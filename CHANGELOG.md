@@ -1,5 +1,10 @@
 # Changelog
 
+## Origen local de checkout — 2026-11-07
+
+- Alineado el ejemplo CORS con el launcher web en 127.0.0.1:3000, conservando localhost explícito para desarrollo. Evita un 403 al crear sesión de invitado desde la dirección canónica del launcher.
+- La corrección local conserva la lista de orígenes existente y añade solo el origen loopback de la web. Se mantienen la comparación exacta y el rechazo de solicitudes cross-site.
+
 ## M6 — Robustez integrada local — 2026-11-07
 
 - Límite HTTP compartido en PostgreSQL con claves HMAC, RLS, ventana/bloqueo atómicos y limpieza acotada. HTTP_RATE_STORE=postgres obligatorio en staging/production; desarrollo/test conservan memory. Migración M6 generada por CLI oficial y aplicada solo a DB de pruebas locales; recuperación de contadores separada de historial contable.
