@@ -1,5 +1,10 @@
 # App Sorteos — Guía visual de la aplicación web
 
+Actualización 2026-11-07: la presentación pública vigente adopta el export de
+Stitch proporcionado por el propietario. Ver [DISENO_STITCH.md](DISENO_STITCH.md)
+y ADR 0022. Esta guía conserva el contexto histórico y las reglas de adaptación
+al negocio; sus tokens iniciales quedan sustituidos por el nuevo tema público.
+
 Fecha: 2026-10-29. Versión: 1.0, aprobada para iniciar F1.
 
 **Estado: el propietario confirmó «Puedes empezar a trabajar». Se autoriza el diseño y la implementación de F1 conforme a esta guía, manteniendo las dependencias de las fases siguientes. No se autoriza un despliegue.**

@@ -1,5 +1,14 @@
 # Changelog
 
+## Presentación pública basada en Stitch — 2026-11-07
+
+- Paleta carbón/champán, Playfair Display y Plus Jakarta Sans locales bajo SIL OFL; tarjetas, campos y botones con radios discretos, cifras tabulares y foco visible.
+- Portada con introducción editorial y escenario fotográfico, catálogo en dos columnas de escritorio y una móvil; detalle, ayuda, pre-reserva y confirmación comparten materiales. Tema limitado al layout público, sin cambios administrativos, de API o de negocio.
+- Imagen SUV del ZIP optimizada a WebP para la fixture DEMO; fotografías de premios reales conservadas. El export es una referencia visual, sin importar sus perfiles, saldos, certificaciones ni selección previa de números.
+- Verificación: lint/typecheck web, 49/49 pruebas web y build de producción aislado correctos. 32/32 escenarios E2E en Chrome instalado, móvil/escritorio y 7/7 adicionales en tablet; incluyen axe WCAG AA, teclado, catálogo, estados y ausencia de escrituras en DEMO. No se repite la integración financiera/remota por este cambio visual.
+- El intento inicial E2E no arrancó por falta del Chromium de Playwright; su descarga falló por espacio insuficiente. Se utilizó Chrome mediante configuración temporal, sin modificar las pruebas ni sus aserciones. Se retiraron cuatro archivos de caché del build aislado creado en esta sesión.
+- Documentación en `docs/frontend/DISENO_STITCH.md`, ADR 0022 y capturas en `docs/frontend/screenshots/stitch/`. Sin nuevas variables, migraciones ni despliegue; M6/M7 siguen pendientes.
+
 ## Acceso administrativo fuera de la navegación pública — 2026-11-07
 
 - Retirados los enlaces a Administración de la cabecera, el menú móvil y el pie del sitio público. El panel conserva su acceso directo en /admin/login.

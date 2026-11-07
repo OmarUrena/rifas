@@ -1,5 +1,10 @@
 # App Sorteos — frontend integrado M4
 
+Presentación pública basada en el ZIP de App Sorteos Luxury Platform: ver
+[sistema visual](../../docs/frontend/DISENO_STITCH.md) y [ADR 0022](../../docs/decisions/0022-public-stitch-theme.md).
+Fuentes locales bajo SIL OFL, tema acotado a `.public-app` y fotografías reales
+conservadas. No requiere nuevas variables ni cambia las funciones de compra.
+
 Desde la raíz de AppRifas, iniciar el backend configurado con `npm run dev:api` y la web con `npm run dev:web` en otra terminal. Abrir http://127.0.0.1:3000/rifas. No se requiere cambiar de rama ni de carpeta de trabajo.
 
 El script `scripts/start-web.ps1` usa API_MODE=live, APP_ENV=development y API_BASE_URL=http://127.0.0.1:3001/api/v1 sin modificar .env.local. Permite -Port y -ApiBaseUrl. CORS_ORIGINS de NestJS debe incluir el origen web exacto; usar 127.0.0.1 en ambos servicios para compartir la cookie invitada. Para demo explícita usar -Demo; demo no crea cupos ni órdenes.

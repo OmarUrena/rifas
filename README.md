@@ -1,5 +1,10 @@
 # App Sorteos — paquete de implementación progresiva para Codex
 
+La interfaz pública usa el [sistema visual de Stitch](docs/frontend/DISENO_STITCH.md):
+carbón y oro champán, tipografías locales Playfair Display y Plus Jakarta Sans,
+catálogo responsive y formularios coherentes. El ajuste conserva los flujos de negocio
+y el estilo independiente de administración; no requiere nuevas variables de entorno.
+
 ## Panel administrativo
 
 La administración tiene estructura y estilo propios, separados del sitio público:

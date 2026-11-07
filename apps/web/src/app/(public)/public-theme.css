@@ -1,0 +1,202 @@
+/* Visual reference: App Sorteos Luxury Platform, Stitch 14492527953335430151.
+   Scoped to the public layout; admin and all business state remain independent. */
+.public-app {
+  --paper: #101417;
+  --surface: #181c1f;
+  --elevated: #262a2e;
+  --ink: #f5f0e6;
+  --muted: #d1c5b3;
+  --line: #383b3e;
+  --control: #807869;
+  --accent: #f4ca78;
+  --radius: 8px;
+  --gold-fill: #d6af60;
+  --recessed: #0b0f12;
+  --mint: #a8cfc4;
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-interface), Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.public-app ::selection { background: var(--accent); color: #261900; }
+.public-app h1, .public-app h2, .public-app h3 {
+  font-family: var(--font-editorial), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -.025em;
+  line-height: 1.2;
+}
+.public-app h1 { font-size: clamp(2.25rem, 4.2vw, 3.5rem); }
+.public-app h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); }
+.public-app h1 em, .public-app h2 em { font-style: italic; font-weight: 400; }
+.public-app .container { width: min(calc(100% - 96px), 1264px); }
+.public-app .eyebrow, .public-app .brand-caption { font-family: var(--font-interface), Arial, sans-serif; }
+.public-app .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .12em; }
+.public-app .header { background: var(--recessed); border-color: #d6af601a; }
+.public-app .header-inner { min-height: 80px; }
+.public-app .brand { color: var(--accent); font-family: var(--font-editorial), Georgia, serif; font-size: 26px; font-weight: 600; }
+.public-app .brand > svg { width: 32px; height: 32px; padding: 5px; border: 1px solid #d6af604d; border-radius: 4px; }
+.public-app .brand-caption { color: var(--muted); font-size: 8px; font-weight: 500; letter-spacing: .16em; }
+.public-app .desktop-nav { gap: 40px; font-size: 12px; }
+.public-app .desktop-nav a { border-bottom: 1px solid transparent; }
+.public-app .desktop-nav a[aria-current='page'] { border-color: var(--gold-fill); }
+.public-app .icon-button { border-radius: 4px; color: var(--muted); }
+.public-app .environment-note { background: #181c1f; border-color: var(--line); color: var(--muted); padding-block: 9px; }
+.public-app .environment-note strong { color: var(--mint); }
+.public-app .home-intro { display: grid; grid-template-columns: 1.5fr 1fr; align-items: end; gap: 64px; padding-block: 48px 32px; }
+.public-app .home-intro h1 { margin-bottom: 0; font-weight: 600; line-height: 1.12; }
+.public-app .home-intro-description { max-width: 400px; justify-self: end; }
+.public-app .home-intro-description p { font-size: 15px; margin-bottom: 8px; }
+.public-app .home-intro .text-link { font-size: 12px; }
+.public-app .hero { min-height: 480px; margin-top: 0; border: 1px solid #d6af6026; border-radius: 8px; align-items: end; }
+.public-app .hero-photo { object-position: center 60%; }
+.public-app .hero-shade { background: linear-gradient(0deg, #0b0f12ed, #0b0f1230 65%, transparent), linear-gradient(90deg, #0b0f1240, transparent 70%); }
+.public-app .hero-copy { background: #0b0f12ed; border: 1px solid #d6af6030; border-radius: 6px; margin: 32px; padding: 24px; max-width: 460px; box-shadow: 0 16px 40px #0003; }
+.public-app .hero-copy .eyebrow { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.public-app .hero-copy .eyebrow svg { width: 14px; height: 14px; }
+.public-app .hero-copy h2 { font-size: clamp(1.6rem, 2.5vw, 2rem); margin-bottom: 10px; }
+.public-app .hero-copy > p:not(.eyebrow) { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.public-app .hero-copy .button { width: 100%; }
+.public-app .hero-caption { position: static; color: var(--muted); font-size: 10px; margin-top: 12px; padding: 0; background: none; }
+.public-app .hero-offline { min-height: 320px; background: radial-gradient(ellipse at 90% 15%, #d6af601a, transparent 65%), var(--recessed); }
+.public-app .button { background: var(--gold-fill); color: #261900; border-color: var(--gold-fill); border-radius: 4px; min-height: 48px; padding: 12px 20px; font-size: 13px; font-weight: 600; transition: background .2s, border-color .2s; }
+.public-app .button:hover { background: var(--accent); border-color: var(--accent); filter: none; }
+.public-app .button-secondary { background: transparent; color: var(--ink); border-color: var(--control); }
+.public-app .button-secondary:hover { background: var(--elevated); border-color: var(--gold-fill); }
+.public-app .button:disabled { background: #313539; color: #c1c7cd; border-color: #62676c; filter: none; }
+.public-app .text-link { color: var(--accent); font-weight: 600; }
+.public-app .trust-strip { margin-top: 24px; padding: 24px; background: var(--surface); border: 1px solid #ffffff08; border-radius: 6px; font-size: 12px; }
+.public-app .trust-strip > span + span { border-left: 1px solid var(--line); }
+.public-app .trust-strip svg { color: var(--mint); }
+.public-app .section { padding-block: 64px; }
+.public-app .section-header { margin-bottom: 24px; }
+.public-app .section-intro { margin-bottom: 28px; font-size: 14px; }
+.public-app .raffle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.public-app .home-raffles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.public-app .raffle-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid #ffffff0a; border-radius: 8px; box-shadow: 0 8px 24px #00000012; transition: border-color .2s; }
+.public-app .raffle-card:hover { border-color: #d6af6060; }
+.public-app .raffle-image-link { aspect-ratio: 1.65; }
+.public-app .image-badges { inset: 16px 16px auto; }
+.public-app .badge { border-radius: 3px; border-color: #a8cfc460; color: #c3ebdf; background: #11362ff2; font-size: 10px; letter-spacing: .06em; }
+.public-app .badge-accent { border-color: #d6af6070; background: #261900ed; color: var(--accent); }
+.public-app .image-demo { background: var(--recessed); border-color: var(--control); color: var(--ink); }
+.public-app .raffle-card-content { display: flex; flex-direction: column; flex: 1; padding: 24px; }
+.public-app .raffle-card-title h3 { font-size: 24px; margin-bottom: 10px; }
+.public-app .raffle-card-title p { font-size: 13px; margin-bottom: 20px; }
+.public-app .raffle-meta { background: var(--recessed); padding: 14px; border-radius: 4px; grid-template-columns: 1.2fr 1fr; margin-top: auto; }
+.public-app .raffle-meta svg { width: 16px; height: 16px; }
+.public-app .raffle-meta strong { color: var(--accent); font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.public-app .raffle-meta small { font-size: 10px; }
+.public-app .raffle-meta > div:last-child strong { color: var(--ink); }
+.public-app .status-open { color: var(--mint); }
+.public-app .status-open > span { background: var(--mint); }
+.public-app .availability-track { height: 4px; background: #313539; }
+.public-app .availability-track > span { background: var(--gold-fill); }
+.public-app .availability-caption { font-size: 11px; }
+.public-app .availability-caption strong { color: var(--accent); }
+.public-app .discovery-card { border-radius: 8px; background: linear-gradient(150deg, #d6af600a, transparent 75%), var(--surface); border-color: #d6af6030; padding: 28px; }
+.public-app .discovery-card h3 { font-size: 28px; }
+.public-app .soft-section { background: #181c1f; border-color: #ffffff08; }
+.public-app .steps { gap: 24px; }
+.public-app .steps article { background: #1c2023; border: 1px solid #ffffff08; padding: 28px; border-radius: 6px; }
+.public-app .step-number { border-radius: 4px; background: #d6af600d; color: var(--accent); border-color: #d6af6040; }
+.public-app .steps h3 { font-size: 24px; }
+.public-app .steps p { font-size: 14px; }
+.public-app .footer { background: var(--recessed); border-color: #ffffff0a; padding-block: 40px; }
+.public-app .footer strong { font-family: var(--font-editorial), Georgia, serif; color: var(--accent); font-size: 25px; }
+.public-app .footer-inner { font-size: 12px; }
+.public-app .page-heading { padding-block: 48px 32px; }
+.public-app .page-heading h1 { margin-bottom: 16px; }
+.public-app .page-heading > p:not(.eyebrow) { max-width: 620px; }
+.public-app .catalog-toolbar { background: var(--surface); border-radius: 6px; padding: 20px; }
+.public-app .filter-chip { border-radius: 4px; color: var(--muted); background: var(--recessed); border-color: var(--control); }
+.public-app .filter-chip[aria-pressed='true'] { color: #261900; background: var(--gold-fill); border-color: var(--gold-fill); }
+.public-app .card, .public-app .checkout-panel { border-color: var(--line); background: var(--surface); border-radius: 8px; }
+.public-app .empty-state { background: radial-gradient(ellipse at center top, #d6af600d, transparent 70%), var(--surface); }
+.public-app .alert { background: #294d4533; border-color: #63867b; border-radius: 6px; color: #c3ebdf; }
+.public-app .alert strong { color: var(--mint); }
+.public-app .alert-error { background: #5a1d1d55; border-color: #b26e65; color: #ffdad6; }
+.public-app .alert-error strong, .public-app .field-error { color: #ffb4ab; }
+.public-app input, .public-app select, .public-app textarea { font-family: inherit; accent-color: var(--gold-fill); }
+.public-app .field input, .public-app .order-form input, .public-app .order-form select, .public-app .quantity-row input { background: var(--recessed); border-color: var(--control); border-radius: 4px; color: var(--ink); }
+.public-app .field input::placeholder, .public-app .order-form input::placeholder { color: #a8a39b; }
+.public-app :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.public-app main:focus { outline: none; }
+.public-app .gallery-main { border-radius: 8px; border-color: var(--line); }
+.public-app .gallery-label { background: #0b0f12ed; color: var(--muted); }
+.public-app .gallery-thumbnails button { border-radius: 4px; }
+.public-app .detail-grid { gap: 40px; }
+.public-app .detail-highlights { border-radius: 6px; background: var(--surface); border-color: var(--line); }
+.public-app .detail-highlights svg { color: var(--mint); }
+.public-app .detail-subtitle { color: var(--accent); }
+.public-app .participation-panel { padding: 28px; border-color: #d6af6050; border-radius: 8px; background: var(--surface); box-shadow: 0 20px 50px -15px #d6af600d; }
+.public-app .price { font-family: var(--font-interface), Arial, sans-serif; font-size: 32px; font-weight: 700; }
+.public-app .inventory-grid { background: var(--recessed); border-color: var(--line); border-radius: 4px; }
+.public-app .inventory-grid dt { font-size: 10px; }
+.public-app .inventory-grid dd { color: var(--ink); font-weight: 600; }
+.public-app .quantity-button { background: var(--recessed); border-radius: 4px; color: var(--accent); border-color: var(--control); }
+.public-app .quantity-button:disabled { background: #313539; color: #c1c7cd; border-color: #62676c; }
+.public-app .rules-link { color: var(--accent); }
+.public-app .reservation-timer { background: var(--recessed); border-radius: 6px; }
+.public-app .checkout-summary dd, .public-app .ticket-numbers li { font-variant-numeric: tabular-nums; }
+.public-app .order-form legend { font-family: var(--font-interface), Arial, sans-serif; font-size: 20px; font-weight: 600; }
+.public-app .ticket-numbers li { border-radius: 4px; background: var(--recessed); }
+.public-app .skeleton { background: #313539; border-radius: 4px; }
+.public-app .bottom-nav { background: #0b0f12f5; border-color: #d6af6033; border-radius: 0; }
+.public-app .bottom-nav a { color: var(--muted); }
+.public-app .bottom-nav a[aria-current='page'] { color: var(--accent); }
+.public-app .detail-mobile-action { background: #0b0f12f5; }
+
+@media (max-width: 1023px) {
+  .public-app .container { width: calc(100% - 64px); }
+  .public-app .home-intro { gap: 32px; }
+  .public-app .home-intro-description p { font-size: 13px; }
+  .public-app .home-raffles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .public-app .hero { min-height: 420px; }
+  .public-app .hero-copy { margin: 24px; max-width: 390px; }
+  .public-app .detail-grid { gap: 28px; }
+  .public-app .steps article { padding: 22px; }
+}
+@media (max-width: 767px) {
+  .public-app .container { width: calc(100% - 40px); }
+  .public-app .header-inner { min-height: 72px; }
+  .public-app .brand { font-size: 23px; }
+  .public-app .brand-caption { font-size: 7px; }
+  .public-app .mobile-menu { background: var(--surface); left: -20px; right: -20px; }
+  .public-app .environment-note { padding-block: 9px; }
+  .public-app .environment-note .container { gap: 4px; }
+  .public-app .environment-note .container > span { font-size: 10px; }
+  .public-app .home-intro { grid-template-columns: 1fr; gap: 18px; padding-block: 32px 24px; }
+  .public-app .home-intro h1 { font-size: clamp(32px, 8vw, 42px); }
+  .public-app .home-intro-description { max-width: none; justify-self: start; }
+  .public-app .home-intro-description p { font-size: 14px; margin-bottom: 0; }
+  .public-app .hero { min-height: 460px; }
+  .public-app .hero-photo { object-position: 58% 40%; }
+  .public-app .hero-shade { background: linear-gradient(0deg, #0b0f1299, transparent 75%); }
+  .public-app .hero-copy { max-width: none; width: calc(100% - 24px); margin: 12px; padding: 20px; }
+  .public-app .hero-copy .eyebrow { font-size: 9px; }
+  .public-app .hero-copy h2 { font-size: 26px; }
+  .public-app .hero-copy .button { min-height: 48px; font-size: 13px; }
+  .public-app .hero-offline { min-height: 300px; }
+  .public-app .trust-strip { gap: 12px; margin-top: 16px; padding: 18px 14px; font-size: 10px; }
+  .public-app .trust-strip > span { flex-direction: column; align-items: start; gap: 8px; }
+  .public-app .trust-strip > span + span { padding-left: 12px; }
+  .public-app .section { padding-block: 40px; }
+  .public-app .section-header h2 { font-size: 28px; }
+  .public-app .raffle-grid { grid-template-columns: 1fr; gap: 24px; }
+  .public-app .raffle-card-content { padding: 22px; }
+  .public-app .raffle-card-title h3 { font-size: 25px; }
+  .public-app .raffle-meta { padding: 12px; gap: 8px; }
+  .public-app .raffle-meta strong { font-size: 15px; }
+  .public-app .steps article { padding: 24px; }
+  .public-app .steps .step-number { position: static; margin-bottom: 18px; }
+  .public-app .steps h3 { font-size: 24px; }
+  .public-app .page-heading { padding-block: 32px 24px; }
+  .public-app .page-heading h1 { font-size: 34px; }
+  .public-app .catalog-toolbar { padding: 16px; gap: 20px; }
+  .public-app .filter-chip { font-size: 11px; padding-inline: 10px; }
+  .public-app .participation-panel, .public-app .checkout-panel { padding: 22px; }
+  .public-app .detail-highlights { gap: 8px; }
+  .public-app .footer { padding-block: 32px; }
+}

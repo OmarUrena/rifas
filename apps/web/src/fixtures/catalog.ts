@@ -12,7 +12,7 @@ const suv: RaffleView = {
   category: "Vehículos", featured: true, status: "PUBLISHED",
   description: "Presencia que inspira. Espacio para nuevos caminos. Explora cómo se verá una rifa de vehículo, conoce su información y descubre cada paso antes de participar.",
   images: [
-    { src: "/images/demo/suv-night.png", alt: "Ilustración demo de un SUV blanco frente a una villa iluminada de noche" },
+    { src: "/images/demo/suv-stitch.webp", alt: "Ilustración demo de un SUV blanco frente a una villa iluminada de noche" },
     { src: "/images/demo/suv-rear.png", alt: "Ilustración demo del SUV blanco visto desde atrás en la misma villa" },
   ],
   ticketPriceMinor: 50000, minPurchase: 1, maxPurchase: 100,
