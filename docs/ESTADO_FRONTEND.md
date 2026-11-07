@@ -241,3 +241,10 @@ La ampliación detectó pérdida de la primera búsqueda antes de hidratación y
 Evidencia: [inicio WebKit móvil](frontend/screenshots/f1-followup/inicio-webkit-mobile.png), [catálogo WebKit móvil](frontend/screenshots/f1-followup/catalogo-webkit-mobile.png), [detalle Firefox](frontend/screenshots/f1-followup/detalle-firefox-desktop.png). f1-followup conserva diez capturas adicionales.
 
 F1 queda verificado localmente dentro de estos límites. F2 requiere B2: ver [ESTADO_F2.md](frontend/ESTADO_F2.md). No se habilitaron compras, transferencias ni autenticación. Las secciones siguientes conservan el registro original.
+# Actualización integrada M6 — 2026-11-07
+
+Web con mensajes de indisponibilidad y origen administrativo rechazado sin
+eliminar sesión válida. Cliente 0.7.0 y 50/50 pruebas unitarias locales aprobadas.
+La regresión de navegador añade recuperación de 429/503/red y métricas de carga,
+CLS/LCP observadas durante QA. Sus resultados finales y límites están en
+[ESTADO_M6.md](ESTADO_M6.md); no sustituyen staging real ni dispositivos físicos.

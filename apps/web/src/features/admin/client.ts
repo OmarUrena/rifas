@@ -5,6 +5,7 @@ export class AdminClientError extends Error {
 export function navigateAdmin(path: string) { window.location.replace(new URL(path, window.location.origin).href); }
 export function adminMessage(code: string) {
   const messages: Record<string, string> = {
+    ORIGIN_NOT_ALLOWED: "La dirección de acceso no coincide. Abre el enlace administrativo habitual y vuelve a intentarlo.",
     CLOSE_REQUIRES_PAUSE: "Pausa la rifa antes de cerrarla.", ACTIVE_HOLDS_EXIST: "Hay pre-reservas vigentes. Espera a que terminen y vuelve a consultar las cifras.",
     EXPORT_TOO_LARGE: "El reporte supera 10 000 órdenes. Acota las fechas o selecciona una rifa.",
     RAFFLE_NOT_EDITABLE: "Pausa la rifa para editarla. Las rifas cerradas no se pueden editar.", RAFFLE_FIELDS_LOCKED: "La numeración es inmutable y el precio queda bloqueado tras la primera pre-reserva.",

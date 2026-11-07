@@ -4,6 +4,7 @@ if (!Number.isSafeInteger(port) || port < 1024 || port > 65535) throw new Error(
 const baseURL = `http://127.0.0.1:${port}`;
 export default defineConfig({
   testDir: "./tests/e2e",
+  globalSetup: "./tests/warm-e2e.mjs",
   workers: 2,
   // Each run starts an isolated cold dev build; navigation compilation is not a product SLA.
   timeout: 60000,

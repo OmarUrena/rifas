@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { after, before, test } from 'node:test';
 import { INestApplication } from '@nestjs/common';
@@ -27,6 +27,7 @@ let root:Client,db:Client,app:INestApplication,base:string,runtimeUrl:string;
 let peer:INestApplication,peerBase:string;
 let rootConnected=false,created=false,loginCreated=false;
 const settings={NODE_ENV:'test',LOG_LEVEL:'silent',SWAGGER_ENABLED:'false',DATABASE_SSL:'false',
+  HTTP_RATE_STORE:'postgres',
   HOLD_MAX_ACTIVE_IP:'1000',HOLD_HOURLY_IP:'10000',CHECKOUT_SESSION_HOURLY_IP:'10000',RATE_LIMIT:'10000',
   HOLD_SWEEP_MS:'3600000',CHECKOUT_ABUSE_HASH_KEY:'b3-integration-key-'.repeat(3)};
 before(async()=>{
@@ -125,19 +126,35 @@ test('cantidad, campos desconocidos, UUID, cabecera y ventana de venta se valida
   assert.equal(extra.status,400);
   assert.equal((await db.query('SELECT count(*)::int AS n FROM sorteos.checkout_holds WHERE raffle_id=$1',[id])).rows[0].n,0);
 });
-test('50 solicitudes paralelas disputan los últimos 20: sin duplicados, sin sobreventa y 409 al agotarse',async()=>{
+test('H03 M6: 100 solicitudes paralelas y reintentos disputan los últimos 20 entre dos instancias',async()=>{
   const id=await raffle(20);
-  const cookies=await Promise.all(Array.from({length:50},()=>session()));
+  const cookies=await Promise.all(Array.from({length:100},()=>session()));
+  const keys=cookies.map(()=>randomUUID());
   const started=performance.now();
-  const responses=await Promise.all(cookies.map((cookie,index)=>create(id,cookie,randomUUID(),1,index%2?peerBase:base)));
+  const samples=await Promise.all(cookies.map(async(cookie,index)=>{
+    const begin=performance.now();const response=await create(id,cookie,keys[index]!,1,index%2?peerBase:base);
+    return {response,duration:performance.now()-begin,index};
+  }));
+  const responses=samples.map(sample=>sample.response);
   const elapsed=Math.round(performance.now()-started);
   assert.equal(responses.filter(r=>r.status===201).length,20);
-  assert.equal(responses.filter(r=>r.status===409).length,30);
+  assert.equal(responses.filter(r=>r.status===409).length,80);
   for(const res of responses)if(res.status===409)assert.equal((await res.json()).error.code,'INSUFFICIENT_TICKETS');
   const inventory=await db.query(`SELECT count(*)::int AS total,count(DISTINCT number)::int AS distinct_numbers,
     count(*) FILTER(WHERE status='HELD')::int AS held,count(DISTINCT hold_id)::int AS holds FROM sorteos.tickets WHERE raffle_id=$1`,[id]);
   assert.deepEqual(inventory.rows[0],{total:20,distinct_numbers:20,held:20,holds:20});
-  console.info(`B3: 50 solicitudes / 20 boletos / 2 instancias en ${elapsed} ms`);
+  for(const sample of samples.filter(s=>s.response.status===201)){
+    const original=await sample.response.json();
+    const retry=await create(id,cookies[sample.index]!,keys[sample.index]!,1,sample.index%2?base:peerBase);
+    assert.equal(retry.status,201);assert.equal((await retry.json()).holdId,original.holdId);
+  }
+  assert.equal((await db.query('SELECT count(*)::int AS n FROM sorteos.checkout_holds WHERE raffle_id=$1',[id])).rows[0].n,20);
+  const sorted=samples.map(s=>s.duration).sort((a,b)=>a-b);
+  const percentile=(p:number)=>Math.round(sorted[Math.ceil(sorted.length*p)-1]!);
+  const report={scenario:'H03',httpRateStore:'postgres',requests:100,instances:2,accepted:20,rejected:80,unexpectedErrors:0,
+    retriedAccepted:20,duplicateHolds:0,duplicateTickets:0,durationMs:elapsed,p50Ms:percentile(.5),p95Ms:percentile(.95),p99Ms:percentile(.99)};
+  const folder=resolve(workspaceRoot,'.tmp/m6');await mkdir(folder,{recursive:true});
+  await writeFile(resolve(folder,'load.json'),JSON.stringify(report,null,2));console.info(JSON.stringify(report));
 });
 test('límites persistentes por sesión/IP, por hora y sesiones nuevas; X-Forwarded-For no evade límites',async()=>{
   const limited=await createApp(parseConfig({...settings,DATABASE_URL:runtimeUrl,HOLD_MAX_ACTIVE_IP:'1',HOLD_HOURLY_IP:'2',
@@ -214,6 +231,6 @@ test('recuperación B3 rechaza datos; vacía restaura permisos B2, repara histor
     assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,13);
     assert.equal((await recovery.query("SELECT has_table_privilege('sorteos_runtime','sorteos.guest_sessions','SELECT') AS allowed")).rows[0].allowed,false);
     revertLocalMigrationHistory(url.toString(),version);migrateLocal(url.toString());
-    assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,17);
+    assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,18);
   }finally{await recovery.end();await root.query(`DROP DATABASE ${recoveryName} WITH(FORCE)`);}
 });

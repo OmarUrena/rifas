@@ -2,7 +2,7 @@
 param(
     [string]$PgBin = 'C:/Program Files/PostgreSQL/17/bin',
     [ValidateRange(1024,65535)][int]$Port = 54339,
-    [ValidateSet('test:integration','test:catalog','test:checkout','test:orders','test:payments','test:m4','test:m5')][string]$TestScript = 'test:integration',
+    [ValidateSet('test:integration','test:catalog','test:checkout','test:orders','test:payments','test:m4','test:m5','test:m6','test:resilience')][string]$TestScript = 'test:integration',
     [switch]$PasswordAuthentication
 )
 
@@ -35,6 +35,7 @@ function Invoke-Checked {
 $previousDatabaseUrl = [Environment]::GetEnvironmentVariable('TEST_DATABASE_URL', 'Process')
 $previousDatabaseSsl = [Environment]::GetEnvironmentVariable('TEST_DATABASE_SSL', 'Process')
 $previousNodeEnv = [Environment]::GetEnvironmentVariable('NODE_ENV', 'Process')
+$previousPgBin = [Environment]::GetEnvironmentVariable('TEST_PG_BIN', 'Process')
 $started = $false
 Push-Location -LiteralPath $workspacePath
 try {
@@ -60,6 +61,7 @@ try {
     [Environment]::SetEnvironmentVariable('TEST_DATABASE_URL', $testConnection, 'Process')
     [Environment]::SetEnvironmentVariable('TEST_DATABASE_SSL', 'false', 'Process')
     [Environment]::SetEnvironmentVariable('NODE_ENV', 'test', 'Process')
+    [Environment]::SetEnvironmentVariable('TEST_PG_BIN', $PgBin, 'Process')
     Invoke-Checked -Program 'npm.cmd' -Arguments @('run',$TestScript)
 } finally {
     if ($passwordFile -and (Test-Path -LiteralPath $passwordFile)) { Remove-Item -LiteralPath $passwordFile }
@@ -70,5 +72,6 @@ try {
     [Environment]::SetEnvironmentVariable('TEST_DATABASE_URL', $previousDatabaseUrl, 'Process')
     [Environment]::SetEnvironmentVariable('TEST_DATABASE_SSL', $previousDatabaseSsl, 'Process')
     [Environment]::SetEnvironmentVariable('NODE_ENV', $previousNodeEnv, 'Process')
+    [Environment]::SetEnvironmentVariable('TEST_PG_BIN', $previousPgBin, 'Process')
     Pop-Location
 }

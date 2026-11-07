@@ -333,7 +333,7 @@ test('recuperación B5 conserva datos Auth, retira solo sus políticas/permisos,
     assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,15);
     assert.equal((await recovery.query('SELECT count(*)::int AS n FROM auth.mfa_factors')).rows[0].n,1);
     assert.equal((await recovery.query("SELECT has_column_privilege('sorteos_runtime','auth.sessions','id','SELECT') AS allowed")).rows[0].allowed,false);
-    migrateLocal(url.toString());assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,17);
+    migrateLocal(url.toString());assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,18);
   }finally{await recovery.end();await root.query(`DROP DATABASE ${recoveryName} WITH(FORCE)`);}
 });
 

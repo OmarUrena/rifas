@@ -10,6 +10,7 @@ export interface AppConfig {
   logLevel: 'silent' | 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
   rateLimit: number;
   rateTtlMs: number;
+  httpRateStore: 'memory' | 'postgres';
   databaseUrl?: string;
   databaseSsl: boolean;
   databaseCa?: string;
@@ -55,6 +56,10 @@ export function parseConfig(env: NodeJS.ProcessEnv): AppConfig {
     throw new Error('Configuración inválida: NODE_ENV');
   }
   const deployed = environment === 'production' || environment === 'staging';
+  const httpRateStore = env.HTTP_RATE_STORE ?? (deployed ? 'postgres' : 'memory');
+  if (!['memory','postgres'].includes(httpRateStore) || (deployed && httpRateStore !== 'postgres')) {
+    throw new Error('HTTP_RATE_STORE debe ser postgres en staging/production');
+  }
   const developmentMfaToken=env.ADMIN_DEVELOPMENT_MFA_TOKEN||undefined;
   const developmentMfaUntil=env.ADMIN_DEVELOPMENT_MFA_UNTIL||undefined;
   const developmentLocalReceipts=boolean(env.DEVELOPMENT_LOCAL_RECEIPTS,false,'DEVELOPMENT_LOCAL_RECEIPTS');
@@ -132,6 +137,7 @@ export function parseConfig(env: NodeJS.ProcessEnv): AppConfig {
     logLevel: logLevel as AppConfig['logLevel'],
     rateLimit: integer(env.RATE_LIMIT, 120, 'RATE_LIMIT', 10000),
     rateTtlMs: integer(env.RATE_TTL_MS, 60000, 'RATE_TTL_MS', 3600000),
+    httpRateStore: httpRateStore as AppConfig['httpRateStore'],
     databaseUrl, databaseSsl, databaseCa: env.DATABASE_CA?.replace(/\\n/g, '\n'),
     supabaseUrl, supabasePublishableKey, publicMediaBucket,
     holdTtlMinutes:integer(env.HOLD_TTL_MINUTES,60,'HOLD_TTL_MINUTES',720),

@@ -4,6 +4,14 @@
 
 **Entornos de pruebas:** base de datos aislada, archivos y bancos ficticios, sin transferencias reales. Los escenarios deben ejecutarse automáticamente siempre que sea viable. Reportar PASS/FAIL/SKIPPED con evidencia; nunca marcar PASS por inferencia.
 
+**M6 (2026-11-07):** ejecución y límites actuales en [ESTADO_M6.md](ESTADO_M6.md).
+H03 registra 100 peticiones entre dos instancias, 20 reintentos y p50/p95/p99.
+S06 ejecuta backup custom y restauración transaccional en DB nueva, con evidencia
+de filas, RLS e invariantes. S08 incluye 429, 503 y red en la bandeja administrativa;
+la regresión M4/M5 conserva los fallos de envío y conciliación. Las verificaciones
+remotas, dispositivos físicos, borde/CAPTCHA y recuperación de Storage/Auth siguen
+separadas y no se marcan PASS por esos ensayos locales.
+
 ## A. Creación y configuración de rifas
 
 | ID | Escenario | Esperado | Fase |

@@ -1,5 +1,11 @@
 # App Sorteos — frontend integrado M4
 
+M6 añade mensajes de indisponibilidad, rechazo de origen sin borrar sesión y
+regresión de 429/503/red. Playwright prepara las rutas DEMO antes de abrir los
+navegadores y guarda `performance.json` con métricas del recorrido QA; son
+observaciones en next dev, no mediciones de usuarios en producción. Ver
+[estado M6](../../docs/ESTADO_M6.md).
+
 Presentación pública basada en el ZIP de App Sorteos Luxury Platform: ver
 [sistema visual](../../docs/frontend/DISENO_STITCH.md) y [ADR 0022](../../docs/decisions/0022-public-stitch-theme.md).
 Fuentes locales bajo SIL OFL, tema acotado a `.public-app` y fotografías reales

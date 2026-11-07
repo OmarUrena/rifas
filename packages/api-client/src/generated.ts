@@ -1021,9 +1021,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1139,9 +1141,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1257,9 +1261,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1377,9 +1383,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1501,9 +1509,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1625,9 +1635,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1744,9 +1756,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1862,9 +1876,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1982,9 +1998,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2102,9 +2120,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2222,9 +2242,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2340,9 +2362,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2462,9 +2486,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2584,9 +2610,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2704,9 +2732,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2828,9 +2858,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2952,9 +2984,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3072,9 +3106,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3196,9 +3232,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3317,9 +3355,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3443,9 +3483,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3563,9 +3605,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3685,9 +3729,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3831,9 +3877,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3951,9 +3999,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4076,9 +4126,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4196,9 +4248,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4316,9 +4370,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4439,9 +4495,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4566,9 +4624,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4693,9 +4753,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4820,9 +4882,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4947,9 +5011,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5065,9 +5131,11 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
             429: {
                 headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {

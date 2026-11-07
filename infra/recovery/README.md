@@ -84,3 +84,15 @@ una migración correctiva. Este procedimiento no autoriza operaciones remotas.
 ## M5
 
 Aplicar `m5-down-empty.sql` solo en instalación vacía y dentro de transacción antes de recuperar B5. Reparar la versión M5 mediante CLI oficial después del COMMIT. Con datos se rechaza: conservar respaldo e implementar corrección hacia adelante. Nunca borrar órdenes o auditoría para pasar la comprobación. El cierre no se revierte ni se liberan reservas como operación de recuperación.
+# Recuperación M6
+
+`m6-down.sql` retira solo la tabla de contadores HTTP desechables. No elimina
+órdenes, pagos, auditoría, archivos ni Auth. Detener tráfico, conservar respaldo y
+reparar únicamente `20261107194617` con el CLI oficial del entorno autorizado.
+No usar memory en staging/production como sustitución del contador compartido.
+Con datos reales, preferir corrección hacia adelante. La regresión aplica y
+retira M6 en bases vacías junto con la recuperación protegida de B5.
+
+El ensayo S06 usa pg_dump custom y pg_restore transaccional sobre una DB nueva
+DEMO. Compara datos, RLS, permisos, constraints y la orden pendiente. No incluye
+objetos de Storage, Auth ni roles globales; ver [operación M6](../../docs/OPERACION_SEGURA_M6.md).

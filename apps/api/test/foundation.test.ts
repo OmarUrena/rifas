@@ -18,6 +18,7 @@ import { randomUUID } from 'node:crypto';
 import { PrivateStorageService } from '../src/orders/private-storage.service';
 import { ReceiptService } from '../src/orders/receipt.service';
 import { PDFDocument } from 'pdf-lib';
+import { chooseTickets } from '../src/checkout/checkout.service';
 
 const config = parseConfig({ NODE_ENV: 'test', LOG_LEVEL: 'silent', SWAGGER_ENABLED: 'true' });
 
@@ -180,6 +181,33 @@ class ProbeController {
 }
 @Module({ controllers: [ProbeController] })
 class ProbeModule {}
+
+test('M6: observabilidad correlaciona errores por categoría sin URL, cabeceras, cuerpos ni PII',async()=>{
+  const module=await Test.createTestingModule({imports:[ProbeModule]}).compile();
+  const probe=module.createNestApplication({logger:false,bodyParser:false});
+  const logger=new SafeLogger('silent'),events:unknown[]=[];
+  for(const level of ['info','warn','error'] as const)logger.output[level]=((value:unknown)=>{events.push(value);}) as typeof logger.output[typeof level];
+  configureApp(probe,{...config,swaggerEnabled:false},logger);await probe.listen(0,'127.0.0.1');
+  try{
+    const response=await fetch(`${await probe.getUrl()}/api/v1/probe/failure?token=PRIVATE_TOKEN&email=demo@example.invalid`,{headers:{Authorization:'Bearer PRIVATE_TOKEN',Cookie:'s=PRIVATE_COOKIE'}});
+    assert.equal(response.status,500);
+    const serialized=JSON.stringify(events);
+    for(const secret of ['PRIVATE_TOKEN','PRIVATE_COOKIE','demo@example.invalid','SECRETO_DE_PRUEBA'])assert.ok(!serialized.includes(secret));
+    const record=events.find(e=>typeof e==='object'&&e!==null&&'status'in e&&e.status===500) as Record<string,unknown>;
+    assert.equal(record.errorCode,'INTERNAL_ERROR');assert.equal(record.routeGroup,'other');
+    assert.equal(record.requestId,response.headers.get('X-Request-Id'));assert.ok(Number(record.durationMs)>=0);
+  }finally{await probe.close();}
+});
+
+test('M6: asignación sin reemplazo mantiene rango y cobertura con N no decimal',()=>{
+  const ids=Array.from({length:137},(_,i)=>String(i));
+  const coverage=new Set<string>();
+  for(let i=0;i<2000;i++){
+    const picked=chooseTickets([...ids],7);assert.equal(picked.length,7);assert.equal(new Set(picked).size,7);
+    for(const id of picked){assert.ok(ids.includes(id));coverage.add(id);}
+  }
+  assert.equal(coverage.size,137); // Smoke test for a stuck index, not a fairness certification.
+});
 
 test('validación, JSON corrupto y errores internos usan el mismo envelope', async () => {
   const module = await Test.createTestingModule({ imports: [ProbeModule] }).compile();

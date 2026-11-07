@@ -1,5 +1,16 @@
 # Changelog
 
+## M6 — Robustez integrada local — 2026-11-07
+
+- Límite HTTP compartido en PostgreSQL con claves HMAC, RLS, ventana/bloqueo atómicos y limpieza acotada. HTTP_RATE_STORE=postgres obligatorio en staging/production; desarrollo/test conservan memory. Migración M6 generada por CLI oficial y aplicada solo a DB de pruebas locales; recuperación de contadores separada de historial contable.
+- Liveness independiente, timeouts de transporte explícitos y proxy no confiable por defecto. Logs por categoría/estado/duración/código conocido, sin URL, cuerpos ni PII; 5xx error y 429 warning.
+- Web distingue indisponibilidad. Rechazo de origen devuelve ORIGIN_NOT_ALLOWED sin eliminar una sesión válida; CSRF, MFA y allowlist se conservan. OpenAPI/cliente 0.7.0 con Retry-After documentado.
+- Verificación local: 97/97 integración; repetición checkout 11/11 con HTTP compartido, 4/4 resiliencia/restore, 18/18 M4, 5/5 M5 y 80/80 E2E en Chromium/Firefox/WebKit. Base API 22/22, configuración 10/10, web 50/50 y core 6/6; lint/tipos/builds aprobados.
+- Carga de 100 solicitudes y 20 reintentos: 20 holds, 80 rechazos por cupo, cero duplicados/errores inesperados, p95 hasta cabeceras 737 ms en entorno local. Backup custom restaurado transaccionalmente en otra DB con datos, RLS, permisos y restricciones verificados. Reportes sin secretos en docs/qa; 25 observaciones de navegador son QA en next dev, no SLA.
+- Preparación previa de rutas y selector de alerta acotado corrigen fallos iniciales del arnés sin omitir escenarios. CI preparada para SQL/restauración y M4/M5, todavía sin ejecución remota.
+- Auditoría productiva sin avisos; un moderado de minimatch en lint y tres WARN remotos conocidos permanecen documentados. M6 sigue abierto por selección de hosting/CAPTCHA, protección de borde/origen, alarmas y validación real de Auth/Storage. No se despliega ni se habilitan ventas.
+- Evidencia, límites y recomendaciones de hosting en docs/ESTADO_M6.md, docs/OPERACION_SEGURA_M6.md y docs/OPCIONES_HOSTING.md.
+
 ## Presentación pública basada en Stitch — 2026-11-07
 
 - Paleta carbón/champán, Playfair Display y Plus Jakarta Sans locales bajo SIL OFL; tarjetas, campos y botones con radios discretos, cifras tabulares y foco visible.

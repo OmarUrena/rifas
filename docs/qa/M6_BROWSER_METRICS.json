@@ -1,0 +1,282 @@
+{
+  "recordedAt": "2026-11-07T20:14:48.599Z",
+  "environment": "Windows / Node 24 / isolated next dev DEMO",
+  "notes": "Observed during full-page QA including scroll and image decode; not production Web Vitals or an SLA.",
+  "measurements": [
+    {
+      "path": "/admin/login",
+      "project": "desktop",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 264,
+      "domContentLoadedMs": 134.59999990463257,
+      "loadMs": 2407.0999999046326,
+      "resourceRequests": 9,
+      "transferredBytes": 3581690
+    },
+    {
+      "path": "/admin/login",
+      "project": "firefox-desktop",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 556,
+      "domContentLoadedMs": 562,
+      "loadMs": 1898,
+      "resourceRequests": 10,
+      "transferredBytes": 3581999
+    },
+    {
+      "path": "/admin/login",
+      "project": "mobile",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 824,
+      "domContentLoadedMs": 741.5,
+      "loadMs": 2700.899999976158,
+      "resourceRequests": 9,
+      "transferredBytes": 3581690
+    },
+    {
+      "path": "/admin/login",
+      "project": "tablet",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 608,
+      "domContentLoadedMs": 572.8999999761581,
+      "loadMs": 2314.6999999284744,
+      "resourceRequests": 9,
+      "transferredBytes": 3581690
+    },
+    {
+      "path": "/admin/login",
+      "project": "webkit-mobile",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 267,
+      "domContentLoadedMs": 240,
+      "loadMs": 1519,
+      "resourceRequests": 10,
+      "transferredBytes": 3610346
+    },
+    {
+      "path": "/ayuda",
+      "project": "desktop",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 320,
+      "domContentLoadedMs": 140.5,
+      "loadMs": 1900.1999999284744,
+      "resourceRequests": 12,
+      "transferredBytes": 3881306
+    },
+    {
+      "path": "/ayuda",
+      "project": "firefox-desktop",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 524,
+      "domContentLoadedMs": 522,
+      "loadMs": 1819,
+      "resourceRequests": 13,
+      "transferredBytes": 3881615
+    },
+    {
+      "path": "/ayuda",
+      "project": "mobile",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 360,
+      "domContentLoadedMs": 198.89999997615814,
+      "loadMs": 2868.399999976158,
+      "resourceRequests": 12,
+      "transferredBytes": 3881306
+    },
+    {
+      "path": "/ayuda",
+      "project": "tablet",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 444,
+      "domContentLoadedMs": 410.7999999523163,
+      "loadMs": 2416.5,
+      "resourceRequests": 12,
+      "transferredBytes": 3881306
+    },
+    {
+      "path": "/ayuda",
+      "project": "webkit-mobile",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 185,
+      "domContentLoadedMs": 143,
+      "loadMs": 920,
+      "resourceRequests": 13,
+      "transferredBytes": 3909962
+    },
+    {
+      "path": "/",
+      "project": "desktop",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0.16666666666666666,
+      "lcpMs": 812,
+      "domContentLoadedMs": 497.60000002384186,
+      "loadMs": 2856.600000023842,
+      "resourceRequests": 14,
+      "transferredBytes": 4099878
+    },
+    {
+      "path": "/",
+      "project": "firefox-desktop",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 824,
+      "domContentLoadedMs": 695,
+      "loadMs": 2756,
+      "resourceRequests": 16,
+      "transferredBytes": 4114577
+    },
+    {
+      "path": "/",
+      "project": "mobile",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0.1675,
+      "lcpMs": 868,
+      "domContentLoadedMs": 575.6000000238419,
+      "loadMs": 2395.100000023842,
+      "resourceRequests": 15,
+      "transferredBytes": 4068466
+    },
+    {
+      "path": "/",
+      "project": "tablet",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0.00005059980321675539,
+      "lcpMs": 1040,
+      "domContentLoadedMs": 598.5999999046326,
+      "loadMs": 3712.0999999046326,
+      "resourceRequests": 15,
+      "transferredBytes": 4114268
+    },
+    {
+      "path": "/",
+      "project": "webkit-mobile",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 672,
+      "domContentLoadedMs": 419,
+      "loadMs": 2346,
+      "resourceRequests": 16,
+      "transferredBytes": 4067288
+    },
+    {
+      "path": "/rifas",
+      "project": "desktop",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0.16666666666666666,
+      "lcpMs": 5260,
+      "domContentLoadedMs": 305.90000009536743,
+      "loadMs": 2246.5,
+      "resourceRequests": 14,
+      "transferredBytes": 4054058
+    },
+    {
+      "path": "/rifas",
+      "project": "firefox-desktop",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 609,
+      "domContentLoadedMs": 606,
+      "loadMs": 1924,
+      "resourceRequests": 15,
+      "transferredBytes": 4054367
+    },
+    {
+      "path": "/rifas",
+      "project": "mobile",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0.1675,
+      "lcpMs": 4968,
+      "domContentLoadedMs": 313.89999997615814,
+      "loadMs": 1905.7000000476837,
+      "resourceRequests": 14,
+      "transferredBytes": 4054058
+    },
+    {
+      "path": "/rifas",
+      "project": "tablet",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0.14663229386011759,
+      "lcpMs": 1508,
+      "domContentLoadedMs": 978,
+      "loadMs": 4280.800000071526,
+      "resourceRequests": 14,
+      "transferredBytes": 4054058
+    },
+    {
+      "path": "/rifas",
+      "project": "webkit-mobile",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 4408,
+      "domContentLoadedMs": 367,
+      "loadMs": 1745,
+      "resourceRequests": 19,
+      "transferredBytes": 4082714
+    },
+    {
+      "path": "/rifas/suv-premium-demo",
+      "project": "desktop",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0.16666666666666666,
+      "lcpMs": 696,
+      "domContentLoadedMs": 396.40000009536743,
+      "loadMs": 2441.600000023842,
+      "resourceRequests": 14,
+      "transferredBytes": 3925127
+    },
+    {
+      "path": "/rifas/suv-premium-demo",
+      "project": "firefox-desktop",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 920,
+      "domContentLoadedMs": 910,
+      "loadMs": 2141,
+      "resourceRequests": 15,
+      "transferredBytes": 3925436
+    },
+    {
+      "path": "/rifas/suv-premium-demo",
+      "project": "mobile",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0.1675,
+      "lcpMs": 732,
+      "domContentLoadedMs": 442.60000002384186,
+      "loadMs": 1985.6000000238419,
+      "resourceRequests": 14,
+      "transferredBytes": 3899517
+    },
+    {
+      "path": "/rifas/suv-premium-demo",
+      "project": "tablet",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0.146484375,
+      "lcpMs": 792,
+      "domContentLoadedMs": 504.89999997615814,
+      "loadMs": 2041.8999999761581,
+      "resourceRequests": 14,
+      "transferredBytes": 3925127
+    },
+    {
+      "path": "/rifas/suv-premium-demo",
+      "project": "webkit-mobile",
+      "environment": "isolated-next-dev-demo",
+      "cls": 0,
+      "lcpMs": 520,
+      "domContentLoadedMs": 325,
+      "loadMs": 1244,
+      "resourceRequests": 15,
+      "transferredBytes": 3922337
+    }
+  ]
+}

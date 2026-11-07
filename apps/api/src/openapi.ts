@@ -3,9 +3,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function createDocument(app: INestApplication) {
   const document = SwaggerModule.createDocument(app, new DocumentBuilder()
-    .setTitle('App Sorteos API').setDescription('M5: editor de rifas, fotos propias, cierre controlado, indicadores y CSV auditado; conciliación y consulta protegidas.')
+    .setTitle('App Sorteos API').setDescription('M6: límites HTTP compartidos, errores uniformes y observabilidad sin PII; conserva catálogo, compra con comprobante y conciliación manual.')
     .addCookieAuth('__Host-sorteos_guest',{type:'apiKey',in:'cookie',description:'Cookie HttpOnly de checkout-session; en desarrollo: sorteos_guest.'},'guestSession')
-    .addBearerAuth().setVersion('0.6.0').build(), {
+    .addBearerAuth().setVersion('0.7.0').build(), {
     operationIdFactory: (controller, method) => `${controller}_${method}`,
   });
   for (const path of Object.values(document.paths)) {
@@ -17,6 +17,9 @@ export function createDocument(app: INestApplication) {
           'application/json': { schema: { $ref: '#/components/schemas/ErrorResponseDto' } },
         } };
       }
+      operation.responses['429'] = { ...operation.responses['429'], description: 'Límite de solicitudes; respetar Retry-After antes de reintentar.',
+        headers: { 'Retry-After': { description: 'Segundos de espera del límite HTTP.', schema: {type:'integer',minimum:1} } },
+      };
     }
   }
   return document;

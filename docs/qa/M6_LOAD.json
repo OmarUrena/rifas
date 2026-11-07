@@ -1,0 +1,16 @@
+{
+  "scenario": "H03",
+  "httpRateStore": "postgres",
+  "requests": 100,
+  "instances": 2,
+  "accepted": 20,
+  "rejected": 80,
+  "unexpectedErrors": 0,
+  "retriedAccepted": 20,
+  "duplicateHolds": 0,
+  "duplicateTickets": 0,
+  "durationMs": 772,
+  "p50Ms": 558,
+  "p95Ms": 737,
+  "p99Ms": 767
+}

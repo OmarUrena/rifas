@@ -9,7 +9,15 @@ test('desarrollo inicia sin credenciales y con TLS por defecto', () => {
   assert.equal(config.databaseUrl, undefined);
   assert.equal(config.databaseSsl, true);
   assert.equal(config.swaggerEnabled, true);
+  assert.equal(config.httpRateStore, 'memory');
   assert.deepEqual(config.corsOrigins, ['http://localhost:3000']);
+});
+
+test('límite HTTP compartido obligatorio fuera de desarrollo; no admite almacenes desconocidos', () => {
+  assert.equal(parseConfig({HTTP_RATE_STORE:'postgres'}).httpRateStore,'postgres');
+  assert.throws(()=>parseConfig({HTTP_RATE_STORE:'redis'}));
+  assert.throws(()=>parseConfig({NODE_ENV:'production',HTTP_RATE_STORE:'memory'}),/HTTP_RATE_STORE/);
+  assert.throws(()=>parseConfig({NODE_ENV:'staging',HTTP_RATE_STORE:'memory'}),/HTTP_RATE_STORE/);
 });
 
 test('orígenes exactos sin wildcard, path, credenciales ni esquemas ajenos', () => {

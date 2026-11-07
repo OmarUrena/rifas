@@ -26,7 +26,14 @@ before(async()=>{
   const deadline=Date.now()+120000;
   while(Date.now()<deadline){
     if(m4Web.exitCode!==null)throw new Error('Next terminó al iniciar; revisar .tmp/m4-next.log');
-    try{if((await globalThis.fetch(origin+'/admin/login',{signal:AbortSignal.timeout(5000)})).ok)return;}catch{}
+    try{if((await globalThis.fetch(origin+'/admin/login',{signal:AbortSignal.timeout(5000)})).ok){
+      // Finish shared chunk compilation before browser contexts; GET only, no action retries.
+      const warmed=await Promise.allSettled(['/admin/ordenes','/admin/ordenes/'+randomUUID(),'/admin/mfa',
+        '/admin/api/raffles','/admin/auth/factors','/rifas/no-existe','/rifas/no-existe/participar','/orden/confirmacion']
+        .map(async route=>{const response=await globalThis.fetch(origin+route,{signal:AbortSignal.timeout(60000)});await response.text();return response.status;}));
+      for(const result of warmed){assert.equal(result.status,'fulfilled');if(result.status==='fulfilled')assert.ok([200,401,404,405].includes(result.value));}
+      return;
+    }}catch(error){if(Date.now()>=deadline)throw error;}
     await new Promise(r=>setTimeout(r,500));
   }
   throw new Error('Next no inició dentro del plazo.');
@@ -67,6 +74,30 @@ test('M4: web, API, PostgreSQL, JWT/JWKS y adaptadores locales Auth/Storage', {t
       await page.getByLabel('Código de autenticación').fill('123456');await page.getByRole('button',{name:'Verificar código',exact:true}).click();await page.waitForURL('**/admin/ordenes');
       const cookies=(await context.cookies()).filter((c:any)=>c.name.startsWith('sorteos_admin_'));assert.ok(cookies.length>=2);assert.ok(cookies.every((c:any)=>c.httpOnly&&c.sameSite==='Strict'&&c.path==='/admin'));
       assert.equal(await page.evaluate(()=>localStorage.length),0);
+    });
+    await t.test('M6: origen rechazado conserva sesión válida y no permite saltar CSRF',async()=>{
+      const before=(await context.cookies()).filter((c:any)=>c.name.startsWith('sorteos_admin_'));
+      const rejected=await context.request.post(origin+'/admin/auth/factors',{headers:{Origin:'https://untrusted.invalid'},data:{}});
+      assert.equal(rejected.status(),403);assert.equal((await rejected.json()).error.code,'ORIGIN_NOT_ALLOWED');
+      assert.deepEqual((await context.cookies()).filter((c:any)=>c.name.startsWith('sorteos_admin_')),before);
+      assert.equal((await context.request.get(origin+'/admin/api/session')).status(),200);
+    });
+    await t.test('S08 M6: 429, 503 y pérdida de red muestran error y recuperan la bandeja sin repetir mutaciones',async()=>{
+      const match=(url:URL)=>url.pathname==='/admin/api/orders';
+      for(const failure of [429,503,0]){
+        const handler=async(route:any)=>failure===0?route.abort('failed'):route.fulfill({status:failure,
+          contentType:'application/json',headers:failure===429?{'Retry-After':'1'}:{},
+          body:JSON.stringify({error:{code:failure===429?'RATE_LIMITED':'SERVICE_UNAVAILABLE'}})});
+        await page.route(match,handler);
+        try{
+          await page.goto(origin+'/admin/ordenes');
+          await page.getByRole('alert').filter({hasText:failure===429?'Demasiados intentos':failure===503?'La API administrativa no está disponible':'No se pudo conectar con el servidor'}).waitFor();
+        }finally{await page.unroute(match,handler);}
+        const response=page.waitForResponse((r:any)=>new URL(r.url()).pathname==='/admin/api/orders'&&r.status()===200);
+        await page.getByRole('button',{name:'Reintentar consulta',exact:true}).click();await response;
+        await expect(page.getByRole('alert').filter({hasText:'No se pudo cargar la bandeja'})).toHaveCount(0);
+        await page.getByRole('heading',{name:'Órdenes registradas',exact:true}).waitFor();
+      }
     });
     let bought:Fixture;
     await t.test('M1–M3: catálogo, hold sin números y orden con archivo desde navegador',async()=>{

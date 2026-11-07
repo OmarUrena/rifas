@@ -633,3 +633,11 @@ migración correctiva, no borrar datos para habilitar rollback.
 
 Siguiente fase funcional: **B6**, consultas operativas, cierre y reportes. No se
 implementa sorteo ni selección de ganador en B5.
+# Actualización integrada M6 — 2026-11-07
+
+M6 autorizado en main. Se añade almacén HTTP PostgreSQL con RLS, timeouts,
+observabilidad por categoría/código sin PII, contención de 100 solicitudes y
+pg_dump/pg_restore real sobre DEMO. OpenAPI/cliente 0.7.0. La regresión local
+actual aprobó 97/97 pruebas de integración; la línea base previa fue 93/93.
+La migración M6 no se aplica al proyecto remoto por esta verificación. Ver
+[estado conjunto M6](ESTADO_M6.md) y [operación segura](OPERACION_SEGURA_M6.md).

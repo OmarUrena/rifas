@@ -26,6 +26,8 @@
     "test:payments": "npm run test:payments --workspace @sorteos/api",
     "test:m4": "npm run test:admin:live --workspace @sorteos/web",
     "test:m5": "npm run test:operations:live --workspace @sorteos/web",
+    "test:resilience": "npm run test:resilience --workspace @sorteos/api",
+    "test:m6": "npm run test:integration && npm run test:m4 && npm run test:m5 && npm run test:e2e --workspace @sorteos/web",
     "db:migrate:local": "npm run db:migrate:local --workspace @sorteos/api",
     "db:seed:demo": "npm run db:seed:demo --workspace @sorteos/api",
     "admin:provision:local": "npm run admin:provision:local --workspace @sorteos/api",

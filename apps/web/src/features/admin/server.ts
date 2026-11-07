@@ -73,7 +73,7 @@ export async function requireAdmin(allowMfa = false) {
 }
 export function sameOrigin(request: NextRequest) {
   const expected = process.env.WEB_ORIGIN || `${secure() ? "https:" : request.nextUrl.protocol}//${request.headers.get("host") ?? request.nextUrl.host}`;
-  if (request.headers.get("origin") !== expected || request.headers.get("sec-fetch-site") === "cross-site") throw new AdminError("FORBIDDEN", 403);
+  if (request.headers.get("origin") !== expected || request.headers.get("sec-fetch-site") === "cross-site") throw new AdminError("ORIGIN_NOT_ALLOWED", 403);
 }
 export async function jsonBody(request: NextRequest, maxBytes = 8192): Promise<Record<string, unknown>> {
   if (!request.headers.get("content-type")?.startsWith("application/json")) throw new AdminError("INVALID_REQUEST", 400);

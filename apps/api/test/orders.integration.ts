@@ -262,6 +262,6 @@ test('recuperación B4 rechaza datos; vacía conserva B3, repara historial ofici
     migrateLocal(url.toString());await recovery.connect();await revertEmptyB4(recovery,url.toString());
     assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,14);
     assert.equal((await recovery.query("SELECT has_table_privilege('sorteos_runtime','sorteos.orders','INSERT') AS allowed")).rows[0].allowed,false);
-    migrateLocal(url.toString());assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,17);
+    migrateLocal(url.toString());assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,18);
   }finally{await recovery.end();await root.query(`DROP DATABASE ${recoveryName} WITH(FORCE)`);}
 });

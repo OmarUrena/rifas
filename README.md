@@ -1,5 +1,17 @@
 # App Sorteos — paquete de implementación progresiva para Codex
 
+## M6: seguridad y resiliencia
+
+Límite HTTP compartido PostgreSQL, telemetría sin PII, timeouts de transporte y
+ensayo real de backup/restauración local. La web distingue indisponibilidad y
+origen administrativo rechazado. OpenAPI/cliente 0.7.0. Ver
+[estado y evidencia](docs/ESTADO_M6.md), [operación segura](docs/OPERACION_SEGURA_M6.md)
+y [opciones de hosting](docs/OPCIONES_HOSTING.md).
+
+`HTTP_RATE_STORE=memory` se limita a desarrollo/test. Staging/producción requieren
+`postgres`, la migración M6 y una clave CHECKOUT_ABUSE_HASH_KEY común. El trabajo
+local no aplica la migración a Supabase ni activa CAPTCHA o despliegues.
+
 La interfaz pública usa el [sistema visual de Stitch](docs/frontend/DISENO_STITCH.md):
 carbón y oro champán, tipografías locales Playfair Display y Plus Jakarta Sans,
 catálogo responsive y formularios coherentes. El ajuste conserva los flujos de negocio

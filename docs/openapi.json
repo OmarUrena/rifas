@@ -116,11 +116,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -254,11 +263,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -385,11 +403,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -530,11 +557,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -685,11 +721,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -865,11 +910,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -1001,11 +1055,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -1132,11 +1195,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -1286,11 +1358,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -1426,11 +1507,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -1566,11 +1656,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -1697,11 +1796,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -1866,11 +1974,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -2010,11 +2127,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -2155,11 +2281,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -2308,11 +2443,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -2463,11 +2607,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -2608,11 +2761,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -2763,11 +2925,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -2909,11 +3080,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -3081,11 +3261,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -3226,11 +3415,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -3377,11 +3575,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -3600,11 +3807,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -3745,11 +3961,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -3946,11 +4171,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -4091,11 +4325,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -4236,11 +4479,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -4394,11 +4646,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -4566,11 +4827,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -4738,11 +5008,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -4910,11 +5189,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -5082,11 +5370,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -5218,11 +5515,20 @@
             }
           },
           "429": {
-            "description": "Error uniforme",
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             }
@@ -5261,8 +5567,8 @@
   },
   "info": {
     "title": "App Sorteos API",
-    "description": "M5: editor de rifas, fotos propias, cierre controlado, indicadores y CSV auditado; conciliación y consulta protegidas.",
-    "version": "0.6.0",
+    "description": "M6: límites HTTP compartidos, errores uniformes y observabilidad sin PII; conserva catálogo, compra con comprobante y conciliación manual.",
+    "version": "0.7.0",
     "contact": {}
   },
   "tags": [],

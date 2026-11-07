@@ -68,6 +68,7 @@ export class ApiExceptionFilter implements ExceptionFilter {
     const readinessCode = typeof payload === 'object' && payload !== null && 'code' in payload
       && domainErrors[String(payload.code)] === status
       ? String(payload.code) : undefined;
+    response.locals.errorCode = readinessCode ?? code;
     response.status(status).json({ error: {
       code: readinessCode ?? code, message, details: {}, requestId: request.res?.getHeader('X-Request-Id'),
     } });

@@ -469,6 +469,15 @@ canal verificado, sin búsqueda abierta por teléfono/correo ni OTP simulado.
 | 403 `FORBIDDEN` | «No tienes permiso para realizar esta acción.» |
 
 ## Contrato no funcional
+- M6 / OpenAPI 0.7.0: el límite HTTP general usa `HTTP_RATE_STORE=postgres` en
+  staging/production. Su 429 incluye `Retry-After` en segundos; los límites de
+  negocio del checkout también pueden responder 429 sin ese encabezado. Mantener
+  la intención y su clave al reintentar; nunca generar una orden nueva para eludirlo.
+- El 503 del almacén de límites no permite continuar una operación crítica. El
+  endpoint de liveness sigue independiente de DB; readiness no habilita ventas.
+- En rutas Auth de Next, origen rechazado devuelve 403 `ORIGIN_NOT_ALLOWED`, sin
+  borrar la sesión existente. Continúan la comparación estricta de origen y la
+  prohibición de cross-site. No es un nuevo permiso ni un cambio de rol.
 - No PII en respuestas públicas, logs, URLs, SEO o analytics.
 - Cada write crítico auditado con `requestId` y actor.
 - Entornos: `development`, `test`, `staging`, `production` separados; usar datos DEMO en primeros tres.

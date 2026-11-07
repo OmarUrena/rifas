@@ -1,0 +1,11 @@
+{
+  "scenario": "S06",
+  "result": "PASS",
+  "tables": 18,
+  "archiveSha256": "d89c33d8bcb8b445a14517d40707316c8b81eee215100a554039769459566a3d",
+  "durationMs": 2796,
+  "pendingOrderPreserved": true,
+  "rls": true,
+  "constraints": true,
+  "storageBytes": "NOT_INCLUDED_IN_SQL_BACKUP"
+}

@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { randomUUID } from 'node:crypto';
 import { performance } from 'node:perf_hooks';
+import { Server } from 'node:http';
 import { INestApplication, ForbiddenException } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
@@ -13,16 +14,32 @@ import { SafeLogger } from './common/logger';
 import { createDocument } from './openapi';
 
 export function configureApp(app: INestApplication, config: AppConfig, logger: SafeLogger): void {
+  app.getHttpAdapter().getInstance().set('trust proxy', false);
+  const server = app.getHttpServer() as Server;
+  server.headersTimeout = 15000;
+  server.requestTimeout = 120000;
+  server.keepAliveTimeout = 5000;
+  server.maxHeadersCount = 100;
+  server.maxRequestsPerSocket = 1000;
   app.setGlobalPrefix('api/v1');
   app.use((req: Request, res: Response, next: NextFunction) => {
     const requestId = randomUUID();
     const start = performance.now();
     res.setHeader('X-Request-Id', requestId);
     res.setHeader('Cache-Control', 'no-store');
-    res.on('finish', () => logger.output.info({
-      event: 'http_request', requestId, method: req.method,
-      status: res.statusCode, durationMs: Math.round(performance.now() - start),
-    }));
+    res.on('finish', () => {
+      // Route categories come from fixed registered patterns, never raw URLs or parameters.
+      const pattern = String(req.route?.path ?? '');
+      const routeGroup = pattern.startsWith('/api/v1/health') ? 'health'
+        : pattern.startsWith('/api/v1/checkout') ? 'checkout'
+        : pattern.startsWith('/api/v1/admin') ? 'admin'
+        : pattern.startsWith('/api/v1/orders') ? 'orders'
+        : pattern.startsWith('/api/v1/raffles') ? 'catalog' : 'other';
+      const level = res.statusCode >= 500 ? 'error' : res.statusCode === 429 ? 'warn' : 'info';
+      logger.output[level]({ event: 'http_request', requestId, method: req.method, routeGroup,
+        status: res.statusCode, durationMs: Math.round(performance.now() - start), errorCode: res.locals.errorCode,
+      });
+    });
     next();
   });
   app.use(helmet());

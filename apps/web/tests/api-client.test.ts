@@ -1,9 +1,16 @@
 // @vitest-environment node
 import { afterEach, expect, test, vi } from "vitest";
 import { createApiClient } from "@/lib/api/client";
-import { ApiError } from "@/lib/api/errors";
+import { ApiError, parseApiError } from "@/lib/api/errors";
 
 afterEach(() => vi.unstubAllGlobals());
+
+test("M6: caída del servicio conserva referencia sin exponer mensajes internos", () => {
+  const failure=parseApiError({error:{code:"DATABASE_UNAVAILABLE",requestId:"test-request",message:"PRIVATE_DATABASE_HOST"}},503);
+  expect(failure.requestId).toBe("test-request");
+  expect(failure.message).toContain("temporalmente fuera de línea");
+  expect(failure.message).not.toContain("PRIVATE_DATABASE_HOST");
+});
 
 test("cliente usa una sola versión, cookies y no-store sobre el contrato health real", async () => {
   const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ status: "ok" }), { headers: { "Content-Type": "application/json" } }));
