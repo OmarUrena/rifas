@@ -72,7 +72,7 @@
 .public-app .section { padding-block: 64px; }
 .public-app .section-header { margin-bottom: 24px; }
 .public-app .section-intro { margin-bottom: 28px; font-size: 14px; }
-.public-app .raffle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.public-app .raffle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; align-items: start; }
 .public-app .home-raffles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
 .public-app .raffle-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid #ffffff0a; border-radius: 8px; box-shadow: 0 8px 24px #00000012; transition: border-color .2s; }
 .public-app .raffle-card:hover { border-color: #d6af6060; }
@@ -84,7 +84,7 @@
 .public-app .raffle-card-content { display: flex; flex-direction: column; flex: 1; padding: 24px; }
 .public-app .raffle-card-title h3 { font-size: 24px; margin-bottom: 10px; }
 .public-app .raffle-card-title p { font-size: 13px; margin-bottom: 20px; }
-.public-app .raffle-meta { background: var(--recessed); padding: 14px; border-radius: 4px; grid-template-columns: 1.2fr 1fr; margin-top: auto; }
+.public-app .raffle-meta { background: var(--recessed); padding: 14px; border-radius: 4px; grid-template-columns: 1.2fr 1fr; margin-top: 0; }
 .public-app .raffle-meta svg { width: 16px; height: 16px; }
 .public-app .raffle-meta strong { color: var(--accent); font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .public-app .raffle-meta small { font-size: 10px; }
