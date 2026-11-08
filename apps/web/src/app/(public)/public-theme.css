@@ -148,6 +148,17 @@
 .public-app .bottom-nav a[aria-current='page'] { color: var(--accent); }
 .public-app .detail-mobile-action { background: #0b0f12f5; }
 
+@media (min-width: 1024px) {
+  .public-app .raffle-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .public-app .raffle-card-content { padding: 16px; }
+  .public-app .raffle-card-title h3 { font-size: 20px; margin-bottom: 6px; }
+  .public-app .raffle-card-title p { margin-bottom: 12px; }
+  .public-app .raffle-meta { padding: 10px; gap: 8px; margin-bottom: 12px; }
+  .public-app .raffle-meta strong { font-size: 14px; }
+  .public-app .raffle-card .button { margin-top: 12px; }
+  .public-app .raffle-card .blessed-preview { margin-block: 12px; padding: 10px; }
+}
+
 @media (max-width: 1023px) {
   .public-app .container { width: calc(100% - 64px); }
   .public-app .home-intro { gap: 32px; }
