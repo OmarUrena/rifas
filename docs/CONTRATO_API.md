@@ -1,5 +1,11 @@
 # Contrato REST compartido — App Sorteos / API v1
 
+> Ajustes de negocio, fase 1 (2026-11-08): [diseño](AJUSTES_NEGOCIO_FASE_1.md).
+> Numeración fija para nuevas rifas, progreso por objetivo, bendecidos, premios
+> y consulta OTP son extensiones planificadas, todavía no endpoints disponibles.
+> OpenAPI y cliente generado no cambian en esta fase. El diseño objetivo no debe
+> usarse para asumir campos que la API actual aún no devuelve.
+
 **Fuente de verdad:** OpenAPI generado desde NestJS. Este documento define el contrato inicial deseado; si Codex detecta incompatibilidad, debe proponer ADR y actualizar **ambos** consumidores, no divergir silenciosamente.
 
 ## Convenciones

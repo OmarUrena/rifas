@@ -12,6 +12,17 @@ Se trabaja desde la raíz actual y exclusivamente en `main`, por instrucción ex
 
 ## Secuencia única y punto de partida
 
+### Ajustes de negocio autorizados — 2026-11-08
+
+La secuencia complementaria de [PLAN_AJUSTES_NEGOCIO.md](PLAN_AJUSTES_NEGOCIO.md)
+amplía las funciones existentes sin reiniciar M0–M5 ni declarar cerrado M6/M7.
+El propietario solicitó comenzar solo su fase 1: reglas y diseño documental,
+completada en [AJUSTES_NEGOCIO_FASE_1.md](AJUSTES_NEGOCIO_FASE_1.md).
+Las etapas 2–7 siguen pendientes de ejecución. Sus entregas serán integradas
+entre datos, API y web; esta fase no altera comportamiento o contratos HTTP.
+
+### Estado de los hitos existentes
+
 | Hito | Referencias técnicas | Entrega conjunta | Situación al unificar |
 |---|---|---|---|
 | M0 — Fundamentos | B0 + F0 | API y web ejecutables, errores, cliente tipado y controles de calidad | Implementación y verificaciones locales históricas registradas |

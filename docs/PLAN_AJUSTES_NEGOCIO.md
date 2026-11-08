@@ -2,7 +2,7 @@
 
 Fecha: 2026-11-08.
 
-Estado: planificación para ejecución posterior. La creación de este documento no implementa cambios de negocio ni autoriza despliegues o migraciones remotas.
+Estado: fase 1 documental completada el 2026-11-08; etapas 2–7 pendientes. Evidencia, inventario, reglas y migración en [AJUSTES_NEGOCIO_FASE_1.md](AJUSTES_NEGOCIO_FASE_1.md). No se implementaron cambios de negocio ni se autorizaron despliegues o migraciones remotas.
 
 Destinatario: modelo ejecutor con razonamiento Medium o Light. Trabajar por etapas, reutilizar el proyecto y comprobar cada resultado antes de continuar.
 
@@ -316,6 +316,8 @@ La API administrativa cubre configuración, resultados, adjudicaciones, entregas
 ## 8. Secuencia de implementación
 
 ### Etapa 1 — Reglas y diseño
+
+Completada documentalmente: [entrega de fase 1](AJUSTES_NEGOCIO_FASE_1.md) y [ADR 0025](decisions/0025-business-adjustments-phase-1.md). No acredita pruebas funcionales de las etapas siguientes.
 
 Entregar inventario de código afectado, reglas actualizadas, ADR, plan de migración de rifas existentes y decisiones pendientes. No modificar inventarios comprometidos ni habilitar adjudicación real de lotería.
 

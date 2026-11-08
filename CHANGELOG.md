@@ -1,5 +1,12 @@
 # Changelog
 
+## Ajustes de negocio — Fase 1 — 2026-11-08
+
+- Inspección de fuentes y diseño: inventario de archivos, reglas AJ01–AJ11, decisiones D01–D06 y ADR 0025.
+- Plan de migración aditiva con compatibilidad legacy, objetivos sin valores inventados, diagnóstico previo y recuperación sin borrar histórico.
+- Hallazgos: total inmutable, ancho generado, patch limitado a DRAFT/PAUSED y recaudación actual basada en PAID; devoluciones posteriores a PAID no soportadas.
+- Actualizados plan integrado y referencias técnicas, distinguiendo diseño objetivo de contrato implementado. Sin código, migraciones, cambios remotos ni pruebas funcionales ejecutadas.
+
 ## Paleta pública reversible — 2026-11-08
 
 - Rojo, blanco y negro en la interfaz pública, con administración intacta.

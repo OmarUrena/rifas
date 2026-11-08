@@ -1,5 +1,10 @@
 # Plan de acción Backend — App Sorteos (NestJS + PostgreSQL/Supabase)
 
+**Extensión 2026-11-08:** [fase 1 de ajustes](AJUSTES_NEGOCIO_FASE_1.md)
+documenta inventario técnico, reglas objetivo y compatibilidad. N configurable
+describe la implementación histórica; nuevas rifas adoptarán 100000 números
+en etapa 2. No alterar universos existentes como parte de la fase documental.
+
 **Uso vigente (2026-11-05):** especificación técnica del backend dentro de [PLAN_DESARROLLO.md](PLAN_DESARROLLO.md), la única secuencia de ejecución M0–M7. Implementar cada hito junto a su frontend en la misma sesión. B0–B8 conservan su identidad para referencias, migraciones y evidencias; no son una agenda separada. Para rutas y payloads ya implementados prevalece [CONTRATO_API.md](CONTRATO_API.md).
 
 **Objetivo:** construir primero el núcleo confiable de inventario, órdenes con comprobante, conciliación de transferencias y control administrativo. **No implementar el sorteo/selección de ganadores sin especificación aprobada.**

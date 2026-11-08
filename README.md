@@ -1,5 +1,11 @@
 # App Sorteos — paquete de implementación progresiva para Codex
 
+## Ajustes de negocio
+
+Fase 1 documental completada: [reglas, inventario técnico y migración](docs/AJUSTES_NEGOCIO_FASE_1.md).
+El [plan de ajustes](docs/PLAN_AJUSTES_NEGOCIO.md) mantiene etapas 2–7 pendientes;
+todavía no cambia numeración, progreso, premios o consulta de boletos en la aplicación.
+
 ## M6: seguridad y resiliencia
 
 Límite HTTP compartido PostgreSQL, telemetría sin PII, timeouts de transporte y

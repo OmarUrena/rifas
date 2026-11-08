@@ -1,5 +1,10 @@
 # Plan de acción Frontend — App Sorteos (Next.js App Router)
 
+**Extensión 2026-11-08:** [fase 1 de ajustes](AJUSTES_NEGOCIO_FASE_1.md)
+prepara progreso por objetivo, cinco cifras, bendecidos, consulta protegida y UX
+mobile first. Son comportamientos objetivo pendientes de implementación; conservar
+contrato actual y tema público reversible hasta ejecutar las etapas correspondientes.
+
 **Uso vigente (2026-11-05):** especificación técnica de la web dentro de [PLAN_DESARROLLO.md](PLAN_DESARROLLO.md), la única secuencia de ejecución M0–M7. F0 se trabaja en M0; F1/F2 en M1; F3–F8 en M2–M7 con sus respectivas partes backend. Las dependencias B/F ordenan la implementación dentro del hito, sin separar sesiones ni aceptar mocks como integración terminada. Para payloads y seguridad ya implementados prevalece [CONTRATO_API.md](CONTRATO_API.md).
 
 **Propósito:** construir una experiencia de compra móvil primero, en español, rápida, accesible y confiable, conectada exclusivamente a contratos reales de la API NestJS. La interfaz debe reflejar la diferencia entre **comprobante recibido** y **pago verificado**.
