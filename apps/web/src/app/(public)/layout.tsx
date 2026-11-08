@@ -2,6 +2,7 @@ import { PublicShell } from "@/components/public-shell";
 import localFont from "next/font/local";
 import "./public-theme.css";
 import "./public-theme-red.css";
+import "./public-prize-images.css";
 
 // Cambiar a "original" para restaurar la paleta carbón/champán.
 const publicTheme: "red" | "original" = "red";

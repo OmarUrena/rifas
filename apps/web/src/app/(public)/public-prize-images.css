@@ -1,0 +1,19 @@
+/* Same frame in both public themes and at every viewport width. */
+.public-app .raffle-image-link,
+.public-app .gallery-main {
+  aspect-ratio: 3 / 2;
+  background: var(--recessed, #181818);
+}
+
+.public-app .prize-image {
+  object-fit: contain;
+  object-position: center;
+}
+
+.public-app .gallery-thumbnails img {
+  width: 90px;
+  height: 60px;
+  object-fit: contain;
+  object-position: center;
+  background: var(--recessed, #181818);
+}
