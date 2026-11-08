@@ -11,6 +11,11 @@ Presentación pública basada en el ZIP de App Sorteos Luxury Platform: ver
 Fuentes locales bajo SIL OFL, tema acotado a `.public-app` y fotografías reales
 conservadas. No requiere nuevas variables ni cambia las funciones de compra.
 
+La paleta pública activa es roja, blanca y negra. Se añade como capa opcional en
+`src/app/(public)/public-theme-red.css`; `public-theme.css` conserva el original.
+Para volver a carbón/champán, cambiar `publicTheme` de `"red"` a `"original"` en
+`src/app/(public)/layout.tsx`. No requiere eliminar CSS ni modificar administración.
+
 Desde la raíz de AppRifas, iniciar el backend configurado con `npm run dev:api` y la web con `npm run dev:web` en otra terminal. Abrir http://127.0.0.1:3000/rifas. No se requiere cambiar de rama ni de carpeta de trabajo.
 
 El script `scripts/start-web.ps1` usa API_MODE=live, APP_ENV=development y API_BASE_URL=http://127.0.0.1:3001/api/v1 sin modificar .env.local. Permite -Port y -ApiBaseUrl. CORS_ORIGINS de NestJS debe incluir el origen web exacto; usar 127.0.0.1 en ambos servicios para compartir la cookie invitada. Para demo explícita usar -Demo; demo no crea cupos ni órdenes.

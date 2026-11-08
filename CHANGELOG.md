@@ -1,5 +1,11 @@
 # Changelog
 
+## Paleta pública reversible — 2026-11-08
+
+- Rojo, blanco y negro en la interfaz pública, con administración intacta.
+- Tema original conservado; restauración con `publicTheme = "original"` en el layout público.
+- Capa CSS opcional, sin cambios en API, datos, variables ni flujos de compra.
+
 ## Origen local de checkout — 2026-11-07
 
 - Alineado el ejemplo CORS con el launcher web en 127.0.0.1:3000, conservando localhost explícito para desarrollo. Evita un 403 al crear sesión de invitado desde la dirección canónica del launcher.

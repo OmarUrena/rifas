@@ -1,5 +1,11 @@
 # Cambios de frontend
 
+## Paleta pública reversible — 2026-11-08
+
+- Tema rojo, blanco y negro aislado mediante `data-public-theme="red"`.
+- Paleta original intacta y restaurable desde `publicTheme` en el layout público.
+- Conservados composición, responsive, fuentes y funcionamiento; administración sin cambios.
+
 ## M4 — Administración y revisión manual — 2026-11-05
 
 - Login Supabase Auth exclusivamente en servidor, cookies HttpOnly/Strict, TOTP, inscripción inicial, renovación y cierre de sesión.

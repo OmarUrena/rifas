@@ -1,0 +1,59 @@
+/* Capa opcional: el tema original permanece intacto en public-theme.css.
+   Solo se aplica al layout público con data-public-theme="red". */
+.public-app[data-public-theme='red'] {
+  --paper: #0a0a0a;
+  --surface: #171717;
+  --elevated: #262626;
+  --ink: #ffffff;
+  --muted: #cccccc;
+  --line: #3f3f3f;
+  --control: #808080;
+  --accent: #ff8080;
+  --gold-fill: #c91824;
+  --recessed: #050505;
+  --mint: #ffffff;
+}
+
+.public-app[data-public-theme='red'] ::selection { background: var(--gold-fill); color: #ffffff; }
+.public-app[data-public-theme='red'] .header { border-color: #c9182433; }
+.public-app[data-public-theme='red'] .brand > svg { border-color: #c9182480; }
+.public-app[data-public-theme='red'] .environment-note,
+.public-app[data-public-theme='red'] .soft-section { background: var(--surface); }
+.public-app[data-public-theme='red'] .hero { border-color: #c9182450; }
+.public-app[data-public-theme='red'] .hero-shade { background: linear-gradient(0deg, #050505ed, #05050530 65%, transparent), linear-gradient(90deg, #05050540, transparent 70%); }
+.public-app[data-public-theme='red'] .hero-copy { background: #050505ed; border-color: #c9182460; }
+.public-app[data-public-theme='red'] .hero-offline { background: radial-gradient(ellipse at 90% 15%, #c9182420, transparent 65%), var(--recessed); }
+.public-app[data-public-theme='red'] .button,
+.public-app[data-public-theme='red'] .filter-chip[aria-pressed='true'] { color: #ffffff; }
+.public-app[data-public-theme='red'] .button:hover { background: #a8111c; border-color: #a8111c; }
+.public-app[data-public-theme='red'] .button-secondary:hover { background: var(--elevated); border-color: var(--accent); }
+.public-app[data-public-theme='red'] .button:disabled,
+.public-app[data-public-theme='red'] .quantity-button:disabled { background: #333333; color: #cccccc; border-color: #737373; }
+.public-app[data-public-theme='red'] .skip-link { background: var(--gold-fill); color: #ffffff; }
+.public-app[data-public-theme='red'] .raffle-card:hover { border-color: var(--gold-fill); }
+.public-app[data-public-theme='red'] .badge { background: #171717f2; border-color: #808080; color: #ffffff; }
+.public-app[data-public-theme='red'] .badge-accent { background: #3a080ced; border-color: #c91824; color: #ffffff; }
+.public-app[data-public-theme='red'] .status-muted { color: var(--muted); }
+.public-app[data-public-theme='red'] .status-muted > span { background: var(--muted); }
+.public-app[data-public-theme='red'] .availability-track,
+.public-app[data-public-theme='red'] .skeleton { background: #333333; }
+.public-app[data-public-theme='red'] .discovery-card { background: linear-gradient(150deg, #c918240d, transparent 75%), var(--surface); border-color: #c9182460; }
+.public-app[data-public-theme='red'] .steps article { background: #1c1c1c; }
+.public-app[data-public-theme='red'] .step-number { background: #c9182415; border-color: #c9182480; }
+.public-app[data-public-theme='red'] .empty-state { background: radial-gradient(ellipse at center top, #c9182410, transparent 70%), var(--surface); }
+.public-app[data-public-theme='red'] .alert { background: #ffffff08; border-color: #808080; color: #ffffff; }
+.public-app[data-public-theme='red'] .alert-error { background: #c9182420; border-color: #ff8080; color: #ffffff; }
+.public-app[data-public-theme='red'] .alert-error strong,
+.public-app[data-public-theme='red'] .field-error { color: var(--accent); }
+.public-app[data-public-theme='red'] .field input::placeholder,
+.public-app[data-public-theme='red'] .order-form input::placeholder { color: #aaaaaa; }
+.public-app[data-public-theme='red'] .gallery-label { background: #050505ed; border-color: var(--control); }
+.public-app[data-public-theme='red'] .participation-panel { border-color: #c9182480; box-shadow: 0 20px 50px -15px #c9182415; }
+.public-app[data-public-theme='red'] .timer-warning { border-color: var(--accent); }
+.public-app[data-public-theme='red'] .bottom-nav { background: #050505f5; border-color: #c9182466; }
+.public-app[data-public-theme='red'] .bottom-nav a[aria-current='page'] svg { fill: #c9182425; }
+.public-app[data-public-theme='red'] .detail-mobile-action { background: #050505f5; }
+
+@media (max-width: 767px) {
+  .public-app[data-public-theme='red'] .hero-shade { background: linear-gradient(0deg, #05050599, transparent 75%); }
+}

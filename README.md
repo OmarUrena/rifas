@@ -13,9 +13,11 @@ y [opciones de hosting](docs/OPCIONES_HOSTING.md).
 local no aplica la migración a Supabase ni activa CAPTCHA o despliegues.
 
 La interfaz pública usa el [sistema visual de Stitch](docs/frontend/DISENO_STITCH.md):
-carbón y oro champán, tipografías locales Playfair Display y Plus Jakarta Sans,
+con una paleta activa roja, blanca y negra y tipografías locales Playfair Display y Plus Jakarta Sans,
 catálogo responsive y formularios coherentes. El ajuste conserva los flujos de negocio
 y el estilo independiente de administración; no requiere nuevas variables de entorno.
+El tema carbón/champán original se conserva intacto. Para restaurarlo, cambiar
+`publicTheme` de `"red"` a `"original"` en `apps/web/src/app/(public)/layout.tsx`.
 
 ## Panel administrativo
 

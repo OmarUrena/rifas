@@ -1,6 +1,10 @@
 import { PublicShell } from "@/components/public-shell";
 import localFont from "next/font/local";
 import "./public-theme.css";
+import "./public-theme-red.css";
+
+// Cambiar a "original" para restaurar la paleta carbón/champán.
+const publicTheme: "red" | "original" = "red";
 
 const editorial = localFont({
   src: [
@@ -15,5 +19,5 @@ const interfaceFont = localFont({
 });
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
-  return <div className={`public-app ${editorial.variable} ${interfaceFont.variable}`}><PublicShell>{children}</PublicShell></div>;
+  return <div data-public-theme={publicTheme} className={`public-app ${editorial.variable} ${interfaceFont.variable}`}><PublicShell>{children}</PublicShell></div>;
 }
