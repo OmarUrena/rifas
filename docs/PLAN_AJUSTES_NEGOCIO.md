@@ -2,7 +2,7 @@
 
 Fecha: 2026-11-08.
 
-Estado: fase 1 documental y etapa 2 integrada completadas localmente, con incidencias y límites de pruebas registrados; etapas 3–7 pendientes. Diseño histórico en [fase 1](AJUSTES_NEGOCIO_FASE_1.md), resultados actuales en [fase 2](AJUSTES_NEGOCIO_FASE_2.md). No se autorizaron despliegues o migraciones remotas.
+Estado: fase 1 documental y etapa 2 integrada completadas localmente, con incidencias y límites de pruebas registrados; etapas 3–7 pendientes. Diseño histórico en [fase 1](AJUSTES_NEGOCIO_FASE_1.md), resultados actuales en [fase 2](AJUSTES_NEGOCIO_FASE_2.md). El propietario autorizó aplicar la migración de etapa 2 al proyecto Rifas el 2026-11-08; aplicación y catálogo verificados. No se autorizó despliegue web ni aplicación de otras migraciones.
 
 Corrección explícita del propietario el 2026-11-08: 100000 es el **rango**, no una cantidad de filas a generar al crear la rifa. Materializar únicamente números seleccionados al pre-reservar; conservar filas históricas.
 

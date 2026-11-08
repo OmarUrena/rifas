@@ -1,6 +1,8 @@
 # Infraestructura B0/B1/B2
 
-Etapa 2 de ajustes: migración `20261108153831_raffle_fundraising_stage2.sql`.
+Etapa 2 de ajustes: migración `20261108165909_raffle_fundraising_stage2.sql`,
+aplicada con autorización al proyecto Rifas el 2026-11-08. La versión local
+coincide con la registrada por Supabase; SQL idéntico al probado anteriormente.
 Las nuevas rifas configuran un rango, sin poblar tickets; se generan al pre-reservar.
 Los fixtures pequeños existentes declaran LEGACY de forma explícita. Seed opcional
 `seeds/stage2-demo.sql`, estado y límites en [fase 2](../docs/AJUSTES_NEGOCIO_FASE_2.md).

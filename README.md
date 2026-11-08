@@ -5,7 +5,8 @@
 Fase 1 documental completada. La [etapa 2](docs/AJUSTES_NEGOCIO_FASE_2.md) implementa
 rango 00000..99999 para nuevas rifas y generación de boletos al pre-reservar,
 objetivo privado editable y progreso público calculado con pagos confirmados.
-Requiere la nueva migración antes de ejecutar el código; no se aplicó remotamente.
+La migración fue aplicada con autorización al proyecto Supabase Rifas el 2026-11-08;
+catálogo y conexión verificados con HTTP 200. En otros entornos, migrar antes de ejecutar el código.
 Las rifas históricas conservan su universo y esperan objetivo del propietario.
 Premios, bendecidos y consulta OTP siguen en las etapas posteriores del
 [plan de ajustes](docs/PLAN_AJUSTES_NEGOCIO.md).

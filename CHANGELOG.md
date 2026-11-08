@@ -1,5 +1,11 @@
 # Changelog
 
+## Corrección de catálogo — Migración autorizada — 2026-11-08
+
+- Aplicada exclusivamente la migración de etapa 2 en Supabase Rifas tras autorización explícita. El catálogo pasó de HTTP 500 a 200; readiness 200.
+- Preservados conteos y huellas de rifas/tickets existentes. Sin precarga de boletos, conversión de rangos o asignación de objetivos.
+- Archivo local renombrado a `20261108165909_raffle_fundraising_stage2.sql` para coincidir con el historial nativo remoto; SQL idéntico. M6 permanece pendiente y no se desplegó la web.
+
 ## Ajustes de negocio — Etapa 2 — 2026-11-08
 
 - Nuevas rifas configuran rango 00000..99999 sin crear 100000 filas. Checkout elige uniformemente posiciones libres con CSPRNG y materializa solo números de la pre-reserva; reutiliza registros liberados y conserva bloqueo, unicidad e idempotencia.

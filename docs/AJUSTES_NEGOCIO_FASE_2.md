@@ -1,6 +1,6 @@
 # Ajustes de negocio — Etapa 2: rango y progreso
 
-Fecha: 2026-11-08. Estado: implementación integrada y verificación local completadas, con incidencias de ejecución descritas abajo. No desplegado; migración remota no aplicada.
+Fecha: 2026-11-08. Estado: implementación integrada y verificación local completadas, con incidencias de ejecución descritas abajo. Posteriormente el propietario autorizó y se aplicó la migración al proyecto Supabase Rifas; catálogo verificado. No se desplegó la web.
 
 ## Comportamiento
 
@@ -13,7 +13,7 @@ Fecha: 2026-11-08. Estado: implementación integrada y verificación local compl
 
 ## Datos y contrato
 
-Migración creada con CLI oficial: `infra/supabase/migrations/20261108153831_raffle_fundraising_stage2.sql`.
+Migración creada con CLI oficial y probada inicialmente como `20261108153831_raffle_fundraising_stage2.sql`. Archivo vigente: `infra/supabase/migrations/20261108165909_raffle_fundraising_stage2.sql`; renombrado para coincidir con la versión registrada al aplicarla mediante Supabase MCP, sin cambios de contenido (SHA-256 verificado antes/después). No se editaron manualmente registros del historial.
 
 Agrega `inventory_policy`, `fundraising_target_minor`, guardas e índices parciales de importes PAID e idempotencia en auditoría. Cambia población inicial a solo LEGACY; conserva protección por número y transacciones. No agrega tablas ni permite acceso desde navegador.
 
@@ -32,6 +32,43 @@ Autorización reutiliza AdminGuard de catálogo y revalida allowlist/rol en tran
 Las suites de recuperación hacen preflight antes de retirar columnas y antes de reparar historia; una prueba negativa no puede dejar parcialmente retirado el esquema. El procedimiento de diagnóstico/conversión de fase 1 sigue pendiente de autorización para datos reales.
 
 ## Verificación
+
+### Aplicación remota autorizada — 2026-11-08
+
+El propietario reportó «No pudimos completar la solicitud», referencia
+`36b1c834-476f-44f7-ada9-ebecdd580569`. No se encontró esa referencia en los
+registros locales disponibles; sí se reprodujo catálogo 500 con readiness 200.
+Se confirmó por consulta de metadatos que faltaban ambas columnas de etapa 2.
+
+Autorización explícita posterior: «Aplica la migracion». Se aplicó únicamente
+`raffle_fundraising_stage2` al proyecto `Rifas` (`vukzxpwnfbavlwaeqkki`) mediante
+la herramienta nativa `apply_migration`. Resultado: success; versión
+`20261108165909`. La migración M6 sigue pendiente en ese proyecto y no se aplicó
+como efecto secundario de esta corrección.
+
+Verificación posterior:
+
+- `/api/v1/health/ready`: HTTP 200.
+- `/api/v1/raffles`: HTTP 200, antes respondía 500.
+- Web `/rifas` y `/admin/login`: HTTP 200. El catálogo devuelve `progressPercent`
+  en ambas rifas y no expone `fundraisingTargetMinor`.
+- Conteos antes/después: 2 rifas, 200 tickets, 2 órdenes y 2 reportes de pago.
+- Huellas de rifa (ID, rango, estado, precio) y tickets (ID, rifa, número,
+  estado y vínculos) idénticas. Ambas rifas conservan LEGACY y objetivo null.
+- Sin creación de rifas/boletos de prueba, asignación de objetivos o cambio de
+  universos existentes. El permiso concedido no autoriza esas conversiones.
+- Asesores de seguridad sin diferencias frente a la lectura previa: avisos
+  preexistentes sobre `public.rls_auto_enable` y protección de contraseñas.
+  Referencias: [ejecución anónima](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable),
+  [ejecución autenticada](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)
+  y [contraseñas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+  No se cambiaron permisos o ajustes Auth fuera de la migración autorizada.
+
+Lección operativa: aplicar y verificar el esquema requerido antes de activar
+el código que lo consume. La verificación de conexión sola no acredita que
+la versión del esquema sea compatible con la API.
+
+### Verificación local histórica de implementación
 
 Las pruebas usan PostgreSQL 18 local aislado, servicios Next/Nest reales y fixtures de protocolos Auth/Storage; no acreditan servicios remotos.
 
