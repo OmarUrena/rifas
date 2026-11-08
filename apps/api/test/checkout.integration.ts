@@ -49,8 +49,7 @@ after(async()=>{
 });
 async function raffle(n=20,status='PUBLISHED',startsAt:string|null=null,endsAt:string|null=null) {
   const id=randomUUID();
-  await db.query(`INSERT INTO sorteos.raffles(id,slug,title,description,prize,total_tickets,ticket_price_minor,min_purchase,max_purchase,rules,rules_version,starts_at,ends_at)
-    VALUES($1,$2,'DEMO B3','SOLO TEST','SIN PREMIO REAL',$3,10025,1,$3,'NO TRANSFERIR','TEST-1',$4,$5)`,[id,`demo-${id}`,n,startsAt,endsAt]);
+  await db.query(`INSERT INTO sorteos.raffles(inventory_policy,id,slug,title,description,prize,total_tickets,ticket_price_minor,min_purchase,max_purchase,rules,rules_version,starts_at,ends_at) VALUES ('LEGACY',$1,$2,'DEMO B3','SOLO TEST','SIN PREMIO REAL',$3,10025,1,$3,'NO TRANSFERIR','TEST-1',$4,$5)`,[id,`demo-${id}`,n,startsAt,endsAt]);
   if(status==='PUBLISHED') {
     await db.query("INSERT INTO sorteos.raffle_media(raffle_id,storage_key,alt,position,rights_confirmed) VALUES($1,'prizes/test.webp','Solo fixture',0,true)",[id]);
     await db.query(`UPDATE sorteos.raffles SET status='PUBLISHED',publication_approved_at=now(),approved_rules_version=rules_version,

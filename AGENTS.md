@@ -13,7 +13,7 @@
 
 ## Reglas de negocio NO NEGOCIABLES
 - **RN01.** Un único organizador/administrador empresarial, no marketplace.
-- **RN02.** Cada rifa configura cantidad de números N, precio, compra mínima/máxima, premio, reglas y fechas. Numeración interna `0..N-1`, presentación con ceros a la izquierda (ancho consistente) y número único dentro de esa rifa.
+- **RN02.** Nuevas rifas: rango fijo `0..99999`, presentación `00000..99999` (cinco cifras), precio, compra mínima/máxima, premio, reglas y fechas configurables. El rango no implica crear 100000 filas: materializar solo los números elegidos al pre-reservar. Conservar universos históricos sin ampliación ni renumeración automática; legacy con números mayores de 99999 mantiene su ancho hasta resolución expresa. Número único dentro de cada rifa.
 - **RN03.** El comprador indica cantidad, **nunca selecciona números**. Asignación uniforme entre elegibles usando aleatoriedad criptográficamente segura **en servidor**.
 - **RN04.** Compra y envío del comprobante bancario ocurren **en el mismo formulario y la misma acción «Enviar orden»**. Comprobante obligatorio; sin archivo válido no se crea orden.
 - **RN05.** Antes de enviar, una pre-reserva técnica temporal (`HELD`) puede proteger stock durante la transferencia. No es una orden, no ofrece boleto definitivo y NO muestra números. TTL inicial propuesto: 60 minutos, configurable; requiere límites y protección antiacaparamiento.
@@ -29,6 +29,7 @@
 - **RN15.** El código público de orden nunca basta para acceder a teléfono, nombre, boletos u otros datos. Usar token de consulta secreto de alta entropía, sesión protegida u OTP; proteger el endpoint de enumeración.
 - **RN16.** Dinero en unidades menores enteras (`amount_minor`) o `NUMERIC` seguro; no usar floats JS para lógica monetaria. Zona horaria de presentación `America/Santo_Domingo`; persistir UTC.
 - **RN17.** No inventar autorización legal, permisos, números bancarios reales, ganador o sorteo. Ninguna función de sorteo real se publica hasta aprobación de reglas y requisitos.
+- **RN18.** Objetivo privado de recaudación positivo y editable por OWNER con versión, motivo y auditoría. Progreso público = porcentaje entero truncado de importes PAID sobre objetivo, limitado visualmente a 100%; sin objetivo, omitir indicador. Alcanzar 100% no modifica disponibilidad ni estado de ventas. No descontar devoluciones de órdenes que nunca integraron PAID. En inventario por rango, ausencia de fila significa número libre; HELD vigente, RESERVED y SOLD ocupan números.
 
 ## Estados que deben mantenerse coherentes
 - **Rifa:** `DRAFT`, `PUBLISHED`, `PAUSED`, `CLOSED`, `DRAWN` (el agotamiento es computado, no debe confundirse con un sorteo realizado).

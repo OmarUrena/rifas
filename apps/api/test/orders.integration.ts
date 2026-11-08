@@ -71,8 +71,7 @@ after(async()=>{
 });
 async function checkout(quantity=3,seconds?:number) {
   const raffle=randomUUID();
-  await db.query(`INSERT INTO sorteos.raffles(id,slug,title,description,prize,total_tickets,ticket_price_minor,min_purchase,max_purchase,rules,rules_version)
-    VALUES($1,$2,'RIFA DEMO B4','PRUEBA','SIN VALOR REAL',100,10025,1,20,'NO TRANSFERIR','B4-TEST')`,[raffle,`demo-${raffle}`]);
+  await db.query(`INSERT INTO sorteos.raffles(inventory_policy,id,slug,title,description,prize,total_tickets,ticket_price_minor,min_purchase,max_purchase,rules,rules_version) VALUES ('LEGACY',$1,$2,'RIFA DEMO B4','PRUEBA','SIN VALOR REAL',100,10025,1,20,'NO TRANSFERIR','B4-TEST')`,[raffle,`demo-${raffle}`]);
   await db.query("INSERT INTO sorteos.raffle_media(raffle_id,storage_key,alt,position,rights_confirmed) VALUES($1,'prizes/test.webp','Fixture',0,true)",[raffle]);
   await db.query(`UPDATE sorteos.raffles SET status='PUBLISHED',publication_approved_at=now(),approved_rules_version=rules_version,
     publication_approved_by=(SELECT id FROM sorteos.admin_users WHERE role='OWNER') WHERE id=$1`,[raffle]);
@@ -128,7 +127,7 @@ test('PDF con JavaScript se rechaza; JPG y PDF estructuralmente válidos son ace
 });
 test('submit atómico muestra exactamente los números del hold, con ceros; nunca PII ni ruta privada',async()=>{
   const c=await checkout(3),count=await orderCount();
-  const held=(await db.query('SELECT number FROM sorteos.tickets WHERE hold_id=$1 ORDER BY number',[c.holdId])).rows.map(r=>String(r.number).padStart(2,'0'));
+  const held=(await db.query('SELECT number FROM sorteos.tickets WHERE hold_id=$1 ORDER BY number',[c.holdId])).rows.map(r=>String(r.number).padStart(5,'0'));
   const res=await submit(c);assert.equal(res.status,201);assert.equal(res.headers.get('cache-control'),'no-store');
   const body=await res.json();assert.equal(body.status,'PENDING_REVIEW');assert.equal(body.paymentReportStatus,'REPORTED');assert.equal(body.totalMinor,30075);
   assert.deepEqual(body.ticketNumbers,held);assert.equal(body.quantity,3);assert.match(body.orderCode,/^RF-[A-F0-9]{32}$/);

@@ -196,6 +196,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/raffles/{id}/fundraising-target": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminRafflesController_target"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/raffles": {
         parameters: {
             query?: never;
@@ -540,6 +556,8 @@ export interface components {
             rightsConfirmed: boolean;
         };
         AdminRaffleDto: {
+            /** @description Progreso de la rifa; null si no tiene objetivo configurado. */
+            progressPercent: number | null;
             /** Format: uuid */
             id: string;
             slug: string;
@@ -565,6 +583,13 @@ export interface components {
             /** Format: date-time */
             endsAt: string | null;
             reservedCount: number;
+            /** @enum {string} */
+            inventoryPolicy: "LEGACY" | "FIVE_DIGIT";
+            /** Format: int64 */
+            fundraisingTargetMinor: number | null;
+            confirmedAmountMinor: string;
+            /** @description Porcentaje entero sin límite superior, como cadena decimal. */
+            actualProgressPercent: string | null;
             version: number;
             media: components["schemas"]["RaffleMediaInputDto"][];
             hasCommitments: boolean;
@@ -592,6 +617,8 @@ export interface components {
             error: components["schemas"]["ErrorDetailDto"];
         };
         RaffleCardDto: {
+            /** @description Progreso de la rifa; null si no tiene objetivo configurado. */
+            progressPercent: number | null;
             /** Format: uuid */
             id: string;
             slug: string;
@@ -624,6 +651,8 @@ export interface components {
             asOf: string;
         };
         RaffleDetailDto: {
+            /** @description Progreso de la rifa; null si no tiene objetivo configurado. */
+            progressPercent: number | null;
             /** Format: uuid */
             id: string;
             slug: string;
@@ -663,6 +692,18 @@ export interface components {
         PublicBankAccountsDto: {
             items: components["schemas"]["PublicBankAccountDto"][];
         };
+        UpdateFundraisingTargetDto: {
+            fundraisingTargetMinor: number;
+            expectedVersion: number;
+            reason: string;
+        };
+        FundraisingTargetResultDto: {
+            /** Format: uuid */
+            id: string;
+            version: number;
+            /** Format: int64 */
+            fundraisingTargetMinor: number;
+        };
         AdminRafflePageDto: {
             items: components["schemas"]["AdminRaffleDto"][];
             pagination: components["schemas"]["PaginationDto"];
@@ -672,7 +713,9 @@ export interface components {
             title: string;
             description: string;
             prize: string;
-            totalTickets: number;
+            /** @enum {integer} */
+            totalTickets: 100000;
+            fundraisingTargetMinor: number;
             ticketPriceMinor: number;
             minPurchase: number;
             maxPurchase: number;
@@ -689,7 +732,6 @@ export interface components {
             title?: string;
             description?: string;
             prize?: string;
-            totalTickets?: number;
             ticketPriceMinor?: number;
             minPurchase?: number;
             maxPurchase?: number;
@@ -700,6 +742,8 @@ export interface components {
             /** Format: date-time */
             endsAt?: string | null;
             images?: components["schemas"]["RaffleMediaInputDto"][];
+            /** @description Valor histórico sin cambios; numeración inmutable. */
+            totalTickets?: number;
             expectedVersion?: number;
         };
         PublicationApprovalDto: {
@@ -2288,6 +2332,134 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PublicBankAccountsDto"];
+                };
+            };
+            /** @description Error uniforme */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Error uniforme */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Error uniforme */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Error uniforme */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Error uniforme */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Error uniforme */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Error uniforme */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Error uniforme */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Límite de solicitudes; respetar Retry-After antes de reintentar. */
+            429: {
+                headers: {
+                    /** @description Segundos de espera del límite HTTP. */
+                    "Retry-After"?: number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Error uniforme */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Error uniforme */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    AdminRafflesController_target: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFundraisingTargetDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FundraisingTargetResultDto"];
                 };
             };
             /** @description Error uniforme */

@@ -1,10 +1,32 @@
 # Contrato REST compartido — App Sorteos / API v1
 
-> Ajustes de negocio, fase 1 (2026-11-08): [diseño](AJUSTES_NEGOCIO_FASE_1.md).
-> Numeración fija para nuevas rifas, progreso por objetivo, bendecidos, premios
-> y consulta OTP son extensiones planificadas, todavía no endpoints disponibles.
-> OpenAPI y cliente generado no cambian en esta fase. El diseño objetivo no debe
-> usarse para asumir campos que la API actual aún no devuelve.
+> Ajustes etapa 2 (2026-11-08), OpenAPI 0.8.0: rango implícito 00000..99999 para
+> nuevas rifas, generación al pre-reservar, objetivo privado y progreso público.
+> Detalles en [fase 2](AJUSTES_NEGOCIO_FASE_2.md). Bendecidos, premios y OTP
+> permanecen pendientes; no asumir endpoints para esas funciones.
+
+## Extensión de etapa 2 — rango y recaudación
+
+- Nuevas altas exigen `totalTickets: 100000` y `fundraisingTargetMinor` entero
+  positivo <=9007199254740991. El primero es capacidad lógica: no crea tickets.
+- Catálogo y detalle incluyen `progressPercent: integer | null`, 0..100,
+  calculado con suma de órdenes PAID, truncado y limitado a 100. Null significa
+  objetivo no configurado, no cero recaudado. No devuelve objetivo o ingreso.
+- `numberWidth` es cinco para universos <=100000; legacy mayor conserva su ancho.
+  Órdenes y detalles administrativos presentan números con ese criterio.
+- Disponibilidad usa total configurado menos HELD vigentes/RESERVED/SOLD.
+  Un número sin fila también está disponible. Al crear un hold se generan solo
+  los seleccionados, bajo bloqueo y aleatoriedad criptográfica uniforme.
+- `POST /admin/raffles/:id/fundraising-target`, OWNER/Bearer,
+  `Idempotency-Key` UUID obligatorio. JSON `{fundraisingTargetMinor,
+  expectedVersion, reason}`; 200 `{id, version, fundraisingTargetMinor}`.
+  Igual clave/payload recupera resultado; conflicto de clave/payload o versión:
+  409. Funciona sin pausar; no cambia publicación, precio o reglas. El patch
+  general rechaza objetivo; mantiene las restricciones de edición existentes.
+- DTO administrativo añade `inventoryPolicy`, objetivo nullable,
+  `confirmedAmountMinor` y `actualProgressPercent` nullable como cadenas decimales.
+- Toda lectura sigue `no-store`; refrescar para ver aprobaciones y nuevos objetivos.
+  Alcanzar 100% no bloquea compras: disponibilidad y estado son controles separados.
 
 **Fuente de verdad:** OpenAPI generado desde NestJS. Este documento define el contrato inicial deseado; si Codex detecta incompatibilidad, debe proponer ADR y actualizar **ambos** consumidores, no divergir silenciosamente.
 

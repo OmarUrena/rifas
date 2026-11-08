@@ -7,7 +7,7 @@ export function operationRoute(method: string, path: string[]) {
   if (method === "GET" && (path.join("/") === "dashboard" || path.join("/") === "reports/orders.csv")) return true;
   if (method === "POST" && path.join("/") === "media") return true;
   if (path[0] !== "raffles") return false;
-  return (path.length === 1 && ["GET", "POST"].includes(method)) || (path.length === 2 && uuid.test(path[1] ?? "") && ["GET", "PATCH"].includes(method)) || (path.length === 3 && uuid.test(path[1] ?? "") && (method === "GET" ? path[2] === "summary" : method === "POST" && ["publish", "pause", "resume", "close"].includes(path[2] ?? "")));
+  return (path.length === 1 && ["GET", "POST"].includes(method)) || (path.length === 2 && uuid.test(path[1] ?? "") && ["GET", "PATCH"].includes(method)) || (path.length === 3 && uuid.test(path[1] ?? "") && (method === "GET" ? path[2] === "summary" : method === "POST" && ["publish", "pause", "resume", "close", "fundraising-target"].includes(path[2] ?? "")));
 }
 export async function proxyOperation(request: NextRequest, path: string[], client: ReturnType<typeof backendClient>) {
   const id = path[1] ?? "", params = { path: { id } };
@@ -49,6 +49,7 @@ export async function proxyOperation(request: NextRequest, path: string[], clien
       if (request.method === "PATCH") data = await checked(await client.PATCH("/api/v1/admin/raffles/{id}", { params, body: body as Schemas["PatchRaffleDto"] }));
       else if (path.length === 1) data = await checked(await client.POST("/api/v1/admin/raffles", { body: body as unknown as Schemas["CreateRaffleDto"] }));
       else switch (path[2]) {
+        case "fundraising-target": data = await checked(await client.POST("/api/v1/admin/raffles/{id}/fundraising-target", { params: { ...params, header: { "Idempotency-Key": request.headers.get("Idempotency-Key") ?? "" } }, body: body as unknown as Schemas["UpdateFundraisingTargetDto"] })); break;
         case "publish": data = await checked(await client.POST("/api/v1/admin/raffles/{id}/publish", { params, body: body as unknown as Schemas["PublicationApprovalDto"] })); break;
         case "resume": data = await checked(await client.POST("/api/v1/admin/raffles/{id}/resume", { params, body: body as unknown as Schemas["PublicationApprovalDto"] })); break;
         case "pause": data = await checked(await client.POST("/api/v1/admin/raffles/{id}/pause", { params })); break;

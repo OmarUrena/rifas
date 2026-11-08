@@ -16,7 +16,7 @@ const suv: RaffleView = {
     { src: "/images/demo/suv-rear.png", alt: "Ilustración demo del SUV blanco visto desde atrás en la misma villa" },
   ],
   ticketPriceMinor: 50000, minPurchase: 1, maxPurchase: 100,
-  total: 10000, sold: 7428, reserved: 420, held: 152, available: 2000,
+  numberWidth: 5, progressPercent: 74, total: 100000, sold: 7428, reserved: 420, held: 152, available: 92000,
   highlights: ["Imagen conceptual", "Asignación aleatoria", "Revisión manual del pago"], rules,
 };
 const laptop: RaffleView = {
@@ -26,13 +26,13 @@ const laptop: RaffleView = {
   description: "Un espacio para tus próximas ideas. Descubre la presentación de un premio tecnológico en esta demostración. Las especificaciones y condiciones de un premio real se publicarán junto a su rifa.",
   images: [{ src: "/images/demo/laptop-night.png", alt: "Ilustración demo de un portátil de grafito abierto sobre una mesa con iluminación cálida" }],
   ticketPriceMinor: 25000, minPurchase: 1, maxPurchase: 50,
-  total: 2000, sold: 520, reserved: 100, held: 80, available: 1300,
+  numberWidth: 5, progressPercent: 26, total: 100000, sold: 520, reserved: 100, held: 80, available: 99300,
   highlights: ["Imagen conceptual", "Cantidad a tu elección", "Reglas antes de participar"], rules,
 };
 
 export const demoRaffles: RaffleView[] = [
   suv, laptop,
-  { ...suv, slug: "suv-pausada-demo", title: "SUV · edición especial", subtitle: "Una pausa en el camino", featured: false, status: "PAUSED", total: 1000, sold: 300, reserved: 60, held: 40, available: 600 },
-  { ...laptop, slug: "portatil-sin-cupo-demo", title: "Portátil · edición limitada", subtitle: "Cupo comprometido", total: 1000, sold: 700, reserved: 300, held: 0, available: 0 },
-  { ...suv, slug: "suv-cerrada-demo", title: "SUV · colección anterior", subtitle: "Participación cerrada", featured: false, status: "CLOSED", total: 1000, sold: 800, reserved: 0, held: 0, available: 200 },
+  { ...suv, slug: "suv-pausada-demo", title: "SUV · edición especial", subtitle: "Una pausa en el camino", featured: false, status: "PAUSED", progressPercent: 30, total: 100000, sold: 300, reserved: 60, held: 40, available: 99600 },
+  { ...laptop, slug: "portatil-sin-cupo-demo", title: "Portátil · edición limitada", subtitle: "Cupo comprometido", progressPercent: 70, total: 100000, sold: 700, reserved: 99300, held: 0, available: 0 },
+  { ...suv, slug: "suv-cerrada-demo", title: "SUV · colección anterior", subtitle: "Participación cerrada", featured: false, status: "CLOSED", progressPercent: 100, total: 100000, sold: 800, reserved: 0, held: 0, available: 99200 },
 ];

@@ -11,7 +11,7 @@ export function adminMessage(code: string) {
     RAFFLE_NOT_EDITABLE: "Pausa la rifa para editarla. Las rifas cerradas no se pueden editar.", RAFFLE_FIELDS_LOCKED: "La numeración es inmutable y el precio queda bloqueado tras la primera pre-reserva.",
     INVALID_RAFFLE: "Revisa las cantidades, el importe y las fechas de la rifa.", INVALID_RAFFLE_STATE: "El estado de la rifa cambió. Recarga los datos guardados.",
     MEDIA_UNAVAILABLE: "No se puede guardar o verificar la fotografía. Revisa la configuración de fotos y vuelve a intentarlo.", INVALID_MEDIA: "La fotografía no es válida o supera los límites permitidos.",
-    PUBLICATION_REQUIREMENTS_NOT_MET: "Añade al menos una foto propia y confirma los derechos antes de publicar.",
+    PUBLICATION_REQUIREMENTS_NOT_MET: "Revisa el objetivo de recaudación, las fotos propias y los derechos antes de publicar.",
     INVALID_CREDENTIALS: "No pudimos iniciar sesión con esos datos.", INVALID_MFA: "El código no es válido o venció. Introduce uno nuevo.",
     UNAUTHORIZED: "La sesión terminó. Vuelve a iniciar sesión.", SESSION_REVOKED: "La sesión fue revocada. Vuelve a iniciar sesión.",
     FORBIDDEN: "No tienes autorización para esta operación.", ADMIN_ACCESS_REVOKED: "El acceso administrativo fue retirado.",

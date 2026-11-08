@@ -20,10 +20,19 @@ test("agotamiento de cupo no se representa como 100% vendido", () => {
   const raffle = demoRaffles.find(item => item.slug === "portatil-sin-cupo-demo");
   if (!raffle) throw new Error("Fixture requerida no encontrada");
   render(<AvailabilityMeter raffle={raffle} />);
-  expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "700");
-  expect(screen.getByRole("progressbar")).toHaveAccessibleName("Boletos vendidos confirmados de demostración");
+  expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "70");
+  expect(screen.getByRole("progressbar")).toHaveAccessibleName("Progreso de la rifa");
   expect(screen.getByText("70%")).toBeInTheDocument();
   expect(availabilityLabel(raffle)).toBe("Sin cupo disponible");
+});
+
+test("sin objetivo no se inventa progreso y el 100% no cambia la disponibilidad", () => {
+  const raffle = { ...demoRaffles[0]!, progressPercent: null };
+  const { rerender } = render(<AvailabilityMeter raffle={raffle} />);
+  expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+  rerender(<AvailabilityMeter raffle={{ ...raffle, progressPercent: 100 }} />);
+  expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuemax", "100");
+  expect(availabilityLabel(raffle)).toBe("Con cupo");
 });
 
 test("fixtures demo conservan los conteos y no confunden pausa con falta de cupo", () => {

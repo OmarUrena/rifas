@@ -4,7 +4,7 @@ import type { components } from "@sorteos/api-client";
 import { catalogApi, mapCard, mapDetail, publicImage } from "@/features/raffles/api";
 
 type Schemas = components["schemas"];
-const card: Schemas["RaffleCardDto"] = { id: "test", slug: "premio-test", title: "Premio TEST", prizeImageUrl: null, status: "PUBLISHED", ticketPriceMinor: 10025, totalTickets: 10, confirmedSoldCount: 2, availableCount: 8 };
+const card: Schemas["RaffleCardDto"] = { progressPercent: 73, id: "test", slug: "premio-test", title: "Premio TEST", prizeImageUrl: null, status: "PUBLISHED", ticketPriceMinor: 10025, totalTickets: 10, confirmedSoldCount: 2, availableCount: 8 };
 const detail: Schemas["RaffleDetailDto"] = { ...card, description: "Descripción", prize: "Premio", images: [], numberWidth: 2, minPurchase: 1, maxPurchase: 5, rules: "Reglas\nTEST", rulesVersion: "1", startsAt: null, endsAt: null, reservedCount: 0 };
 const inventory: Schemas["AvailabilityDto"] = { total: 10, available: 0, held: 1, reserved: 7, sold: 2, asOf: "2026-11-01T12:00:00Z" };
 afterEach(() => vi.unstubAllGlobals());

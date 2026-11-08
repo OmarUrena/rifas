@@ -125,7 +125,7 @@ test('S06 M6: pg_dump custom + pg_restore en DB nueva conservan datos, inventari
     await assert.rejects(()=>restored.query("INSERT INTO sorteos.tickets(raffle_id,number) SELECT raffle_id,number FROM sorteos.tickets LIMIT 1"),{code:'23505'});
     await assert.rejects(()=>restored.query("UPDATE sorteos.raffles SET status='DRAWN'"),{code:'23514'});
     migrateLocal(restoreUrl.toString());
-    assert.equal((await restored.query('SELECT count(*)::int AS n FROM supabase_migrations.schema_migrations')).rows[0].n,10);
+    assert.equal((await restored.query('SELECT count(*)::int AS n FROM supabase_migrations.schema_migrations')).rows[0].n,11);
     const report={scenario:'S06',result:'PASS',tables:18,archiveSha256:archiveHash,durationMs:Math.round(performance.now()-started),
       pendingOrderPreserved:true,rls:true,constraints:true,storageBytes:'NOT_INCLUDED_IN_SQL_BACKUP'};
     await writeFile(join(reports,'restore.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report));

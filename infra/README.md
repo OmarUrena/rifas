@@ -1,5 +1,11 @@
 # Infraestructura B0/B1/B2
 
+Etapa 2 de ajustes: migración `20261108153831_raffle_fundraising_stage2.sql`.
+Las nuevas rifas configuran un rango, sin poblar tickets; se generan al pre-reservar.
+Los fixtures pequeños existentes declaran LEGACY de forma explícita. Seed opcional
+`seeds/stage2-demo.sql`, estado y límites en [fase 2](../docs/AJUSTES_NEGOCIO_FASE_2.md).
+No aplicar a un entorno remoto sin autorización; no convierte rifas existentes.
+
 B0 solo consulta salud de PostgreSQL. B1 añade un único sistema de migraciones:
 Supabase CLI 2.122.0 y `supabase/migrations/`. Tablas privadas en `sorteos`, seed
 DEMO en `seeds/demo.sql` ejecutado desde las herramientas del backend y recuperación

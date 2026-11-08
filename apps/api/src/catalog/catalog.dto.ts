@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ArrayMaxSize, Equals, IsArray, IsBoolean, IsEnum, IsInt, IsISO8601, IsOptional,
   IsString, Matches, Max, MaxLength, Min, MinLength, ValidateNested } from 'class-validator';
@@ -23,7 +23,8 @@ export class CreateRaffleDto {
   @ApiProperty() @IsString() @Matches(/\S/) @MinLength(1) @MaxLength(180) title!: string;
   @ApiProperty() @IsString() @MaxLength(20000) description!: string;
   @ApiProperty() @IsString() @Matches(/\S/) @MinLength(1) @MaxLength(2000) prize!: string;
-  @ApiProperty({type:'integer',minimum:1,maximum:1000000}) @IsInt() @Min(1) @Max(1000000) totalTickets!: number;
+  @ApiProperty({type:'integer',enum:[100000]}) @Equals(100000) totalTickets!: number;
+  @ApiProperty({type:'integer',minimum:1,maximum:9007199254740991}) @IsInt() @Min(1) @Max(Number.MAX_SAFE_INTEGER) fundraisingTargetMinor!: number;
   @ApiProperty({type:'integer',minimum:1,maximum:9007199254740991}) @IsInt() @Min(1) @Max(Number.MAX_SAFE_INTEGER) ticketPriceMinor!: number;
   @ApiProperty({type:'integer',minimum:1,maximum:1000000}) @IsInt() @Min(1) @Max(1000000) minPurchase!: number;
   @ApiProperty({type:'integer',minimum:1,maximum:1000000}) @IsInt() @Min(1) @Max(1000000) maxPurchase!: number;
@@ -34,8 +35,19 @@ export class CreateRaffleDto {
   @ApiPropertyOptional({type:[RaffleMediaInputDto],maxItems:8}) @IsOptional() @IsArray() @ArrayMaxSize(8)
   @ValidateNested({each:true}) @Type(()=>RaffleMediaInputDto) images?: RaffleMediaInputDto[];
 }
-export class PatchRaffleDto extends PartialType(CreateRaffleDto) {
+export class PatchRaffleDto extends PartialType(OmitType(CreateRaffleDto,['totalTickets','fundraisingTargetMinor'] as const)) {
+  @ApiPropertyOptional({type:'integer',minimum:1,maximum:1000000,description:'Valor histórico sin cambios; numeración inmutable.'}) @IsOptional() @IsInt() @Min(1) @Max(1000000) totalTickets?:number;
   @ApiPropertyOptional({type:'integer',minimum:1}) @IsOptional() @IsInt() @Min(1) @Max(2147483647) expectedVersion?:number;
+}
+export class UpdateFundraisingTargetDto {
+  @ApiProperty({type:'integer',minimum:1,maximum:9007199254740991}) @IsInt() @Min(1) @Max(Number.MAX_SAFE_INTEGER) fundraisingTargetMinor!:number;
+  @ApiProperty({type:'integer',minimum:1}) @IsInt() @Min(1) @Max(2147483647) expectedVersion!:number;
+  @ApiProperty({maxLength:500}) @IsString() @Matches(/\S/) @MaxLength(500) reason!:string;
+}
+export class FundraisingTargetResultDto {
+  @ApiProperty({format:'uuid'}) id!:string;
+  @ApiProperty({type:'integer'}) version!:number;
+  @ApiProperty({type:'integer',format:'int64'}) fundraisingTargetMinor!:number;
 }
 export class PublicationApprovalDto {
   @ApiProperty({enum:[true]}) @Equals(true) rulesApproved!: boolean;
@@ -52,6 +64,7 @@ export class ImageDto {
   @ApiProperty() alt!: string;
 }
 export class RaffleCardDto {
+  @ApiProperty({type:'integer',minimum:0,maximum:100,nullable:true,description:'Progreso de la rifa; null si no tiene objetivo configurado.'}) progressPercent!:number|null;
   @ApiProperty({format:'uuid'}) id!: string;
   @ApiProperty() slug!: string;
   @ApiProperty() title!: string;
@@ -76,6 +89,10 @@ export class RaffleDetailDto extends RaffleCardDto {
   @ApiProperty({type:'integer',minimum:0}) reservedCount!: number;
 }
 export class AdminRaffleDto extends RaffleDetailDto {
+  @ApiProperty({enum:['LEGACY','FIVE_DIGIT']}) inventoryPolicy!:'LEGACY'|'FIVE_DIGIT';
+  @ApiProperty({type:'integer',format:'int64',nullable:true}) fundraisingTargetMinor!:number|null;
+  @ApiProperty({type:String,pattern:'^[0-9]+$'}) confirmedAmountMinor!:string;
+  @ApiProperty({type:String,nullable:true,description:'Porcentaje entero sin límite superior, como cadena decimal.'}) actualProgressPercent!:string|null;
   @ApiProperty({type:'integer',minimum:1}) version!: number;
   @ApiProperty({type:[RaffleMediaInputDto]}) media!: RaffleMediaInputDto[];
   @ApiProperty() hasCommitments!: boolean;

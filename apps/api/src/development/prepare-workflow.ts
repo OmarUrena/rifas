@@ -47,8 +47,7 @@ export class DevelopmentWorkflowSetup {
         SELECT 'BANCO DEMO — NO EXISTE','TITULAR DEMO — NO REAL','DEMO','SIN CUENTA REAL — NO TRANSFERIR',true,false
         WHERE NOT EXISTS(SELECT 1 FROM sorteos.bank_accounts WHERE is_demo AND bank_name='BANCO DEMO — NO EXISTE')`);
       const slug='demo-prueba-completa';
-      await db.query(`INSERT INTO sorteos.raffles(slug,title,description,prize,total_tickets,ticket_price_minor,min_purchase,max_purchase,rules,rules_version,ends_at)
-        VALUES($1,'RIFA DEMO — NO TRANSFERIR','Prueba de desarrollo sin venta ni transferencia real.','PREMIO DEMO SIN VALOR COMERCIAL',100,10000,1,20,
+      await db.query(`INSERT INTO sorteos.raffles(inventory_policy,slug,title,description,prize,total_tickets,ticket_price_minor,min_purchase,max_purchase,rules,rules_version,ends_at) VALUES ('LEGACY',$1,'RIFA DEMO — NO TRANSFERIR','Prueba de desarrollo sin venta ni transferencia real.','PREMIO DEMO SIN VALOR COMERCIAL',100,10000,1,20,
           'DEMO: no transferir dinero. Sin premio ni sorteo real; solo prueba del formulario y revision.','DEMO-PRUEBA-1',$2)
         ON CONFLICT(slug) DO NOTHING`,[slug,new Date(until)]);
       const raffle=(await db.query<{id:string;rules_version:string;title:string;status:string}>(

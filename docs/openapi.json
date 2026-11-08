@@ -1840,6 +1840,179 @@
         ]
       }
     },
+    "/api/v1/admin/raffles/{id}/fundraising-target": {
+      "post": {
+        "operationId": "AdminRafflesController_target",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFundraisingTargetDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundraisingTargetResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error uniforme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error uniforme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error uniforme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error uniforme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error uniforme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Error uniforme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Error uniforme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error uniforme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Límite de solicitudes; respetar Retry-After antes de reintentar.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos de espera del límite HTTP.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error uniforme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error uniforme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin-raffles"
+        ]
+      }
+    },
     "/api/v1/admin/raffles": {
       "get": {
         "operationId": "AdminRafflesController_list",
@@ -5567,8 +5740,8 @@
   },
   "info": {
     "title": "App Sorteos API",
-    "description": "M6: límites HTTP compartidos, errores uniformes y observabilidad sin PII; conserva catálogo, compra con comprobante y conciliación manual.",
-    "version": "0.7.0",
+    "description": "Ajustes etapa 2: nuevas rifas de 100000 números, objetivos privados y progreso público con pagos confirmados; conserva compra con comprobante y conciliación manual.",
+    "version": "0.8.0",
     "contact": {}
   },
   "tags": [],
@@ -5719,6 +5892,13 @@
       "AdminRaffleDto": {
         "type": "object",
         "properties": {
+          "progressPercent": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true,
+            "description": "Progreso de la rifa; null si no tiene objetivo configurado."
+          },
           "id": {
             "type": "string",
             "format": "uuid"
@@ -5805,6 +5985,27 @@
             "type": "integer",
             "minimum": 0
           },
+          "inventoryPolicy": {
+            "type": "string",
+            "enum": [
+              "LEGACY",
+              "FIVE_DIGIT"
+            ]
+          },
+          "fundraisingTargetMinor": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "confirmedAmountMinor": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+          },
+          "actualProgressPercent": {
+            "type": "string",
+            "nullable": true,
+            "description": "Porcentaje entero sin límite superior, como cadena decimal."
+          },
           "version": {
             "type": "integer",
             "minimum": 1
@@ -5820,6 +6021,7 @@
           }
         },
         "required": [
+          "progressPercent",
           "id",
           "slug",
           "title",
@@ -5840,6 +6042,10 @@
           "startsAt",
           "endsAt",
           "reservedCount",
+          "inventoryPolicy",
+          "fundraisingTargetMinor",
+          "confirmedAmountMinor",
+          "actualProgressPercent",
           "version",
           "media",
           "hasCommitments"
@@ -5919,6 +6125,13 @@
       "RaffleCardDto": {
         "type": "object",
         "properties": {
+          "progressPercent": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true,
+            "description": "Progreso de la rifa; null si no tiene objetivo configurado."
+          },
           "id": {
             "type": "string",
             "format": "uuid"
@@ -5963,6 +6176,7 @@
           }
         },
         "required": [
+          "progressPercent",
           "id",
           "slug",
           "title",
@@ -6055,6 +6269,13 @@
       "RaffleDetailDto": {
         "type": "object",
         "properties": {
+          "progressPercent": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true,
+            "description": "Progreso de la rifa; null si no tiene objetivo configurado."
+          },
           "id": {
             "type": "string",
             "format": "uuid"
@@ -6143,6 +6364,7 @@
           }
         },
         "required": [
+          "progressPercent",
           "id",
           "slug",
           "title",
@@ -6214,6 +6436,50 @@
           "items"
         ]
       },
+      "UpdateFundraisingTargetDto": {
+        "type": "object",
+        "properties": {
+          "fundraisingTargetMinor": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "fundraisingTargetMinor",
+          "expectedVersion",
+          "reason"
+        ]
+      },
+      "FundraisingTargetResultDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "fundraisingTargetMinor": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "fundraisingTargetMinor"
+        ]
+      },
       "AdminRafflePageDto": {
         "type": "object",
         "properties": {
@@ -6249,8 +6515,14 @@
           },
           "totalTickets": {
             "type": "integer",
+            "enum": [
+              100000
+            ]
+          },
+          "fundraisingTargetMinor": {
+            "type": "integer",
             "minimum": 1,
-            "maximum": 1000000
+            "maximum": 9007199254740991
           },
           "ticketPriceMinor": {
             "type": "integer",
@@ -6297,6 +6569,7 @@
           "description",
           "prize",
           "totalTickets",
+          "fundraisingTargetMinor",
           "ticketPriceMinor",
           "minPurchase",
           "maxPurchase",
@@ -6318,11 +6591,6 @@
           },
           "prize": {
             "type": "string"
-          },
-          "totalTickets": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1000000
           },
           "ticketPriceMinor": {
             "type": "integer",
@@ -6361,6 +6629,12 @@
             "items": {
               "$ref": "#/components/schemas/RaffleMediaInputDto"
             }
+          },
+          "totalTickets": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000,
+            "description": "Valor histórico sin cambios; numeración inmutable."
           },
           "expectedVersion": {
             "type": "integer",

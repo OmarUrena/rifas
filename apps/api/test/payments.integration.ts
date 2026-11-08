@@ -107,8 +107,7 @@ after(async()=>{
 });
 async function order(quantity=3) {
   const raffle=randomUUID();
-  await db.query(`INSERT INTO sorteos.raffles(id,slug,title,description,prize,total_tickets,ticket_price_minor,min_purchase,max_purchase,rules,rules_version)
-    VALUES($1,$2,'RIFA DEMO B5','SOLO TEST','PREMIO FICTICIO',10,10025,1,5,'NO TRANSFERIR','B5-1')`,[raffle,`demo-${raffle}`]);
+  await db.query(`INSERT INTO sorteos.raffles(inventory_policy,id,slug,title,description,prize,total_tickets,ticket_price_minor,min_purchase,max_purchase,rules,rules_version) VALUES ('LEGACY',$1,$2,'RIFA DEMO B5','SOLO TEST','PREMIO FICTICIO',10,10025,1,5,'NO TRANSFERIR','B5-1')`,[raffle,`demo-${raffle}`]);
   await db.query("INSERT INTO sorteos.raffle_media(raffle_id,storage_key,alt,position,rights_confirmed) VALUES($1,'prizes/test.webp','Fixture',0,true)",[raffle]);
   await db.query("UPDATE sorteos.raffles SET status='PUBLISHED',publication_approved_by=$2,publication_approved_at=now(),approved_rules_version=rules_version WHERE id=$1",[raffle,ownerId]);
   const session=await fetch(`${base}/api/v1/checkout-session`,{method:'POST',headers:{Origin:origin}});assert.equal(session.status,201);const cookie=session.headers.get('set-cookie')!.split(';')[0]!;
@@ -403,6 +402,20 @@ test('M5 edición con versión obsoleta no sobrescribe borrador',async()=>{
   assert.equal((await db.query('SELECT title FROM sorteos.raffles WHERE id=$1',[c.raffle])).rows[0].title,'Título M5 vigente');
 });
 
+test('objetivo cambia tras cierre sin reabrir y dos versiones concurrentes no se sobrescriben',async()=>{
+  const c=await order(1);
+  assert.equal((await request(`raffles/${c.raffle}/pause`,{method:'POST',body:{}})).status,200);
+  let version=(await db.query('SELECT version FROM sorteos.raffles WHERE id=$1',[c.raffle])).rows[0].version;
+  assert.equal((await request(`raffles/${c.raffle}/close`,{method:'POST',body:{expectedVersion:version}})).status,200);
+  version=(await db.query('SELECT version FROM sorteos.raffles WHERE id=$1',[c.raffle])).rows[0].version;
+  const path=`raffles/${c.raffle}/fundraising-target`,body={fundraisingTargetMinor:100000,expectedVersion:version,reason:'Objetivo DEMO después del cierre'};
+  assert.equal((await request(path,{method:'POST',body,key:randomUUID(),token:staffToken})).status,403);
+  const responses=await Promise.all([request(path,{method:'POST',body,key:randomUUID()}),request(path,{method:'POST',body:{...body,fundraisingTargetMinor:200000},key:randomUUID(),api:peerBase})]);
+  assert.deepEqual(responses.map(r=>r.status).sort(),[200,409]);
+  const row=(await db.query('SELECT status,total_tickets,ticket_price_minor,version FROM sorteos.raffles WHERE id=$1',[c.raffle])).rows[0];
+  assert.equal(row.status,'CLOSED');assert.equal(row.total_tickets,10);assert.equal(row.ticket_price_minor,'10025');assert.equal(row.version,version+1);
+});
+
 test('M5 fotos propias normalizadas: Auth/MFA, Storage público separado, formato real y publicación',async()=>{
   async function upload(bytes:Buffer,mime='image/png',auth:string|null=ownerToken){
     const form=new FormData();form.set('image',new Blob([new Uint8Array(bytes)],{type:mime}),'prueba.png');
@@ -415,7 +428,7 @@ test('M5 fotos propias normalizadas: Auth/MFA, Storage público separado, format
   const response=await upload(png);assert.equal(response.status,201);
   const media=await response.json() as unknown as {storageKey:string;url:string};assert.match(media.storageKey,/^prizes\/[a-f0-9-]{36}\.webp$/);
   assert.equal((await sharp(objects.get('media:'+media.storageKey)!).metadata()).format,'webp');assert.ok(!media.url.includes('receipts'));
-  const draft={slug:'m5-media-'+randomUUID(),title:'PREMIO DEMO',description:'Prueba sin valor real',prize:'PREMIO DE PRUEBA',totalTickets:10,ticketPriceMinor:10000,minPurchase:1,maxPurchase:5,rules:'NO TRANSFERIR: DEMO',rulesVersion:'M5',images:[{storageKey:media.storageKey,alt:'Foto propia de prueba',rightsConfirmed:true}]};
+  const draft={slug:'m5-media-'+randomUUID(),title:'PREMIO DEMO',description:'Prueba sin valor real',prize:'PREMIO DE PRUEBA',totalTickets:100000,fundraisingTargetMinor:1000000,ticketPriceMinor:10000,minPurchase:1,maxPurchase:5,rules:'NO TRANSFERIR: DEMO',rulesVersion:'M5',images:[{storageKey:media.storageKey,alt:'Foto propia de prueba',rightsConfirmed:true}]};
   const created=await request('raffles',{method:'POST',body:draft});assert.equal(created.status,201);const id=(await created.json()).id;
   assert.equal((await request(`raffles/${id}/publish`,{method:'POST',body:{rulesApproved:true,requirementsReviewed:true,mediaRightsConfirmed:true}})).status,200);
   assert.throws(()=>parseConfig({NODE_ENV:'production',DEVELOPMENT_LOCAL_MEDIA:'true'}),/Fotos locales/);

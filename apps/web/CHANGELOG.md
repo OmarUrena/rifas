@@ -1,5 +1,11 @@
 # Cambios de frontend
 
+## Ajustes de negocio — Etapa 2 — 2026-11-08
+
+- Alta con rango fijo de cinco cifras y objetivo privado; edición OWNER del objetivo independiente del bloqueo general y con reintentos idempotentes.
+- Progreso público desde la API con semántica accesible 0..100, omisión si falta objetivo y disponibilidad independiente. Conservados tema reversible y compra con comprobante.
+- Cliente generado 0.8.0 y proxy administrativo tipado. Evidencia integrada y limitaciones en docs/AJUSTES_NEGOCIO_FASE_2.md.
+
 ## Paleta pública reversible — 2026-11-08
 
 - Tema rojo, blanco y negro aislado mediante `data-public-theme="red"`.

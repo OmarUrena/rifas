@@ -18,8 +18,9 @@ La secuencia complementaria de [PLAN_AJUSTES_NEGOCIO.md](PLAN_AJUSTES_NEGOCIO.md
 amplía las funciones existentes sin reiniciar M0–M5 ni declarar cerrado M6/M7.
 El propietario solicitó comenzar solo su fase 1: reglas y diseño documental,
 completada en [AJUSTES_NEGOCIO_FASE_1.md](AJUSTES_NEGOCIO_FASE_1.md).
-Las etapas 2–7 siguen pendientes de ejecución. Sus entregas serán integradas
-entre datos, API y web; esta fase no altera comportamiento o contratos HTTP.
+Etapa 2 implementada y verificada localmente: [rango y recaudación](AJUSTES_NEGOCIO_FASE_2.md), con incidencias de ejecución y límites documentados.
+El propietario aclaró generación bajo demanda: rango fijo no implica crear
+100000 filas. Etapas 3–7 siguen pendientes; M6/M7 conservan sus pendientes externos.
 
 ### Estado de los hitos existentes
 

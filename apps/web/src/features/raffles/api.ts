@@ -14,7 +14,7 @@ export function publicImage(url: string | null, base?: string): boolean {
 }
 export function mapCard(dto: Schemas["RaffleCardDto"], imageBase?: string): RaffleSummary {
   return { slug: dto.slug, title: dto.title, status: dto.status, ticketPriceMinor: dto.ticketPriceMinor,
-    total: dto.totalTickets, sold: dto.confirmedSoldCount, available: dto.availableCount, demo: false,
+    total: dto.totalTickets, sold: dto.confirmedSoldCount, available: dto.availableCount, demo: false, progressPercent: dto.progressPercent,
     images: publicImage(dto.prizeImageUrl, imageBase) ? [{ src: dto.prizeImageUrl!, alt: dto.title }] : [] };
 }
 export function mapDetail(dto: Schemas["RaffleDetailDto"], inventory: Schemas["AvailabilityDto"], imageBase?: string): RaffleView {

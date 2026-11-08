@@ -1,5 +1,7 @@
-import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Headers, HttpCode, HttpException, Param, ParseUUIDPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiCreatedResponse, ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { isUUID } from 'class-validator';
+import { UpdateFundraisingTargetDto, FundraisingTargetResultDto } from './catalog.dto';
 import { AdminGuard, AdminRequest } from '../auth/admin.guard';
 import { CatalogService } from './catalog.service';
 import { AdminPageQueryDto, AdminRaffleDto, AdminRafflePageDto, AvailabilityDto, CreateRaffleDto,
@@ -32,6 +34,12 @@ export class PublicBankAccountsController {
 export class AdminRafflesController {
   constructor(private readonly catalog:CatalogService) {}
   private requestId(request:AdminRequest):string { return String(request.res?.getHeader('X-Request-Id')); }
+  @Post(':id/fundraising-target') @HttpCode(200) @ApiOkResponse({type:FundraisingTargetResultDto})
+  @ApiHeader({name:'Idempotency-Key',required:true,schema:{type:'string',format:'uuid'}})
+  target(@Param('id',new ParseUUIDPipe()) id:string,@Body() body:UpdateFundraisingTargetDto,@Headers('Idempotency-Key') key:string,@Req() request:AdminRequest) {
+    if(!key||!isUUID(key))throw new HttpException({code:'INVALID_REQUEST'},400);
+    return this.catalog.updateTarget(id,body,key,request.admin,this.requestId(request));
+  }
   @Get() @ApiOkResponse({type:AdminRafflePageDto})
   list(@Query() query:AdminPageQueryDto) { return this.catalog.list(query,true); }
   @Get(':id') @ApiOkResponse({type:AdminRaffleDto})

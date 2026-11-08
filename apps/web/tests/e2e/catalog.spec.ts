@@ -55,8 +55,8 @@ test("pausa, cierre y cupo agotado mantienen su significado", async ({ page }) =
     await expect(page.getByRole("button", { name: label, exact: true })).toBeDisabled();
     await expect(page.getByRole("spinbutton")).toBeDisabled();
   }
-  await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "700");
-  await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuemax", "1000");
+  await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "70");
+  await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuemax", "100");
   await expect(page.getByText("El cupo está comprometido.", { exact: false })).toBeVisible();
 });
 

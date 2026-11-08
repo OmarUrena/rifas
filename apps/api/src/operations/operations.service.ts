@@ -1,4 +1,5 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { inventory } from '../catalog/inventory';
 import { PoolClient } from 'pg';
 import { DatabaseService } from '../database/database.service';
 import { FinancialAuthorization } from '../auth/financial.guard';
@@ -21,14 +22,7 @@ export class OperationsService {
     return this.db.transaction(async c=>{
       await this.auth.authorize(c,actor,proof,requestId);
       if(id&&!(await c.query('SELECT id FROM sorteos.raffles WHERE id=$1',[id])).rowCount)throw new NotFoundException();
-      const inventory=(await c.query<{total:number;available:number;held:number;reserved:number;sold:number;asOf:Date}>(`
-        SELECT count(*)::int AS total,
-        count(*) FILTER(WHERE t.status='AVAILABLE' OR (t.status='HELD' AND (h.status<>'ACTIVE' OR h.expires_at<=now())))::int AS available,
-        count(*) FILTER(WHERE t.status='HELD' AND h.status='ACTIVE' AND h.expires_at>now())::int AS held,
-        count(*) FILTER(WHERE t.status='RESERVED')::int AS reserved,
-        count(*) FILTER(WHERE t.status='SOLD')::int AS sold,now() AS "asOf"
-        FROM sorteos.tickets t LEFT JOIN sorteos.checkout_holds h ON h.id=t.hold_id
-        WHERE ($1::uuid IS NULL OR t.raffle_id=$1)`,[id??null])).rows[0]!;
+      const stock=await inventory(c,id??null);
       const money=(await c.query<{confirmedAmountMinor:string;pendingAmountMinor:string;pendingOrders:number}>(`
         SELECT coalesce(sum(total_minor) FILTER(WHERE status='PAID'),0)::text AS "confirmedAmountMinor",
         coalesce(sum(total_minor) FILTER(WHERE status IN('PENDING_REVIEW','UNDER_REVIEW','NEEDS_RESOLUTION')),0)::text AS "pendingAmountMinor",
@@ -39,7 +33,7 @@ export class OperationsService {
         WHERE i.status<>'RESOLVED' AND ($1::uuid IS NULL OR coalesce(o.raffle_id,h.raffle_id)=$1)`,[id??null])).rows[0]!.count;
       const active=(await c.query<{count:number}>(`SELECT count(*)::int AS count FROM sorteos.raffles WHERE status='PUBLISHED' AND ($1::uuid IS NULL OR id=$1)`,[id??null])).rows[0]!.count;
       await this.audit(c,actor,requestId,'OPERATIONS_SUMMARY_READ',id??null);
-      return {...inventory,asOf:inventory.asOf.toISOString(),...money,openIncidents:incidents,activeRaffles:active};
+      return {...stock,...money,openIncidents:incidents,activeRaffles:active};
     },false,true);
   }
   async close(id:string,version:number,actor:AdminIdentity,proof:AdminProof,requestId:string) {

@@ -4,6 +4,7 @@ import { PoolClient } from 'pg';
 import { APP_CONFIG, AppConfig } from '../config/config';
 import { DatabaseService } from '../database/database.service';
 import { CreateHoldDto, HoldDto } from './checkout.dto';
+import { chooseNumbers } from './numbers';
 
 interface Session {id:string}
 interface Hold {
@@ -99,7 +100,7 @@ export class CheckoutService implements OnModuleInit,OnModuleDestroy {
       }
       const lifetime=await c.query('SELECT id FROM sorteos.guest_sessions WHERE id=$1 AND expires_at>=now()+$2*interval \'1 minute\'',[session.id,this.config.holdTtlMinutes]);
       if(!lifetime.rowCount)fail('SESSION_INVALID',401);
-      const result=await c.query<{id:string;status:string;min_purchase:number;max_purchase:number;ticket_price_minor:string;rules_version:string;open:boolean}>(
+      const result=await c.query<{id:string;total_tickets:number;status:string;min_purchase:number;max_purchase:number;ticket_price_minor:string;rules_version:string;open:boolean}>(
         `SELECT *, (starts_at IS NULL OR starts_at<=now()) AND (ends_at IS NULL OR ends_at>now()) AS open
          FROM sorteos.raffles WHERE id=$1 FOR UPDATE`,[body.raffleId]);
       const raffle=result.rows[0];
@@ -112,9 +113,13 @@ export class CheckoutService implements OnModuleInit,OnModuleDestroy {
         FROM sorteos.checkout_holds WHERE status='ACTIVE' AND expires_at>now() AND (session_id=$1 OR abuse_key_hash=$2)`,[session.id,ipKey]);
       if(active.rows[0]!.session_count>=this.config.holdMaxActiveSession || active.rows[0]!.ip_count>=this.config.holdMaxActiveIp)fail('RATE_LIMITED',429);
       await this.budget(c,'hold',ipKey,this.config.holdHourlyIp);
-      const available=await c.query<{id:string}>("SELECT id FROM sorteos.tickets WHERE raffle_id=$1 AND status='AVAILABLE' ORDER BY number",[raffle.id]);
-      if(available.rows.length<body.quantity)fail('INSUFFICIENT_TICKETS',409);
-      const selected=chooseTickets(available.rows.map(row=>row.id),body.quantity);
+      const occupied=await c.query<{number:number}>("SELECT number FROM sorteos.tickets WHERE raffle_id=$1 AND status<>'AVAILABLE' ORDER BY number",[raffle.id]);
+      if(raffle.total_tickets-occupied.rows.length<body.quantity)fail('INSUFFICIENT_TICKETS',409);
+      const numbers=chooseNumbers(raffle.total_tickets,occupied.rows.map(row=>row.number),body.quantity);
+      // Materialize only selected numbers. Released AVAILABLE rows can be reused.
+      await c.query(`INSERT INTO sorteos.tickets(raffle_id,number) SELECT $1,n FROM unnest($2::int[]) AS n
+        ON CONFLICT(raffle_id,number) DO NOTHING`,[raffle.id,numbers]);
+      const selected=(await c.query<{id:string}>('SELECT id FROM sorteos.tickets WHERE raffle_id=$1 AND number=ANY($2::int[]) ORDER BY number',[raffle.id,numbers])).rows.map(row=>row.id);
       const created=await c.query<Hold>(`INSERT INTO sorteos.checkout_holds(raffle_id,session_id,quantity,unit_price_minor_snapshot,
         rules_version_snapshot,expires_at,idempotency_key,request_hash,abuse_key_hash)
         VALUES($1,$2,$3,$4,$5,now()+$6*interval '1 minute',$7,$8,$9) RETURNING *`,

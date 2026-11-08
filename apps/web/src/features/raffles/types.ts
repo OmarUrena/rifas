@@ -15,6 +15,7 @@ export type RaffleView = {
   minPurchase: number;
   maxPurchase: number;
   total: number;
+  progressPercent?: number | null;
   sold: number;
   reserved: number;
   held: number;
@@ -30,7 +31,7 @@ export type RaffleView = {
   rulesVersion?: string;
 };
 
-export type RaffleSummary = Pick<RaffleView, "slug" | "title" | "images" | "status" | "ticketPriceMinor" | "total" | "sold" | "available" | "demo" | "featured"> & Partial<Pick<RaffleView, "category" | "subtitle">>;
+export type RaffleSummary = Pick<RaffleView, "slug" | "title" | "images" | "status" | "ticketPriceMinor" | "total" | "sold" | "available" | "demo" | "featured" | "progressPercent"> & Partial<Pick<RaffleView, "category" | "subtitle">>;
 
 export function availabilityLabel(raffle: Pick<RaffleView, "status" | "available">) {
   if (raffle.status === "PAUSED") return "Pausada";

@@ -1,5 +1,10 @@
 # Recuperación B1/B2
 
+Etapa 2: `stage2-down-unused.sql` solo admite retirada sin uso FIVE_DIGIT,
+objetivo o historial de cambios. Con uso real, recuperación hacia delante;
+no reducir inventario ni borrar boletos. Coordinar versión API/web y respaldo.
+Ver [procedimiento](../../docs/AJUSTES_NEGOCIO_FASE_2.md).
+
 La recuperación se ensaya únicamente sobre las DB desechables de
 `apps/api/test/schema.integration.ts`. No hay autorización para rollback, DROP,
 reset ni restauración sobre bases de producción.

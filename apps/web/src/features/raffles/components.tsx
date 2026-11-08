@@ -11,11 +11,11 @@ export function StatusTag({ raffle }: { raffle: Pick<RaffleView, "status" | "ava
 }
 
 export function AvailabilityMeter({ raffle, compact = false }: { raffle: RaffleSummary & Partial<Pick<RaffleView, "reserved" | "held">>; compact?: boolean }) {
-  const percent = raffle.total > 0 ? Math.floor(raffle.sold * 100 / raffle.total) : 0;
+  const percent = raffle.progressPercent;
   const number = (value: number) => new Intl.NumberFormat("es-DO").format(value);
   return <div className="availability">
-    <div className="availability-track" role="progressbar" aria-label={raffle.demo ? "Boletos vendidos confirmados de demostración" : "Boletos vendidos confirmados"} aria-valuenow={raffle.sold} aria-valuemin={0} aria-valuemax={raffle.total} aria-valuetext={`${number(raffle.sold)} de ${number(raffle.total)} vendidos confirmados${raffle.demo ? "; datos demo" : ""}`}><span style={{ width: `${percent}%` }} /></div>
-    <div className="availability-caption"><span><strong>{number(raffle.sold)}</strong> / {number(raffle.total)} vendidos confirmados</span><strong>{percent}%</strong></div>
+    {percent != null && <><div className="availability-track" role="progressbar" aria-label="Progreso de la rifa" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-valuetext={`${percent}%${raffle.demo ? "; datos demo" : ""}`}><span style={{ width: `${percent}%` }} /></div>
+    <div className="availability-caption"><span>Progreso de la rifa</span><strong>{percent}%</strong></div></>}
     {!compact && raffle.reserved !== undefined && raffle.held !== undefined && <dl className="inventory-grid"><div><dt>Disponibles</dt><dd>{number(raffle.available)}</dd></div><div><dt>Reservados</dt><dd>{number(raffle.reserved)}</dd></div><div><dt>Cupo temporal</dt><dd>{number(raffle.held)}</dd></div></dl>}
   </div>;
 }

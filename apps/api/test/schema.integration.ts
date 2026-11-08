@@ -66,9 +66,8 @@ async function rejectsSql(sql: string, params: unknown[] = [], codes = ['23514',
 
 async function createRaffle(total: number): Promise<string> {
   const id = randomUUID();
-  await db.query(`INSERT INTO sorteos.raffles(id,slug,title,description,prize,total_tickets,
-    ticket_price_minor,min_purchase,max_purchase,rules,rules_version)
-    VALUES ($1,$2,'DEMO TEST','Fixture','PREMIO DEMO',$3,10025,1,1,'Solo pruebas','TEST-1')`,
+  await db.query(`INSERT INTO sorteos.raffles(inventory_policy,id,slug,title,description,prize,total_tickets,
+    ticket_price_minor,min_purchase,max_purchase,rules,rules_version) VALUES ('LEGACY',$1,$2,'DEMO TEST','Fixture','PREMIO DEMO',$3,10025,1,1,'Solo pruebas','TEST-1')`,
   [id, `test-${id}`, total]);
   return id;
 }
@@ -77,6 +76,23 @@ test('migración oficial repetida conserva una sola versión', async () => {
   const result = await db.query('SELECT count(*)::int AS n FROM supabase_migrations.schema_migrations');
   const files = await readdir(resolve(workspaceRoot,'infra/supabase/migrations'));
   assert.equal(result.rows[0].n, files.filter(file=>/^\d+_.*\.sql$/.test(file)).length);
+});
+
+test('nuevo seed configura rango virtual, no crea tickets y protege política/rango en DB',async()=>{
+  await db.query(await readFile(resolve(workspaceRoot,'infra/seeds/stage2-demo.sql'),'utf8'));
+  await db.query(await readFile(resolve(workspaceRoot,'infra/seeds/stage2-demo.sql'),'utf8'));
+  const id='00000000-0000-4000-8000-000000000802';
+  assert.equal((await db.query('SELECT count(*)::int AS n FROM sorteos.tickets WHERE raffle_id=$1',[id])).rows[0].n,0);
+  assert.equal((await db.query('SELECT total_tickets FROM sorteos.raffles WHERE id=$1',[id])).rows[0].total_tickets,100000);
+  await rejectsSql('UPDATE sorteos.raffles SET inventory_policy=\'LEGACY\' WHERE id=$1',[id]);
+  await rejectsSql('INSERT INTO sorteos.tickets(raffle_id,number) VALUES($1,100000)',[id]);
+  await rejectsSql('INSERT INTO sorteos.tickets(raffle_id,number) VALUES($1,-1)',[id]);
+  await rejectsSql('UPDATE sorteos.raffles SET fundraising_target_minor=2 WHERE id=$1',[id]);
+  await db.query('BEGIN');
+  try{
+    await db.query('INSERT INTO sorteos.tickets(raffle_id,number) VALUES($1,0),($1,99999)',[id]);
+    assert.equal((await db.query('SELECT count(*)::int AS n FROM sorteos.tickets WHERE raffle_id=$1',[id])).rows[0].n,2);
+  }finally{await db.query('ROLLBACK');}
 });
 
 test('seed DEMO reejecutable conserva datos, reservas y auditoría', async () => {

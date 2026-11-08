@@ -58,7 +58,7 @@ export class OrdersService implements OnModuleInit,OnModuleDestroy {
     const payment=await c.query<{status:string}>('SELECT status FROM sorteos.payment_reports WHERE order_id=$1 AND active',[order.id]);
     return {orderCode:order.order_code,status:order.status,paymentReportStatus:payment.rows[0]!.status,
       raffleId:order.raffle_id,raffleTitle:raffle.rows[0]!.title,quantity:order.ticket_quantity,
-      ticketNumbers:numbers.rows.map(row=>String(row.number).padStart(raffle.rows[0]!.ticket_width,'0')),
+      ticketNumbers:numbers.rows.map(row=>String(row.number).padStart(Math.max(5,raffle.rows[0]!.ticket_width),'0')),
       totalMinor:Number(order.total_minor),currency:'DOP',createdAt:order.created_at.toISOString(),
       message:order.status==='PAID'?'Pago verificado.':order.status==='CANCELLED'?'Orden cancelada mediante resolución administrativa.':
         'Orden y comprobante recibidos. Los números están reservados y el pago está pendiente de verificación.'};

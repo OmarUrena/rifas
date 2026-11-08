@@ -1,5 +1,12 @@
 # Changelog
 
+## Ajustes de negocio — Etapa 2 — 2026-11-08
+
+- Nuevas rifas configuran rango 00000..99999 sin crear 100000 filas. Checkout elige uniformemente posiciones libres con CSPRNG y materializa solo números de la pre-reserva; reutiliza registros liberados y conserva bloqueo, unicidad e idempotencia.
+- Objetivo privado positivo y editable por OWNER mediante acción separada, con versión, motivo y auditoría de reintentos. Progreso público basado exclusivamente en PAID, truncado/limitado a 100, sin bloquear compras al alcanzarlo.
+- Inventario público y gerencial derivado del universo lógico y estados ocupados; formato de cinco cifras para universos compatibles. Legacy conserva rango y filas, sin objetivos inventados.
+- Nueva migración aditiva y recuperación protegida, seed DEMO virtual, OpenAPI/cliente 0.8.0, editor conectado y pruebas ampliadas. Estado, comandos y límites en docs/AJUSTES_NEGOCIO_FASE_2.md. Sin despliegue o migración remota.
+
 ## Ajustes de negocio — Fase 1 — 2026-11-08
 
 - Inspección de fuentes y diseño: inventario de archivos, reglas AJ01–AJ11, decisiones D01–D06 y ADR 0025.

@@ -118,12 +118,13 @@ after(async()=>{
 
 function input(slug=`demo-b2-${randomUUID()}`) {
   return {slug,title:'PREMIO DEMO B2',description:'Fixture de integración, sin venta real',prize:'PREMIO FICTICIO',
-    totalTickets:10,ticketPriceMinor:10025,minPurchase:1,maxPurchase:5,rules:'SOLO PRUEBAS, NO TRANSFERIR',
+    totalTickets:100000,fundraisingTargetMinor:1000000,ticketPriceMinor:10025,minPurchase:1,maxPurchase:5,rules:'SOLO PRUEBAS, NO TRANSFERIR',
     rulesVersion:'TEST-B2-1',images:[{storageKey:'prizes/valid.webp',alt:'Imagen fixture',rightsConfirmed:true}]};
 }
-async function request(path:string,options:{method?:string;body?:unknown;token?:string|null}={}) {
+async function request(path:string,options:{method?:string;body?:unknown;token?:string|null;key?:string}={}) {
   const headers:Record<string,string>={'Content-Type':'application/json'};
   if (options.token!==null) headers.Authorization=`Bearer ${options.token??ownerToken}`;
+  if(options.key)headers['Idempotency-Key']=options.key;
   return fetch(`${base}/api/v1/${path}`,{method:options.method??'GET',headers,
     body:options.body===undefined?undefined:JSON.stringify(options.body)});
 }
@@ -159,24 +160,25 @@ test('allowlist activa gobierna permisos; email y metadata no conceden rol',asyn
   assert.equal((await request('admin/raffles',{token:await token(ownerSubject,{},nextKey.privateKey,'rotated')})).status,200);
 });
 
-test('creación real genera exactamente N boletos y solo DRAFT',async()=>{
+test('creación configura rango 00000..99999 sin materializar boletos, solo DRAFT',async()=>{
   const body=input();raffleSlug=body.slug;
   const response=await request('admin/raffles',{method:'POST',body});assert.equal(response.status,201);
   const row=await response.json() as AdminRaffleDto;raffleId=row.id;
-  assert.equal(row.status,'DRAFT');assert.equal(row.availableCount,10);assert.equal(row.numberWidth,1);
+  assert.equal(row.status,'DRAFT');assert.equal(row.availableCount,100000);assert.equal(row.numberWidth,5);
   const inventory=await db.query('SELECT count(*)::int AS n,min(number) AS min,max(number) AS max FROM sorteos.tickets WHERE raffle_id=$1',[raffleId]);
-  assert.deepEqual(inventory.rows[0],{n:10,min:0,max:9});
+  assert.deepEqual(inventory.rows[0],{n:0,min:null,max:null});
+  assert.equal(row.inventoryPolicy,'FIVE_DIGIT');assert.equal(row.fundraisingTargetMinor,1000000);assert.equal(row.progressPercent,0);
   assert.equal((await request(`raffles/${raffleSlug}`,{token:null})).status,404);
   assert.equal((await request(`admin/raffles/${raffleId}`)).status,200);
 });
 
 test('validaciones y conflicto de slug no dejan rifas ni boletos parciales',async()=>{
   const body=input();
-  for (const invalid of [{...body,totalTickets:0},{...body,totalTickets:1.5},{...body,status:'PUBLISHED'},
+  for (const invalid of [{...body,totalTickets:0},{...body,totalTickets:10},{...body,totalTickets:1.5},{...body,fundraisingTargetMinor:0},{...body,fundraisingTargetMinor:1.5},{...body,fundraisingTargetMinor:null},{...body,status:'PUBLISHED'},
     {...body,images:[{...body.images[0],storageKey:'receipts/private.pdf'}]}]) {
     assert.equal((await request('admin/raffles',{method:'POST',body:invalid})).status,400);
   }
-  assert.equal((await request('admin/raffles',{method:'POST',body:{...body,maxPurchase:11}})).status,422);
+  assert.equal((await request('admin/raffles',{method:'POST',body:{...body,maxPurchase:100001}})).status,422);
   assert.equal((await db.query('SELECT 1 FROM sorteos.raffles WHERE slug=$1',[body.slug])).rows.length,0);
   assert.equal((await request('admin/raffles',{method:'POST',body:input(raffleSlug)})).status,409);
   assert.equal((await request('admin/raffles/not-a-uuid')).status,400);
@@ -237,7 +239,7 @@ test('detalle y disponibilidad públicos separan vendidos/reservados y no expone
   const list=await (await request('raffles',{token:null})).json() as RafflePageDto;
   assert.equal(list.pagination.total,1);assert.equal(list.items[0]!.status,'PUBLISHED');
   const availability=await (await request(`raffles/${raffleSlug}/availability`,{token:null})).json() as AvailabilityDto;
-  assert.deepEqual({...availability,asOf:undefined},{total:10,available:10,held:0,reserved:0,sold:0,asOf:undefined});
+  assert.deepEqual({...availability,asOf:undefined},{total:100000,available:100000,held:0,reserved:0,sold:0,asOf:undefined});
   const detail=await (await request(`raffles/${raffleSlug}`,{token:null})).text();
   for (const secret of ['customer','ticketNumbers','session_id','lookup_secret_hash','receipt','rightsConfirmed',ownerSubject]) {
     assert.ok(!detail.includes(secret));
@@ -300,10 +302,14 @@ test('desactivar allowlist revoca acceso aun con JWT vigente; accesos y publicac
 });
 
 test('conteos públicos diferencian reservas pendientes de ventas bancarias verificadas',async()=>{
+  const legacy=await (await request(`admin/raffles/${seedRaffle}`)).json() as AdminRaffleDto;
+  assert.equal(legacy.totalTickets,100);assert.equal(legacy.inventoryPolicy,'LEGACY');assert.equal(legacy.progressPercent,null);assert.equal(legacy.numberWidth,5);
+  assert.equal((await request(`admin/raffles/${seedRaffle}/fundraising-target`,{method:'POST',key:randomUUID(),body:{fundraisingTargetMinor:30075,expectedVersion:legacy.version,reason:'Objetivo de prueba sin dinero real'}})).status,200);
   assert.equal((await request(`admin/raffles/${seedRaffle}`,{method:'PATCH',body:{images:input().images}})).status,200);
   assert.equal((await request(`admin/raffles/${seedRaffle}/publish`,{method:'POST',body:approval})).status,200);
   const before=await (await request('raffles/demo-b1-100',{token:null})).json() as AdminRaffleDto;
   assert.equal(before.reservedCount,3);assert.equal(before.confirmedSoldCount,0);assert.equal(before.availableCount,97);
+  assert.equal(before.progressPercent,0);
   // Fixture SQL exclusivamente: el endpoint de aprobación de pagos pertenece a B5.
   await db.query('BEGIN');
   try {
@@ -317,6 +323,53 @@ test('conteos públicos diferencian reservas pendientes de ventas bancarias veri
   } catch(error) { await db.query('ROLLBACK');throw error; }
   const after=await (await request('raffles/demo-b1-100',{token:null})).json() as AdminRaffleDto;
   assert.equal(after.reservedCount,0);assert.equal(after.confirmedSoldCount,3);assert.equal(after.availableCount,97);
+  assert.equal(after.progressPercent,100);
+});
+
+test('objetivo editable publicado, auditable e idempotente; progreso privado y compra al 100%',async()=>{
+  const path=`admin/raffles/${seedRaffle}/fundraising-target`;
+  let row=await (await request(`admin/raffles/${seedRaffle}`)).json() as AdminRaffleDto;
+  const body={fundraisingTargetMinor:60150,expectedVersion:row.version,reason:'Aumentar objetivo DEMO'};
+  const key=randomUUID();
+  assert.equal((await request(path,{method:'POST',body})).status,400);
+  assert.equal((await request(path,{method:'POST',body,key,token:adminToken})).status,403);
+  const response=await request(path,{method:'POST',body,key});assert.equal(response.status,200);const result=await response.json();
+  assert.deepEqual(await (await request(path,{method:'POST',body,key})).json(),result);
+  assert.equal((await request(path,{method:'POST',body:{...body,fundraisingTargetMinor:1},key})).status,409);
+  assert.equal((await request(path,{method:'POST',body,key:randomUUID()})).status,409);
+  row=await (await request(`admin/raffles/${seedRaffle}`)).json() as AdminRaffleDto;
+  assert.equal(row.progressPercent,50);assert.equal(row.confirmedAmountMinor,'30075');assert.equal(row.actualProgressPercent,'50');
+  const publicResponse=await request('raffles/demo-b1-100',{token:null});assert.equal(publicResponse.headers.get('cache-control'),'no-store');
+  const publicRow=await publicResponse.json() as Record<string,unknown>;assert.equal(publicRow.progressPercent,50);
+  for(const field of ['fundraisingTargetMinor','confirmedAmountMinor','actualProgressPercent','inventoryPolicy'])assert.ok(!(field in publicRow));
+  assert.equal((await request(`admin/raffles/${seedRaffle}`,{method:'PATCH',body:{fundraisingTargetMinor:1}})).status,400);
+  const changed=await request(path,{method:'POST',body:{...body,expectedVersion:row.version,fundraisingTargetMinor:1},key:randomUUID()});assert.equal(changed.status,200);
+  assert.equal((await (await request('raffles/demo-b1-100',{token:null})).json() as AdminRaffleDto).progressPercent,100);
+  const origin='http://localhost:3000';
+  const session=await fetch(`${base}/api/v1/checkout-session`,{method:'POST',headers:{Origin:origin}});assert.equal(session.status,201);
+  const hold=await fetch(`${base}/api/v1/checkout-holds`,{method:'POST',headers:{Origin:origin,Cookie:session.headers.get('set-cookie')!.split(';')[0]!,'Idempotency-Key':randomUUID(),'Content-Type':'application/json'},body:JSON.stringify({raffleId:seedRaffle,quantity:1})});
+  assert.equal(hold.status,201);assert.ok(!('ticketNumbers' in (await hold.json() as object)));
+  const audit=await db.query("SELECT metadata FROM sorteos.audit_logs WHERE action='FUNDRAISING_TARGET_CHANGED' AND metadata->>'idempotencyKey'=$1",[key]);
+  assert.equal(audit.rowCount,1);assert.equal(audit.rows[0].metadata.previousTargetMinor,'30075');assert.equal(audit.rows[0].metadata.nextTargetMinor,'60150');
+});
+
+test('rango implícito crea únicamente los números del hold, sin colisiones ni duplicados por retry',async()=>{
+  const origin='http://localhost:3000';
+  const initial=(await db.query('SELECT count(*)::int AS n FROM sorteos.tickets WHERE raffle_id=$1',[raffleId])).rows[0].n;
+  async function session(){const r=await fetch(`${base}/api/v1/checkout-session`,{method:'POST',headers:{Origin:origin}});assert.equal(r.status,201);return r.headers.get('set-cookie')!.split(';')[0]!;}
+  const cookies=await Promise.all([session(),session()]),keys=[randomUUID(),randomUUID()];
+  async function hold(i:number){return fetch(`${base}/api/v1/checkout-holds`,{method:'POST',headers:{Origin:origin,Cookie:cookies[i]!,'Idempotency-Key':keys[i]!,'Content-Type':'application/json'},body:JSON.stringify({raffleId,quantity:3})});}
+  const responses=await Promise.all([hold(0),hold(1)]);
+  for(const response of responses)assert.equal(response.status,201);
+  const holds=await Promise.all(responses.map(r=>r.json() as Promise<{holdId:string}>));
+  const rows=await db.query('SELECT number,hold_id FROM sorteos.tickets WHERE hold_id=ANY($1::uuid[])',[holds.map(h=>h.holdId)]);
+  assert.equal(rows.rowCount,6);assert.equal(new Set(rows.rows.map(r=>r.number)).size,6);assert.ok(rows.rows.every(r=>r.number>=0&&r.number<100000));
+  const count=(await db.query('SELECT count(*)::int AS n FROM sorteos.tickets WHERE raffle_id=$1',[raffleId])).rows[0].n;
+  assert.ok(count<=initial+6);assert.ok(count<100000);
+  for(let i=0;i<2;i++){assert.equal((await hold(i)).status,201);assert.equal((await fetch(`${base}/api/v1/checkout-holds/${holds[i]!.holdId}`,{method:'DELETE',headers:{Origin:origin,Cookie:cookies[i]!}})).status,200);}
+  assert.equal((await db.query('SELECT count(*)::int AS n FROM sorteos.tickets WHERE raffle_id=$1',[raffleId])).rows[0].n,count);
+  const stock=await (await request(`raffles/${raffleSlug}/availability`,{token:null})).json() as AvailabilityDto;
+  assert.equal(stock.total,stock.available+stock.held+stock.reserved+stock.sold);
 });
 
 test('disponibilidad computa HELD vigentes y no expira órdenes ni muta inventario al leer',async()=>{
@@ -324,6 +377,8 @@ test('disponibilidad computa HELD vigentes y no expira órdenes ni muta inventar
   await db.query('BEGIN');
   try {
     for (const [id,number,old] of [[expired,3,true],[active,4,false]] as const) {
+      // Sparse inventory: this fixture must materialize its own chosen numbers.
+      await db.query('INSERT INTO sorteos.tickets(raffle_id,number) VALUES($1,$2) ON CONFLICT(raffle_id,number) DO NOTHING',[raffleId,number]);
       await db.query(`INSERT INTO sorteos.checkout_holds(id,raffle_id,session_id,quantity,unit_price_minor_snapshot,
         rules_version_snapshot,created_at,expires_at,idempotency_key,request_hash)
         VALUES ($1,$2,'00000000-0000-4000-8000-000000000400',1,10025,'TEST-B2-1',
@@ -333,7 +388,7 @@ test('disponibilidad computa HELD vigentes y no expira órdenes ni muta inventar
     await db.query('COMMIT');
   } catch(error) { await db.query('ROLLBACK');throw error; }
   const result=await (await request(`raffles/${raffleSlug}/availability`,{token:null})).json() as AvailabilityDto;
-  assert.deepEqual({...result,asOf:undefined},{total:10,available:9,held:1,reserved:0,sold:0,asOf:undefined});
+  assert.deepEqual({...result,asOf:undefined},{total:100000,available:99999,held:1,reserved:0,sold:0,asOf:undefined});
   assert.equal((await db.query("SELECT count(*)::int AS n FROM sorteos.tickets WHERE raffle_id=$1 AND status='HELD'",[raffleId])).rows[0].n,2);
 });
 

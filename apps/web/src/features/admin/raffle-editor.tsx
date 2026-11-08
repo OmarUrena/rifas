@@ -9,7 +9,8 @@ import { AdminStatus } from "./frame";
 import { adminFetch, navigateAdmin } from "./client";
 import { localTransferTime, parseMinor, type AdminSession } from "./types";
 import { OperationalSummary, raffleStates, type AdminRaffle } from "./operations";
-type Draft = components["schemas"]["CreateRaffleDto"];
+import { FundraisingTarget } from "./fundraising-target";
+type Draft = Omit<components["schemas"]["CreateRaffleDto"], "totalTickets" | "fundraisingTargetMinor"> & { totalTickets: number; fundraisingTargetMinor?: number };
 type Photo = components["schemas"]["RaffleMediaInputDto"] & { url: string };
 const dateInput = (value?: string | null) => value ? new Date(Date.parse(value) - 4 * 3600000).toISOString().slice(0, 16) : "";
 const minorInput = (value: number) => `${BigInt(value) / 100n}.${String(BigInt(value) % 100n).padStart(2, "0")}`;
@@ -24,7 +25,7 @@ export function RaffleEditor({ id, role }: { id?: string; role: AdminSession["ro
   const reload = () => { setError(""); setRow(null); setRevision(v => v + 1); };
   if (error) return <Alert title="No se pudo cargar la rifa" tone="error">{error}<Button onClick={reload}>Reintentar</Button></Alert>;
   if (id && row?.id !== id) return <p role="status">Cargando rifa…</p>;
-  return <>{notice && <p role="status">Rifa actualizada.</p>}<RaffleForm key={`${id ?? "new"}-${row?.version ?? 0}`} current={row} role={role} onSaved={value => { setRow(value); setNotice(true); }} onReload={reload} />{id && <OperationalSummary key={row?.version} id={id} />}</>;
+  return <>{notice && <p role="status">Rifa actualizada.</p>}{row && <FundraisingTarget key={`target-${row.version}`} raffle={row} owner={role === "OWNER"} onSaved={() => { setNotice(true); reload(); }} />}<RaffleForm key={`${id ?? "new"}-${row?.version ?? 0}`} current={row} role={role} onSaved={value => { setRow(value); setNotice(true); }} onReload={reload} />{id && <OperationalSummary key={row?.version} id={id} />}</>;
 }
 function RaffleForm({ current, role, onSaved, onReload }: { current: AdminRaffle | null; role: AdminSession["role"]; onSaved: (value: AdminRaffle) => void; onReload: () => void }) {
   const hydrated = useHydrated();
@@ -52,7 +53,8 @@ function RaffleForm({ current, role, onSaved, onReload }: { current: AdminRaffle
       setPreview(draft);
       if ((event.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "preview") return;
       flight.current = true; setBusy(true);
-      const result = await adminFetch<AdminRaffle>(current ? `/admin/api/raffles/${current.id}` : "/admin/api/raffles", { method: current ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...draft, ...(current ? { expectedVersion: current.version } : {}) }) });
+      const payload = current ? { ...draft, expectedVersion: current.version } : { ...draft, fundraisingTargetMinor: parseMinor(value("fundraisingTarget")) };
+      const result = await adminFetch<AdminRaffle>(current ? `/admin/api/raffles/${current.id}` : "/admin/api/raffles", { method: current ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (!current) navigateAdmin(`/admin/rifas/${result.id}`); else { onSaved(result); setDirty(false); setSaved(true); }
     } catch (error) { setError(error instanceof Error ? error.message : "No se pudo guardar la rifa."); } finally { flight.current = false; setBusy(false); }
   }
@@ -80,7 +82,8 @@ function RaffleForm({ current, role, onSaved, onReload }: { current: AdminRaffle
           <div className="field-wide"><Input id="raffle-prize" name="prize" label="Premio" required maxLength={2000} defaultValue={current?.prize} hint="Describe el premio y sus características." /></div>
         </div></section>
         <section className="admin-form-section" aria-labelledby="raffle-sales-heading"><div className="admin-form-section-heading"><span>02</span><div><h2 id="raffle-sales-heading">Configuración de venta</h2><p>Establece el inventario, el precio y los límites de compra.</p></div></div><div className="admin-form-grid">
-          <Input id="raffle-total" name="totalTickets" label="Cantidad total de números" type="number" min={1} max={1000000} required defaultValue={current?.totalTickets ?? 100} disabled={!!current || busy || !editable} hint={current ? "No puede modificarse después de crear la rifa." : "Los números se asignan automáticamente al enviar la orden."} />
+          <Input id="raffle-total" name="totalTickets" label="Cantidad total de números" type="number" required defaultValue={current?.totalTickets ?? 100000} readOnly disabled={!!current} hint={current?.inventoryPolicy === "LEGACY" ? "Universo histórico conservado; no se amplía automáticamente." : "Rango 00000 a 99999. Los boletos se generan al pre-reservar."} />
+          {!current && <Input id="raffle-fundraising-target" name="fundraisingTarget" label="Objetivo de recaudación (DOP)" inputMode="decimal" required hint="Privado. El progreso público se calcula con pagos confirmados." />}
           <Input id="raffle-price" name="price" label="Precio por número en RD$" inputMode="decimal" required defaultValue={minorInput(current?.ticketPriceMinor ?? 10000)} disabled={current?.hasCommitments || busy || !editable} hint={current?.hasCommitments ? "Bloqueado: ya existe historial de pre-reservas." : "Importe en pesos dominicanos, con hasta dos decimales."} />
           <Input id="raffle-min" name="minPurchase" label="Compra mínima" type="number" required min={1} max={1000000} defaultValue={current?.minPurchase ?? 1} hint="Cantidad mínima por orden." />
           <Input id="raffle-max" name="maxPurchase" label="Compra máxima" type="number" required min={1} max={1000000} defaultValue={current?.maxPurchase ?? 10} hint="Cantidad máxima por orden." />

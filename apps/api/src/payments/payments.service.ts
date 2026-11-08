@@ -61,7 +61,7 @@ export class PaymentsService {
         FROM sorteos.admin_actions WHERE order_id=$1 ORDER BY created_at DESC,id DESC LIMIT 100`,[id]);
       const incidents=await c.query('SELECT id,category,status,resolution FROM sorteos.payment_incidents WHERE order_id=$1 ORDER BY created_at DESC,id LIMIT 100',[id]);
       await this.audit(c,admin,'ORDER_DETAIL_ACCESS','orders',id,requestId);
-      return {...this.summary(order),customer,ticketNumbers:tickets.rows.map(row=>String(row.number).padStart(row.ticket_width,'0')),
+      return {...this.summary(order),customer,ticketNumbers:tickets.rows.map(row=>String(row.number).padStart(Math.max(5,row.ticket_width),'0')),
         paymentReport:{verifiedAmountMinor:report.verified_amount_minor===null?null:Number(report.verified_amount_minor),
           id:report.id,bankAccountId:report.bankAccountId,reference:report.reference,status:report.status,
           transferDate:report.transferDate.toISOString(),reportedAt:report.reportedAt.toISOString(),

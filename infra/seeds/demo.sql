@@ -6,9 +6,8 @@ INSERT INTO sorteos.admin_users(id, auth_user_id, role, active)
 VALUES ('00000000-0000-4000-8000-000000000010','00000000-0000-4000-8000-000000000011','OWNER',false)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO sorteos.raffles(id, slug, title, description, prize, total_tickets, ticket_price_minor,
-  min_purchase, max_purchase, rules, rules_version)
-VALUES ('00000000-0000-4000-8000-000000000100','demo-b1-100', 'RIFA DEMO B1 — NO ES UNA OFERTA REAL',
+INSERT INTO sorteos.raffles(inventory_policy,id, slug, title, description, prize, total_tickets, ticket_price_minor,
+  min_purchase, max_purchase, rules, rules_version) VALUES ('LEGACY','00000000-0000-4000-8000-000000000100','demo-b1-100', 'RIFA DEMO B1 — NO ES UNA OFERTA REAL',
   'Fixture de desarrollo sin ventas ni sorteo real.', 'PREMIO DEMO SIN VALOR COMERCIAL',
   100, 10025, 1, 20, 'Solo demostración; no transferir dinero.', 'DEMO-1')
 ON CONFLICT (id) DO NOTHING;

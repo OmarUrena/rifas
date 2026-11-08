@@ -1,5 +1,11 @@
 # App Sorteos — frontend integrado M4
 
+Etapa 2 de ajustes: progreso público genérico desde `progressPercent` de API,
+sin barra si falta objetivo. Nuevas rifas configuran rango 00000..99999; el
+servidor genera boletos al pre-reservar. El editor tiene una acción OWNER de
+objetivo independiente del bloqueo general, con motivo y recuperación de retries.
+Requiere OpenAPI 0.8.0 y migración de etapa 2. Ver [evidencia](../../docs/AJUSTES_NEGOCIO_FASE_2.md).
+
 M6 añade mensajes de indisponibilidad, rechazo de origen sin borrar sesión y
 regresión de 429/503/red. Playwright prepara las rutas DEMO antes de abrir los
 navegadores y guarda `performance.json` con métricas del recorrido QA; son

@@ -2,7 +2,9 @@
 
 Fecha: 2026-11-08.
 
-Estado: fase 1 documental completada el 2026-11-08; etapas 2–7 pendientes. Evidencia, inventario, reglas y migración en [AJUSTES_NEGOCIO_FASE_1.md](AJUSTES_NEGOCIO_FASE_1.md). No se implementaron cambios de negocio ni se autorizaron despliegues o migraciones remotas.
+Estado: fase 1 documental y etapa 2 integrada completadas localmente, con incidencias y límites de pruebas registrados; etapas 3–7 pendientes. Diseño histórico en [fase 1](AJUSTES_NEGOCIO_FASE_1.md), resultados actuales en [fase 2](AJUSTES_NEGOCIO_FASE_2.md). No se autorizaron despliegues o migraciones remotas.
+
+Corrección explícita del propietario el 2026-11-08: 100000 es el **rango**, no una cantidad de filas a generar al crear la rifa. Materializar únicamente números seleccionados al pre-reservar; conservar filas históricas.
 
 Destinatario: modelo ejecutor con razonamiento Medium o Light. Trabajar por etapas, reutilizar el proyecto y comprobar cada resultado antes de continuar.
 
@@ -55,6 +57,7 @@ Para nuevas rifas:
 
 - Universo exacto: enteros `0..99999`.
 - Cada rifa dispone de `100000` números distintos.
+- Es un universo lógico: no crear filas para todos esos números al dar de alta la rifa. Los boletos se crean bajo demanda durante la pre-reserva, sin revelar sus números antes de la orden.
 - Presentación siempre con cinco cifras: `0` → `00000`; `45` → `00045`; `99999` → `99999`.
 - Aplicar el formato a boletos, bendecidos, resultados de lotería, premios, búsquedas, confirmaciones y exportaciones.
 - El comprador elige cantidad, nunca números.
@@ -322,6 +325,8 @@ Completada documentalmente: [entrega de fase 1](AJUSTES_NEGOCIO_FASE_1.md) y [AD
 Entregar inventario de código afectado, reglas actualizadas, ADR, plan de migración de rifas existentes y decisiones pendientes. No modificar inventarios comprometidos ni habilitar adjudicación real de lotería.
 
 ### Etapa 2 — Numeración y progreso
+
+Implementación y pruebas locales: [entrega de fase 2](AJUSTES_NEGOCIO_FASE_2.md). Conservar sus limitaciones y resultados detallados; no implica aplicar la migración al entorno del propietario.
 
 Implementar cinco cifras, universo de nuevas rifas, objetivo configurable, cálculo seguro, edición auditada, progreso público genérico y compra independiente del 100%. Cerrar con pruebas API/datos/web.
 

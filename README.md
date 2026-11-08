@@ -2,9 +2,13 @@
 
 ## Ajustes de negocio
 
-Fase 1 documental completada: [reglas, inventario técnico y migración](docs/AJUSTES_NEGOCIO_FASE_1.md).
-El [plan de ajustes](docs/PLAN_AJUSTES_NEGOCIO.md) mantiene etapas 2–7 pendientes;
-todavía no cambia numeración, progreso, premios o consulta de boletos en la aplicación.
+Fase 1 documental completada. La [etapa 2](docs/AJUSTES_NEGOCIO_FASE_2.md) implementa
+rango 00000..99999 para nuevas rifas y generación de boletos al pre-reservar,
+objetivo privado editable y progreso público calculado con pagos confirmados.
+Requiere la nueva migración antes de ejecutar el código; no se aplicó remotamente.
+Las rifas históricas conservan su universo y esperan objetivo del propietario.
+Premios, bendecidos y consulta OTP siguen en las etapas posteriores del
+[plan de ajustes](docs/PLAN_AJUSTES_NEGOCIO.md).
 
 ## M6: seguridad y resiliencia
 
