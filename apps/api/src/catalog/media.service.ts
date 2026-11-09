@@ -23,7 +23,7 @@ export class MediaService {
       if(this.config.developmentLocalMedia&&/^prizes\/local-[a-f0-9-]{36}\.webp$/.test(key)){
         try{await this.localRead(key.slice(13,-5));return;}catch{throw new UnprocessableEntityException({code:'INVALID_MEDIA'});}
       }
-      let response: Response;
+      let response: Awaited<ReturnType<typeof fetchFromServer>>;
       try { response = await fetchFromServer(this.url(key), {method:'HEAD',redirect:'error',signal:AbortSignal.timeout(2000)}); }
       catch { throw new ServiceUnavailableException({code:'MEDIA_UNAVAILABLE'}); }
       if (!response.ok || !/^image\/(jpeg|png|webp|avif)(;|$)/.test(response.headers.get('content-type') ?? '')) {

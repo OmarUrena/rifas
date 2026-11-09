@@ -101,8 +101,13 @@ test('HTTP saliente permite elegir IPv4 sin omitir errores de red ni cancelacion
   try{
     process.env.HTTP_DNS_FAMILY='6';
     await assert.rejects(fetchFromServer(url,{signal:AbortSignal.timeout(2000)}));
-    process.env.HTTP_DNS_FAMILY='4';
-    const response=await fetchFromServer(url);assert.equal(response.status,200);assert.deepEqual(await response.json(),{ready:true});
+    for(const family of [undefined,'auto','4']){
+      if(family===undefined)delete process.env.HTTP_DNS_FAMILY;else process.env.HTTP_DNS_FAMILY=family;
+      const response=await fetchFromServer(url);
+      assert.equal(response.status,200);assert.equal(response.ok,true);
+      assert.equal(response.headers.get('content-type'),'application/json');
+      assert.deepEqual(await response.json(),{ready:true});
+    }
     await assert.rejects(fetchFromServer(url,{signal:AbortSignal.abort()}));
     process.env.HTTP_DNS_FAMILY='invalid';assert.throws(()=>fetchFromServer(url),/HTTP_DNS_FAMILY/);
   }finally{
