@@ -10,6 +10,11 @@ Ver [ADR 0031](docs/decisions/0031-vercel-nestjs-entrypoint.md).
 El backend declara explícitamente las librerías de tipos Web API y Node para
 que `fetch`, `Response` y `Headers` se resuelvan durante el build de Vercel;
 ver [ADR 0032](docs/decisions/0032-server-fetch-web-types.md).
+`jose` se carga con `import()` y el compilador usa `NodeNext` para conservar esa
+instrucción al generar CommonJS. Tras compilar la API, ejecutar
+`npm run test:esm --workspace @sorteos/api` para comprobar el arranque y la
+verificación JWT con `require(ESM)` desactivado; ver
+[ADR 0033](docs/decisions/0033-jose-esm-runtime.md).
 Las variables del servidor se documentan en [apps/api/.env.example](apps/api/.env.example);
 el despliegue requiere configurar las credenciales reales y verificar la base de
 datos y Storage. La corrección de detección no acredita el funcionamiento remoto.

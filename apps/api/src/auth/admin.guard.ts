@@ -1,7 +1,6 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Inject, Injectable,
   ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
 import { isUUID } from 'class-validator';
-import { createRemoteJWKSet, customFetch, jwtVerify } from 'jose';
 import { Request } from 'express';
 import { APP_CONFIG, AppConfig } from '../config/config';
 import { DatabaseService } from '../database/database.service';
@@ -13,23 +12,23 @@ export type AdminRequest = Request & { admin: AdminIdentity; adminProof:AdminPro
 
 @Injectable()
 export class AdminGuard implements CanActivate {
-  private readonly jwks?: ReturnType<typeof createRemoteJWKSet>;
-  constructor(@Inject(APP_CONFIG) private readonly config: AppConfig, private readonly db: DatabaseService) {
-    if (config.supabaseUrl) this.jwks = createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json',config.supabaseUrl),
-      { timeoutDuration:2000, cooldownDuration:30000, cacheMaxAge:600000, [customFetch]:fetchFromServer });
-  }
+  private jwks?: ReturnType<typeof import('jose').createRemoteJWKSet>;
+  constructor(@Inject(APP_CONFIG) private readonly config: AppConfig, private readonly db: DatabaseService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AdminRequest>();
     const header = request.get('authorization') ?? '';
     const token = header.match(/^Bearer ([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)$/i)?.[1];
     if (!token || token.length > 8192) throw new UnauthorizedException();
-    if (!this.jwks || !this.config.supabaseUrl || !this.config.supabasePublishableKey) {
+    if (!this.config.supabaseUrl || !this.config.supabasePublishableKey) {
       throw new ServiceUnavailableException({code:'AUTH_UNAVAILABLE'});
     }
     let subject: string;
     let proof:AdminProof;
     try {
+      const { createRemoteJWKSet, customFetch, jwtVerify } = await import('jose');
+      this.jwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json',this.config.supabaseUrl),
+        { timeoutDuration:2000, cooldownDuration:30000, cacheMaxAge:600000, [customFetch]:fetchFromServer });
       const { payload } = await jwtVerify(token,this.jwks,{
         issuer:`${this.config.supabaseUrl}/auth/v1`, audience:'authenticated', algorithms:['ES256','RS256'],
         requiredClaims:['sub','exp','iat','iss','aud','session_id'], clockTolerance:5,
