@@ -1,0 +1,69 @@
+test('etapa 6: Comprar, formulario único, recuperación y confirmación móvil/escritorio',{timeout:360000},async()=>{
+ const {chromium,expect}=m4Playwright, path=require('node:path'),fs=require('node:fs');
+ const fixture=await order(1),slug='demo-'+fixture.raffle;
+ const browser=await chromium.launch({channel:process.env.PLAYWRIGHT_CHANNEL||undefined});
+ const contexts:any[]=[];const output=path.join(m4Workspace,'.tmp/stage6-browser');fs.mkdirSync(output,{recursive:true});
+ const count=async()=>Number((await db.query('SELECT count(*) FROM sorteos.orders WHERE raffle_id=$1',[fixture.raffle])).rows[0].count);
+ async function prepare(view:any){
+  await view.goto(origin+'/rifas/'+slug+'/participar');await view.getByRole('button',{name:'Confirmar cupo',exact:true}).click();
+  await expect(view.getByRole('timer')).toBeVisible();
+  await view.getByLabel('Nombre completo',{exact:true}).fill('CLIENTE DEMO FASE SEIS');
+  await view.getByLabel('Teléfono con código de país').fill('+18095550100');
+  await view.getByLabel('Correo electrónico',{exact:true}).fill('fase6@example.invalid');
+  await view.getByLabel('Cuenta a la que transferiste').selectOption(bankId);
+  await view.getByLabel('Referencia bancaria',{exact:true}).fill('DEMO FASE SEIS');
+  await view.getByLabel('Fecha y hora de la transferencia',{exact:true}).fill(new Date(Date.now()-4*3600000).toISOString().slice(0,16));
+  await view.getByRole('checkbox').check();
+ }
+ async function attach(view:any){await view.getByLabel('Imagen JPG/PNG o PDF',{exact:true}).setInputFiles({name:'demo.png',mimeType:'image/png',buffer:png});}
+ try {
+  const context=await browser.newContext({viewport:{width:390,height:844},permissions:['clipboard-read','clipboard-write']});contexts.push(context);const page=await context.newPage();
+  page.setDefaultTimeout(30000);let holds=0,posts=0;
+  page.on('request',(r:any)=>{if(r.method()==='POST'&&r.url().endsWith('/checkout-holds'))holds++;if(r.method()==='POST'&&r.url().endsWith('/orders'))posts++;});
+  await page.goto(origin+'/rifas');
+  await page.getByRole('link',{name:'Comprar',exact:true}).first().click();
+  await expect(page.getByRole('heading',{name:'Comprar boletos',exact:true})).toBeVisible();
+  await expect(page.getByRole('spinbutton')).toHaveCount(0);assert.equal(holds,0);assert.equal(posts,0);
+  await page.locator('.participation-panel').getByRole('link',{name:'Comprar',exact:true}).click();
+  await page.getByRole('spinbutton',{name:'Cantidad de boletos'}).fill('2');
+  await page.getByRole('button',{name:'Confirmar cupo',exact:true}).click();
+  await expect(page.getByRole('timer')).toBeVisible();assert.equal(holds,1);
+  await expect(page.locator('#resumen-cupo')).toBeFocused();
+  await expect(page.getByRole('list',{name:'Números asignados a la orden'})).toHaveCount(0);
+  await page.getByRole('button',{name:'Copiar cuenta de BANCO DEMO'}).click();await expect(page.getByText('Cuenta copiada.')).toBeVisible();
+  await page.getByLabel('Nombre completo',{exact:true}).fill('CLIENTE DEMO FASE SEIS');
+  await page.getByLabel('Teléfono con código de país').fill('+18095550100');
+  await page.getByLabel('Correo electrónico',{exact:true}).fill('correo-invalido');await page.getByLabel('Referencia bancaria',{exact:true}).focus();
+  await expect(page.getByText('Introduce un correo válido.')).toBeVisible();
+  await page.getByLabel('Correo electrónico',{exact:true}).fill('fase6@example.invalid');
+  await page.getByLabel('Cuenta a la que transferiste').selectOption(bankId);
+  await page.getByLabel('Referencia bancaria',{exact:true}).fill('DEMO FASE SEIS');
+  await page.getByLabel('Fecha y hora de la transferencia',{exact:true}).fill(new Date(Date.now()-4*3600000).toISOString().slice(0,16));
+  await page.getByRole('checkbox').check();
+  await expect(page.getByRole('button',{name:'Enviar orden',exact:true})).toBeDisabled();assert.equal(posts,0);
+  await attach(page);await page.screenshot({path:output+'/compra-mobile.png',fullPage:true});
+  const baseline=await count();
+  await page.locator('form.order-form').evaluate((form:any)=>{form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));});
+  await page.waitForURL('**/orden/confirmacion');await expect(page.getByRole('heading',{name:'Orden recibida',exact:true})).toBeVisible();
+  assert.equal(posts,1);assert.equal(await count(),baseline+1);
+  await expect(page.getByText('Pago pendiente de revisión',{exact:true})).toBeVisible();
+  await expect(page.getByRole('list',{name:'Números asignados a la orden'}).locator('li')).toHaveCount(2);
+  await expect(page.getByRole('link',{name:'Consultar mis boletos',exact:true}).last()).toBeVisible();
+  await page.screenshot({path:output+'/confirmacion-mobile.png',fullPage:true});
+  const AxeBuilder=m4WebRequire('@axe-core/playwright').default;
+  assert.equal((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations.length,0);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  await page.setViewportSize({width:1280,height:900});await page.screenshot({path:output+'/confirmacion-desktop.png',fullPage:true});
+  await page.reload();await expect(page.getByRole('heading',{name:'Orden recibida',exact:true})).toBeVisible();assert.equal(await count(),baseline+1);
+  // Response lost after server commit: recover exactly one order with the original key/file.
+  const lostContext=await browser.newContext();contexts.push(lostContext);const lost=await lostContext.newPage();await prepare(lost);await attach(lost);
+  let abort=true;await lost.route('**/api/v1/orders',async(route:any)=>{if(abort&&route.request().method()==='POST'){abort=false;await route.fetch();await route.abort();}else await route.continue();});
+  const beforeLost=await count();await lost.getByRole('button',{name:'Enviar orden',exact:true}).click();await expect(lost.getByText('El envío necesita atención',{exact:true})).toBeVisible();assert.equal(await count(),beforeLost+1);
+  await lost.getByRole('button',{name:'Recuperar el mismo envío',exact:true}).click();await lost.waitForURL('**/orden/confirmacion');assert.equal(await count(),beforeLost+1);
+  // Advance only the browser clock to verify expiry warning and disabled submission.
+  const expiryContext=await browser.newContext();contexts.push(expiryContext);const expiry=await expiryContext.newPage();await expiry.clock.install();await prepare(expiry);await attach(expiry);
+  await expiry.clock.fastForward(61*60*1000);
+  await expect(expiry.getByRole('button',{name:'Enviar orden',exact:true})).toBeDisabled();
+  await expect(expiry.getByText('Si transferiste, solicita asistencia; no crees otro cupo para intentar vincular el pago.',{exact:false})).toBeVisible();
+ } finally {for(const context of contexts)await context.close();await browser.close();}
+});

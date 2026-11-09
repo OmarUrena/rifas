@@ -2,7 +2,7 @@
 
 Fecha: 2026-11-08.
 
-Estado: fases 1 y 2 conservan su evidencia histórica. Etapas 3 y 4 implementadas; ver [fase 3](AJUSTES_NEGOCIO_FASE_3.md) y [fase 4](AJUSTES_NEGOCIO_FASE_4.md) para verificaciones actuales y límites. El propietario autorizó las migraciones necesarias durante esta sesión; las de bendecidos y lotería están aplicadas al proyecto Rifas. No se autorizó despliegue. Etapa 5 implementada y verificada localmente con alcance revisado: resumen censurado por teléfono, sin OTP; ver [fase 5](AJUSTES_NEGOCIO_FASE_5.md). Migración de etapa 5 aplicada tras autorización expresa del propietario; sin despliegue. Etapas 6–7 pendientes.
+Estado: fases 1 y 2 conservan su evidencia histórica. Etapas 3 y 4 implementadas; ver [fase 3](AJUSTES_NEGOCIO_FASE_3.md) y [fase 4](AJUSTES_NEGOCIO_FASE_4.md) para verificaciones actuales y límites. El propietario autorizó las migraciones necesarias durante esta sesión; las de bendecidos y lotería están aplicadas al proyecto Rifas. No se autorizó despliegue. Etapa 5 implementada y verificada localmente con alcance revisado: resumen censurado por teléfono, sin OTP; ver [fase 5](AJUSTES_NEGOCIO_FASE_5.md). Migración de etapa 5 aplicada tras autorización expresa del propietario; sin despliegue. Etapa 6 implementada y verificada localmente; ver [fase 6](AJUSTES_NEGOCIO_FASE_6.md). Etapa 7 pendiente.
 
 Corrección explícita del propietario el 2026-11-08: 100000 es el **rango**, no una cantidad de filas a generar al crear la rifa. Materializar únicamente números seleccionados al pre-reservar; conservar filas históricas.
 
@@ -348,7 +348,7 @@ Alcance actualizado por el propietario: rifa + teléfono, resumen de nombre/corr
 
 ### Etapa 6 — Simplificación pública
 
-Implementar «Comprar», reducción de texto, jerarquía, formulario compacto, confirmación, acceso a consulta y accesibilidad mobile first. Reutilizar componentes adaptados anteriormente.
+Implementación y verificación local en [fase 6](AJUSTES_NEGOCIO_FASE_6.md): «Comprar», reducción de texto, jerarquía, formulario compacto, confirmación, acceso a consulta y accesibilidad mobile first, reutilizando los flujos conectados existentes.
 
 ### Etapa 7 — Regresión y entrega
 

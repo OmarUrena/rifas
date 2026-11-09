@@ -23,7 +23,7 @@ test("agotamiento de cupo no se representa como 100% vendido", () => {
   expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "70");
   expect(screen.getByRole("progressbar")).toHaveAccessibleName("Progreso de la rifa");
   expect(screen.getByText("70%")).toBeInTheDocument();
-  expect(availabilityLabel(raffle)).toBe("Sin cupo disponible");
+  expect(availabilityLabel(raffle)).toBe("Agotada");
 });
 
 test("sin objetivo no se inventa progreso y el 100% no cambia la disponibilidad", () => {
@@ -37,6 +37,6 @@ test("sin objetivo no se inventa progreso y el 100% no cambia la disponibilidad"
 
 test("fixtures demo conservan los conteos y no confunden pausa con falta de cupo", () => {
   for (const raffle of demoRaffles) expect(raffle.sold + raffle.reserved + raffle.held + raffle.available).toBe(raffle.total);
-  expect(availabilityLabel({ status: "PAUSED", available: 600 })).toBe("Pausada");
-  expect(availabilityLabel({ status: "CLOSED", available: 200 })).toBe("Cerrada");
+  expect(availabilityLabel({ status: "PAUSED", available: 600 })).toBe("Ventas pausadas");
+  expect(availabilityLabel({ status: "CLOSED", available: 200 })).toBe("Finalizada");
 });

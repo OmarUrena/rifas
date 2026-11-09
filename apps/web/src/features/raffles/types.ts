@@ -11,6 +11,7 @@ export type RaffleView = {
   description: string;
   images: RaffleImage[];
   status: RaffleStatus;
+  canPurchase?: boolean;
   featured?: boolean;
   ticketPriceMinor: number;
   minPurchase: number;
@@ -34,12 +35,20 @@ export type RaffleView = {
   rulesVersion?: string;
 };
 
-export type RaffleSummary = Pick<RaffleView, "slug" | "title" | "images" | "status" | "ticketPriceMinor" | "total" | "sold" | "available" | "demo" | "featured" | "progressPercent" | "blessedNumbers" | "blessedNumberCount"> & Partial<Pick<RaffleView, "category" | "subtitle">>;
+export type RaffleSummary = Pick<RaffleView, "slug" | "title" | "images" | "status" | "canPurchase" | "ticketPriceMinor" | "total" | "sold" | "available" | "demo" | "featured" | "progressPercent" | "blessedNumbers" | "blessedNumberCount"> & Partial<Pick<RaffleView, "category" | "subtitle">>;
 
-export function availabilityLabel(raffle: Pick<RaffleView, "status" | "available">) {
-  if (raffle.status === "PAUSED") return "Pausada";
-  if (raffle.status === "CLOSED") return "Cerrada";
+export function salesOpen(raffle:Pick<RaffleView,'status'|'available'|'canPurchase'> & Partial<Pick<RaffleView,'minPurchase'|'startsAt'|'endsAt'>>,now=Date.now()) {
+  return raffle.status==='PUBLISHED'&&raffle.available>=(raffle.minPurchase??1)&&raffle.canPurchase!==false
+    &&(!raffle.startsAt||Date.parse(raffle.startsAt)<=now)&&(!raffle.endsAt||Date.parse(raffle.endsAt)>now);
+}
+
+export function availabilityLabel(raffle: Pick<RaffleView, "status" | "available"> & Partial<Pick<RaffleView,'canPurchase'|'minPurchase'|'startsAt'|'endsAt'>>) {
+  if (raffle.status === "PAUSED") return "Ventas pausadas";
+  if (raffle.status === "CLOSED") return "Finalizada";
   if (raffle.status === "DRAWN") return "Finalizada";
   if (raffle.status === "DRAFT") return "En preparación";
-  return raffle.available > 0 ? "Con cupo" : "Sin cupo disponible";
+  if (raffle.startsAt&&Date.parse(raffle.startsAt)>Date.now())return 'Próximamente';
+  if (raffle.endsAt&&Date.parse(raffle.endsAt)<=Date.now())return 'Finalizada';
+  if (raffle.available>0&&!salesOpen(raffle))return 'Ventas no disponibles';
+  return raffle.available > 0 ? "Con cupo" : "Agotada";
 }

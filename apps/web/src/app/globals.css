@@ -425,3 +425,11 @@ main:focus { outline: none; }
 .lookup-results dl { display: grid; gap: 12px; margin: 0; }
 .lookup-results dd { margin: 4px 0 0; overflow-wrap: anywhere; }
 .lookup-results dt { font-weight: 600; }
+
+/* Etapa 6: compra en una columna, reglas plegables y acciones claras. */
+.checkout-page .checkout-grid { grid-template-columns: minmax(0, 760px); justify-content: center; gap: 20px; }
+.detail-section summary, .order-confirmation summary { cursor: pointer; padding-block: 16px; font-weight: 600; }
+.participation-panel > .text-link { display: block; margin-top: 16px; }
+.order-form fieldset { margin-block: 22px; }
+.order-confirmation .ticket-numbers { margin-block: 20px; }
+.order-confirmation .confirmation-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-block: 24px; }

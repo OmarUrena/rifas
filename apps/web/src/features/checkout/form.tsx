@@ -48,6 +48,9 @@ export function CheckoutForm({ baseUrl, raffle, recoveryOnly = false, maxBytes =
     setBanks(null); setBankError(false);
     setRaw(String(result.quantity));
   }, [raffle.id]);
+  useEffect(()=>{
+    if(hold?.status==='ACTIVE')document.getElementById('resumen-cupo')?.focus();
+  },[hold?.holdId,hold?.status]);
   useEffect(() => {
     let current = true;
     void Promise.resolve().then(async () => {
@@ -165,10 +168,10 @@ export function CheckoutForm({ baseUrl, raffle, recoveryOnly = false, maxBytes =
   if (completed) return <div className="checkout-panel"><OrderSummary order={completed} />{locatorFailed && <Alert title="La orden ya fue registrada">No vuelvas a enviarla. Conserva el código mostrado y continúa a su consulta protegida.<Button onClick={() => { void complete(completed); }}>Continuar a la consulta protegida</Button></Alert>}</div>;
 
   return <div className="checkout-grid" aria-busy={busy || !ready}>
-    <section className="checkout-panel" aria-labelledby="quantity-title">
-      <p className="eyebrow">01 · Cantidad</p><h2 id="quantity-title">Tu participación empieza aquí.</h2>
-      <p>{raffle.title}</p>{raffle.unitPriceMinor !== undefined && <p>Precio publicado por boleto: <strong>{formatMoney(raffle.unitPriceMinor)}</strong>. El servidor confirmará el importe al pre-reservar.</p>}
-      <Alert title="Primero confirma el cupo">Transfiere solo con un cupo vigente, una cuenta publicada y tiempo suficiente para enviar tus datos y el comprobante juntos. La pre-reserva no es una orden ni confirma el pago.</Alert>
+    {(!hold || foreign || storageFailed || error) && <section className="checkout-panel" aria-labelledby="quantity-title">
+      <p className="eyebrow">01 · Cantidad</p><h2 id="quantity-title">Cantidad de boletos</h2>
+      <p>{raffle.title}</p>{raffle.unitPriceMinor !== undefined && <p>Por boleto: <strong>{formatMoney(raffle.unitPriceMinor)}</strong>.</p>}
+      <p>Confirma el cupo antes de transferir. Los números se asignan al enviar la orden.</p>
       {!ready && <p role="status">Consultando tu cupo anterior…</p>}
       {storageFailed && <Alert title="No podemos guardar la recuperación" tone="error">Habilita el almacenamiento de esta pestaña. Si ya tenías un cupo o transferiste, solicita asistencia antes de intentar crear otro.</Alert>}
       {foreign ? <Alert title="Hay otra solicitud en esta pestaña"><Link href={`/rifas/${intent!.slug}/participar`}>Volver a la solicitud anterior</Link>. Revísala antes de crear otro cupo.</Alert> : <>
@@ -176,27 +179,28 @@ export function CheckoutForm({ baseUrl, raffle, recoveryOnly = false, maxBytes =
           <Button type="button" className="quantity-button" aria-label="Reducir cantidad" disabled={!ready || busy || !!intent || !valid || value <= raffle.min} onClick={() => setRaw(String(value - 1))}>−</Button>
           <Input id="checkout-quantity" type="number" inputMode="numeric" label="Cantidad de boletos" min={raffle.min} max={raffle.max} step={1} value={raw} disabled={!ready || busy || !!intent || storageFailed} onChange={event => setRaw(event.target.value)} error={!intent && !valid ? `Introduce una cantidad entera entre ${raffle.min} y ${raffle.max}.` : undefined} />
           <Button type="button" className="quantity-button" aria-label="Aumentar cantidad" disabled={!ready || busy || !!intent || !valid || value >= raffle.max} onClick={() => setRaw(String(value + 1))}>+</Button>
-        </div><p className="field-hint">De {raffle.min} a {raffle.max} boletos. Nunca eliges los números. Cambiar cantidad libera el cupo anterior y requiere una nueva pre-reserva, sin garantía de disponibilidad.</p></div>
-        {!hold && <Button disabled={!ready || busy || storageFailed || (!intent && (recoveryOnly || !valid || (raffle.available ?? 0) < raffle.min))} onClick={reserve}>{busy ? "Consultando…" : intent ? "Recuperar la misma solicitud" : "Consultar y reservar cupo temporal"}</Button>}
+        </div><p className="field-hint">De {raffle.min} a {raffle.max} boletos.</p></div>
+        {!hold && <Button disabled={!ready || busy || storageFailed || (!intent && (recoveryOnly || !valid || (raffle.available ?? 0) < raffle.min))} onClick={reserve}>{busy ? "Consultando…" : intent ? "Recuperar la misma solicitud" : "Confirmar cupo"}</Button>}
         {!hold && !intent && (raffle.available ?? 0) < raffle.min && <p>No hay cupo disponible para la compra mínima. <Link href={`/rifas/${raffle.slug}`}>Volver a consultar disponibilidad</Link>.</p>}
-        {intent && !hold && <p>No se creará otra intención al reintentar. Conservamos la misma cantidad y clave para evitar duplicados.</p>}
+        {!hold && !intent && recoveryOnly && (raffle.available ?? 0) >= raffle.min && <p>Las ventas no están disponibles. Solo puedes recuperar un cupo anterior de esta pestaña.</p>}
+        {intent && !hold && <p>Reintenta esta misma solicitud para evitar duplicados.</p>}
         {hold && <p role="status">{hold.status === "CONSUMED" ? "Cupo ya utilizado." : active ? "Cupo reservado temporalmente." : hold.status === "CANCELLED" ? "Cupo cancelado." : "Reserva vencida."} <a href="#resumen-cupo" className="text-link">Ver resumen</a></p>}
         {hold && active && <a href="#enviar-orden" className="text-link">Completar orden y comprobante</a>}
       </>}
       {error && <Alert title="No pudimos completar la consulta" tone="error"><p>{error.code === "IDEMPOTENCY_CONFLICT" ? "La solicitud tiene otros datos asociados. Conserva este intento y solicita asistencia." : error.message}</p>{error.requestId && <p>Referencia: {error.requestId}</p>}{canEditRejected && <Button className="button-secondary" disabled={busy} onClick={editRejected}>Revisar cantidad</Button>}</Alert>}
       <Link href="/ayuda#incidencias" className="text-link">Si ya transferiste, revisa cómo solicitar asistencia</Link>
-    </section>
-    <section className="checkout-panel" id="resumen-cupo" tabIndex={-1} aria-labelledby="summary-title">
-      <p className="eyebrow">02 · Cupo temporal</p><h2 id="summary-title">Resumen de tu pre-reserva.</h2>
+    </section>}
+    {hold && <section className="checkout-panel" id="resumen-cupo" tabIndex={-1} aria-labelledby="summary-title">
+      <p className="eyebrow">Cupo temporal</p><h2 id="summary-title">Tu cupo</h2>
       {!hold ? <p>La cantidad y el importe confirmado aparecerán tras una respuesta del servidor. No tienes números asignados.</p> : <>
-        <Alert title={hold.status === "CONSUMED" ? "Cupo ya utilizado" : active ? "Cupo reservado temporalmente" : hold.status === "CANCELLED" ? "Cupo cancelado" : "Reserva vencida"}>{hold.status === "CONSUMED" ? "Consulta tu orden por un canal protegido; no crees otra pre-reserva." : active ? "No es una orden. El pago aún no está verificado y no hay números para mostrar." : "No transfieras ni intentes enviar un comprobante con este cupo. Si ya transferiste, solicita asistencia antes de crear otro."}</Alert>
-        <dl className="checkout-summary"><div><dt>Cantidad</dt><dd>{hold.quantity}</dd></div><div><dt>Precio congelado por boleto</dt><dd>{formatMoney(hold.unitPriceMinor)}</dd></div><div><dt>Total confirmado por servidor</dt><dd>{formatMoney(hold.totalMinor)}</dd></div></dl>
+        <Alert title={hold.status === "CONSUMED" ? "Cupo ya utilizado" : active ? "Cupo reservado temporalmente" : hold.status === "CANCELLED" ? "Cupo cancelado" : "Reserva vencida"}>{hold.status === "CONSUMED" ? "Consulta tu orden por un canal protegido; no crees otra pre-reserva." : active ? "Completa el formulario y adjunta tu comprobante antes de que venza el cupo." : "No transfieras ni intentes enviar un comprobante con este cupo. Si ya transferiste, solicita asistencia antes de crear otro."}</Alert>
+        <dl className="checkout-summary"><div><dt>Cantidad</dt><dd>{hold.quantity}</dd></div><div><dt>Precio por boleto</dt><dd>{formatMoney(hold.unitPriceMinor)}</dd></div><div><dt>Total a transferir</dt><dd>{formatMoney(hold.totalMinor)}</dd></div></dl>
         {active && <><div className={`reservation-timer ${nearExpiry ? "timer-warning" : ""}`} role="timer" aria-label="Tiempo restante de cupo temporal"><span>Tiempo restante</span><strong>{String(Math.floor(seconds / 60)).padStart(2, "0")}:{String(seconds % 60).padStart(2, "0")}</strong></div><p>Vence: {formatDate(hold.expiresAt)} (Santo Domingo).</p></>}
         {nearExpiry && <Alert title="El cupo está por vencer" tone="error">No transfieras. Una transferencia puede tardar más que el tiempo restante.</Alert>}
         <div className="checkout-actions"><Button className="button-secondary" disabled={busy || orderLocked} onClick={refresh}>Actualizar estado</Button>{hold.status !== "CONSUMED" && <Button className="button-secondary" disabled={busy || orderLocked} onClick={release}>{active ? "Liberar cupo y cambiar cantidad" : "Volver a consultar cupo"}</Button>}</div>
-        {active && !nearExpiry && <div className="bank-preview"><h3>Cuentas publicadas</h3><p>Utiliza solo la cuenta publicada y el total confirmado. Conserva tu comprobante para enviarlo junto a tus datos.</p>{bankError ? <p>No pudimos consultar las cuentas. Puedes actualizar el estado para volver a consultar; tu cupo conserva su vencimiento.</p> : banks === null ? <p role="status">Consultando cuentas publicadas…</p> : !banks.length ? <p>No hay cuentas bancarias publicadas. No realices transferencias.</p> : banks.map(bank => <dl className="bank-account" key={bank.id}><div><dt>Banco</dt><dd>{bank.bankName}</dd></div><div><dt>Tipo</dt><dd>{bank.accountType === "SAVINGS" ? "Ahorros" : bank.accountType === "CHECKING" ? "Corriente" : bank.accountType}</dd></div><div><dt>Cuenta publicada</dt><dd>{bank.accountDisplay}<Button type="button" className="button-secondary" onClick={() => { void copyAccount(bank); }}>Copiar cuenta de {bank.bankName}</Button></dd></div><div><dt>Titular</dt><dd>{bank.holderName}</dd></div><div><dt>Moneda</dt><dd>{bank.currency}</dd></div></dl>)}{copyStatus && <p role="status">{copyStatus}</p>}</div>}
+        {active && !nearExpiry && <div className="bank-preview"><h3>Cuentas publicadas</h3><p>Transfiere el total indicado a una cuenta publicada y adjunta el comprobante.</p>{bankError ? <p>No pudimos consultar las cuentas. Puedes actualizar el estado para volver a consultar; tu cupo conserva su vencimiento.</p> : banks === null ? <p role="status">Consultando cuentas publicadas…</p> : !banks.length ? <p>No hay cuentas bancarias publicadas. No realices transferencias.</p> : banks.map(bank => <dl className="bank-account" key={bank.id}><div><dt>Banco</dt><dd>{bank.bankName}</dd></div><div><dt>Tipo</dt><dd>{bank.accountType === "SAVINGS" ? "Ahorros" : bank.accountType === "CHECKING" ? "Corriente" : bank.accountType}</dd></div><div><dt>Cuenta publicada</dt><dd>{bank.accountDisplay}<Button type="button" className="button-secondary" onClick={() => { void copyAccount(bank); }}>Copiar cuenta de {bank.bankName}</Button></dd></div><div><dt>Titular</dt><dd>{bank.holderName}</dd></div><div><dt>Moneda</dt><dd>{bank.currency}</dd></div></dl>)}{copyStatus && <p role="status">{copyStatus}</p>}</div>}
       </>}
-    </section>
+    </section>}
     {hold && (hold.status !== "CONSUMED" || orderLocked) && (raffle.rulesVersion || intent?.rulesVersion) && <section className="checkout-panel order-panel"><OrderForm baseUrl={baseUrl} hold={hold} active={active} serverNowMs={Date.parse(hold.expiresAt) - seconds * 1000} banks={banks} rulesVersion={intent?.rulesVersion ?? raffle.rulesVersion!} rules={intent?.rules ?? raffle.rules ?? []} maxBytes={maxBytes} onLock={setOrderLocked} onSuccess={complete} /></section>}
     {hold?.status === "CONSUMED" && !orderLocked && <Alert title="Tu cupo ya fue utilizado"><Link href="/orden/confirmacion">Consultar la última orden de esta sesión</Link> o <Link href="/orden/recuperar">recuperar un envío pendiente</Link>. No hagas otra transferencia.</Alert>}
   </div>;

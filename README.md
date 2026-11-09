@@ -478,3 +478,7 @@ Registro manual de Pick 4 Florida + FIREBALL al final, adjudicación privada y c
 ## Consulta pública de registros — Etapa 5
 
 En `/consultar-boletos` se busca por rifa y teléfono, sin OTP. Solo muestra nombre y correo censurados y cantidad y estado de cada orden no cancelada (incluye pendientes de pago); nunca números, códigos ni comprobantes. La migración local de etapa 5 debe aplicarse antes de habilitar el endpoint en otro entorno. No añade proveedores ni variables: usa la clave secreta estable `CHECKOUT_ABUSE_HASH_KEY` para límites compartidos. Contrato y evidencia en [fase 5](docs/AJUSTES_NEGOCIO_FASE_5.md).
+
+## Compra simplificada — Etapa 6
+
+El catálogo usa Comprar para rifas disponibles; el detalle lleva a la selección real de cantidad, sin reservas por navegar. Cuentas y total del hold permanecen visibles antes de Enviar orden, que adjunta el comprobante en la misma operación. La confirmación prioriza estado, números y bendecidos; el resumen se puede desplegar. La API proyecta `canPurchase` y conserva la validación final del inventario. No añade variables ni migraciones. Evidencia en [fase 6](docs/AJUSTES_NEGOCIO_FASE_6.md).

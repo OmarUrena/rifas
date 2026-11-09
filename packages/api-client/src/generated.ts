@@ -827,6 +827,8 @@ export interface components {
             rightsConfirmed: boolean;
         };
         AdminRaffleDto: {
+            /** @description Disponibilidad computada: estado, fechas de venta y cupo mínimo. No crea reserva. */
+            canPurchase: boolean;
             /** @description Vista previa de hasta 12 números y premios; lista completa paginada. */
             blessedNumbers: components["schemas"]["BlessedNumberDto"][];
             blessedNumberCount: number;
@@ -891,6 +893,8 @@ export interface components {
             error: components["schemas"]["ErrorDetailDto"];
         };
         RaffleCardDto: {
+            /** @description Disponibilidad computada: estado, fechas de venta y cupo mínimo. No crea reserva. */
+            canPurchase: boolean;
             /** @description Vista previa de hasta 12 números y premios; lista completa paginada. */
             blessedNumbers: components["schemas"]["BlessedNumberDto"][];
             blessedNumberCount: number;
@@ -923,6 +927,8 @@ export interface components {
             asOf: string;
         };
         RaffleDetailDto: {
+            /** @description Disponibilidad computada: estado, fechas de venta y cupo mínimo. No crea reserva. */
+            canPurchase: boolean;
             /** @description Vista previa de hasta 12 números y premios; lista completa paginada. */
             blessedNumbers: components["schemas"]["BlessedNumberDto"][];
             blessedNumberCount: number;

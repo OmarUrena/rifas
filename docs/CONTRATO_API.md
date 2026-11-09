@@ -1,5 +1,10 @@
 # Contrato REST compartido — App Sorteos / API v1
 
+## Etapa 6 — OpenAPI 0.12.0
+
+Catálogo y detalle incorporan `canPurchase`: verdadero solo con estado PUBLISHED, ventana de venta abierta y disponibilidad para la compra mínima. Es una proyección informativa; no crea hold/orden ni sustituye las validaciones transaccionales del checkout. El progreso al 100% no altera esta propiedad. La compra conserva los mismos endpoints, cuerpo multipart, comprobante obligatorio, idempotencia y consulta protegida.
+
+
 ## Etapa 5 revisada — OpenAPI 0.11.1
 
 Decisión del propietario: búsqueda pública por teléfono sin OTP, exclusivamente para resumen censurado. No concede sesión ni acceso a órdenes/boletos completos.

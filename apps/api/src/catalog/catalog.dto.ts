@@ -58,6 +58,7 @@ export class ImageDto {
   @ApiProperty() alt!: string;
 }
 export class RaffleCardDto {
+  @ApiProperty({description:'Disponibilidad computada: estado, fechas de venta y cupo mínimo. No crea reserva.'}) canPurchase!:boolean;
   @ApiProperty({type:[BlessedNumberDto],description:'Vista previa de hasta 12 números y premios; lista completa paginada.'}) blessedNumbers!:BlessedNumberDto[];
   @ApiProperty({type:'integer',minimum:0}) blessedNumberCount!:number;
   @ApiProperty({type:'integer',minimum:0,maximum:100,nullable:true,description:'Progreso de la rifa; null si no tiene objetivo configurado.'}) progressPercent!:number|null;

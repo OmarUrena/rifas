@@ -1,5 +1,7 @@
 # Plan de acción Backend — App Sorteos (NestJS + PostgreSQL/Supabase)
 
+**Etapa 6 (2026-11-08):** compra pública simplificada conectada a la proyección `canPurchase` de NestJS y al checkout existente. Alcance, contrato y evidencia en [AJUSTES_NEGOCIO_FASE_6.md](AJUSTES_NEGOCIO_FASE_6.md). No modifica el esquema ni las transiciones financieras.
+
 **Extensión 2026-11-08:** [fase 1 de ajustes](AJUSTES_NEGOCIO_FASE_1.md)
 documenta inventario técnico, reglas objetivo y compatibilidad. N configurable
 describe la implementación histórica; nuevas rifas adoptarán 100000 números

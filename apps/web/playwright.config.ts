@@ -8,7 +8,7 @@ export default defineConfig({
   workers: 2,
   // Each run starts an isolated cold dev build; navigation compilation is not a product SLA.
   timeout: 60000,
-  use: { baseURL, trace: "retain-on-failure" },
+  use: { baseURL, trace: "retain-on-failure", channel: process.env.PLAYWRIGHT_CHANNEL },
   projects: [
     { name: "mobile", use: { browserName: "chromium", viewport: { width: 360, height: 800 } } },
     { name: "tablet", use: { browserName: "chromium", viewport: { width: 768, height: 1024 } } },

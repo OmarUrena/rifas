@@ -7472,8 +7472,8 @@
   },
   "info": {
     "title": "App Sorteos API",
-    "description": "Etapa 5: resumen público por rifa y teléfono, nombre/correo censurados y cantidad de boletos. Los números de boletos y las órdenes conservan acceso protegido.",
-    "version": "0.11.1",
+    "description": "Etapa 6: compra pública simplificada y disponibilidad informativa calculada por servidor; conserva comprobante obligatorio, idempotencia y consulta protegida.",
+    "version": "0.12.0",
     "contact": {}
   },
   "tags": [],
@@ -8188,6 +8188,10 @@
       "AdminRaffleDto": {
         "type": "object",
         "properties": {
+          "canPurchase": {
+            "type": "boolean",
+            "description": "Disponibilidad computada: estado, fechas de venta y cupo mínimo. No crea reserva."
+          },
           "blessedNumbers": {
             "description": "Vista previa de hasta 12 números y premios; lista completa paginada.",
             "type": "array",
@@ -8328,6 +8332,7 @@
           }
         },
         "required": [
+          "canPurchase",
           "blessedNumbers",
           "blessedNumberCount",
           "progressPercent",
@@ -8434,6 +8439,10 @@
       "RaffleCardDto": {
         "type": "object",
         "properties": {
+          "canPurchase": {
+            "type": "boolean",
+            "description": "Disponibilidad computada: estado, fechas de venta y cupo mínimo. No crea reserva."
+          },
           "blessedNumbers": {
             "description": "Vista previa de hasta 12 números y premios; lista completa paginada.",
             "type": "array",
@@ -8496,6 +8505,7 @@
           }
         },
         "required": [
+          "canPurchase",
           "blessedNumbers",
           "blessedNumberCount",
           "progressPercent",
@@ -8568,6 +8578,10 @@
       "RaffleDetailDto": {
         "type": "object",
         "properties": {
+          "canPurchase": {
+            "type": "boolean",
+            "description": "Disponibilidad computada: estado, fechas de venta y cupo mínimo. No crea reserva."
+          },
           "blessedNumbers": {
             "description": "Vista previa de hasta 12 números y premios; lista completa paginada.",
             "type": "array",
@@ -8674,6 +8688,7 @@
           }
         },
         "required": [
+          "canPurchase",
           "blessedNumbers",
           "blessedNumberCount",
           "progressPercent",

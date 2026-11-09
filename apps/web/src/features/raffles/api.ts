@@ -13,7 +13,7 @@ export function publicImage(url: string | null, base?: string): boolean {
   } catch { return false; }
 }
 export function mapCard(dto: Schemas["RaffleCardDto"], imageBase?: string): RaffleSummary {
-  return { slug: dto.slug, title: dto.title, status: dto.status, ticketPriceMinor: dto.ticketPriceMinor,
+  return { slug: dto.slug, title: dto.title, status: dto.status, canPurchase:dto.canPurchase, ticketPriceMinor: dto.ticketPriceMinor,
     total: dto.totalTickets, sold: dto.confirmedSoldCount, available: dto.availableCount, demo: false, progressPercent: dto.progressPercent,
     blessedNumbers: dto.blessedNumbers, blessedNumberCount: dto.blessedNumberCount,
     images: publicImage(dto.prizeImageUrl, imageBase) ? [{ src: dto.prizeImageUrl!, alt: dto.title }] : [] };

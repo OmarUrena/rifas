@@ -1,5 +1,7 @@
 # Plan de acción Frontend — App Sorteos (Next.js App Router)
 
+**Etapa 6 (2026-11-08):** compra pública simplificada conectada a la proyección `canPurchase` de NestJS y al checkout existente. Alcance, contrato y evidencia en [AJUSTES_NEGOCIO_FASE_6.md](AJUSTES_NEGOCIO_FASE_6.md). No modifica el esquema ni las transiciones financieras.
+
 **Extensión 2026-11-08:** [fase 1 de ajustes](AJUSTES_NEGOCIO_FASE_1.md)
 prepara progreso por objetivo, cinco cifras, bendecidos, consulta protegida y UX
 mobile first. [Etapa 2](AJUSTES_NEGOCIO_FASE_2.md) implementa rango implícito,

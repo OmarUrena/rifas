@@ -1,5 +1,13 @@
 # Changelog
 
+## Etapa 6 — Compra pública simplificada — 2026-11-08
+
+- Comprar condicionado a estado, fechas y cupo mínimo de la API; catálogo con imagen, precio y progreso. Detalle sin cantidad de vista previa y con reglas/información ampliada desplegables.
+- Compra en una columna, cuentas copiables visibles, formulario único con comprobante obligatorio y errores contextuales; Enviar orden conserva idempotencia y recuperación.
+- Confirmación con estado real, números y bendecidos antes del resumen secundario, más acceso a consulta. Tema público reversible conservado.
+- OpenAPI/cliente 0.12.0; sin migraciones ni variables nuevas. Evidencia en docs/AJUSTES_NEGOCIO_FASE_6.md.
+
+
 ## Estado de orden en consulta pública — 2026-11-08
 
 - La consulta censurada por teléfono muestra estado y cantidad de cada orden no cancelada, separando compras con estados diferentes y conservando el total de boletos.

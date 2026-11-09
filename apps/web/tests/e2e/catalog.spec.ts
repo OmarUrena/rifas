@@ -25,7 +25,7 @@ test("búsqueda sin tildes, filtros y recuperación del catálogo vacío", async
   await expect(page.getByRole("article")).toHaveCount(2);
   await page.getByRole("button", { name: "Sin cupo", exact: true }).click();
   await expect(page.getByRole("article")).toHaveCount(1);
-  await expect(page.getByRole("article")).toContainText("Sin cupo disponible");
+  await expect(page.getByRole("article")).toContainText("Agotada");
   await page.getByRole("searchbox").fill("sin coincidencias");
   await expect(page.getByRole("heading", { name: "No encontramos coincidencias" })).toBeVisible();
   await page.getByRole("button", { name: "Limpiar búsqueda y filtros" }).click();
@@ -37,27 +37,22 @@ test("detalle explorable, cantidad válida y ninguna compra simulada", async ({ 
   page.on("request", request => { if (request.method() === "POST") writes.push(request.url()); });
   await page.goto("/rifas/suv-premium-demo");
   await expect(page.getByRole("heading", { name: "SUV premium", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Aumentar cantidad" }).click();
-  await expect(page.getByRole("spinbutton", { name: "Cantidad de boletos" })).toHaveValue("2");
-  await page.getByRole("spinbutton").fill("101");
-  await expect(page.getByRole("spinbutton")).toHaveAccessibleDescription(/Introduce una cantidad entera/);
-  await page.getByRole("spinbutton").fill("10");
-  await expect(page.getByRole("button", { name: "Compra no habilitada en demo" })).toBeDisabled();
-  await expect(page.getByText("Vista previa: 10 boletos. No reserva cupo.")).toBeVisible();
+  await expect(page.getByRole("spinbutton")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Vista demo" })).toBeDisabled();
   await page.getByRole("link", { name: "Leer reglas de la demostración" }).click();
   await expect(page).toHaveURL(/#reglas$/);
   expect(writes.filter(url => /\/api\/v1\//.test(url))).toEqual([]);
 });
 
 test("pausa, cierre y cupo agotado mantienen su significado", async ({ page }) => {
-  for (const [slug, label] of [["suv-pausada-demo", "Pausada"], ["suv-cerrada-demo", "Cerrada"], ["portatil-sin-cupo-demo", "Sin cupo disponible"]]) {
+  for (const [slug, label] of [["suv-pausada-demo", "Ventas pausadas"], ["suv-cerrada-demo", "Finalizada"], ["portatil-sin-cupo-demo", "Agotada"]]) {
     await page.goto(`/rifas/${slug}`);
     await expect(page.getByRole("button", { name: label, exact: true })).toBeDisabled();
-    await expect(page.getByRole("spinbutton")).toBeDisabled();
+    await expect(page.getByRole("spinbutton")).toHaveCount(0);
   }
   await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "70");
   await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuemax", "100");
-  await expect(page.getByText("El cupo está comprometido.", { exact: false })).toBeVisible();
+  await expect(page.getByText("Esta rifa no admite nuevas compras en este momento.")).toBeVisible();
 });
 
 test("ayuda usa preguntas desplegables accesibles", async ({ page }) => {

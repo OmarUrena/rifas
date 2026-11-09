@@ -1,13 +1,13 @@
 import { PrizeImage as Image } from "./prize-image";
 import Link from "next/link";
-import { Badge, ButtonLink } from "@/components/ui";
+import { Badge, Button, ButtonLink } from "@/components/ui";
 import { Icon } from "@/components/ui/icon";
 import { formatMoney } from "@/lib/format";
-import { availabilityLabel, type RaffleView, type RaffleSummary } from "./types";
+import { availabilityLabel, salesOpen, type RaffleView, type RaffleSummary } from "./types";
 import { BlessedNumbers } from "./blessed-numbers";
 
 export function StatusTag({ raffle }: { raffle: Pick<RaffleView, "status" | "available"> }) {
-  const open = raffle.status === "PUBLISHED" && raffle.available > 0;
+  const open = salesOpen(raffle);
   return <span className={`status-tag ${open ? "status-open" : "status-muted"}`}><span aria-hidden="true" />{availabilityLabel(raffle)}</span>;
 }
 
@@ -23,16 +23,17 @@ export function AvailabilityMeter({ raffle, compact = false }: { raffle: RaffleS
 
 export function RaffleCard({ raffle, priority = false }: { raffle: RaffleSummary; priority?: boolean }) {
   const image = raffle.images[0];
+  const open=salesOpen(raffle);
   return <article className="raffle-card">
     <Link href={`/rifas/${raffle.slug}`} className="raffle-image-link" aria-label={`Ver ${raffle.title}`}>
       {!image && <span className="image-fallback">Imagen del premio pendiente</span>}{image && <Image src={image.src} alt={image.alt} fill sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1023px) 46vw, 380px" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} className="prize-image" />}
       <div className="image-badges">{(raffle.category || raffle.featured) && <Badge tone={raffle.featured ? "accent" : "neutral"}>{raffle.featured ? "Destacada" : raffle.category}</Badge>}{raffle.demo && <span className="image-demo">DEMO</span>}</div>
     </Link>
     <div className="raffle-card-content"><div className="raffle-card-title"><h3><Link href={`/rifas/${raffle.slug}`}>{raffle.title}</Link></h3><p>{raffle.subtitle}</p></div>
-      <div className="raffle-meta"><div><Icon name="tag" /><span><strong>{formatMoney(raffle.ticketPriceMinor)}</strong><small>por boleto{raffle.demo ? " · demo" : ""}</small></span></div><div><Icon name="users" /><span><strong>{new Intl.NumberFormat("es-DO").format(raffle.total)}</strong><small>boletos totales</small></span></div></div>
+      <div className="raffle-meta"><div><Icon name="tag" /><span><strong>{formatMoney(raffle.ticketPriceMinor)}</strong><small>por boleto{raffle.demo ? " · demo" : ""}</small></span></div></div>
       <StatusTag raffle={raffle} /><AvailabilityMeter raffle={raffle} compact />
       <BlessedNumbers numbers={raffle.blessedNumbers} total={raffle.blessedNumberCount} slug={raffle.slug} />
-      <ButtonLink href={`/rifas/${raffle.slug}`}>Ver detalles <Icon name="arrow" /></ButtonLink>
+      {open&&!raffle.demo?<ButtonLink href={`/rifas/${raffle.slug}#participacion`}>Comprar <Icon name="arrow" /></ButtonLink>:<Button disabled>{raffle.demo&&open?'Vista demo':open?'No disponible':raffle.canPurchase===false&&raffle.available>0&&raffle.status==='PUBLISHED'?'Ventas no disponibles':availabilityLabel(raffle)}</Button>}
     </div>
   </article>;
 }
@@ -42,5 +43,5 @@ export function PricePanel({ raffle }: { raffle: RaffleView }) {
 }
 
 export function RaffleRules({ raffle }: { raffle: RaffleView }) {
-  return <section className="detail-section" id="reglas" aria-labelledby="rules-title"><p className="eyebrow">Antes de participar</p><h2 id="rules-title">Todo empieza con las reglas.</h2><ol className="rules-list">{raffle.rules.map(rule => <li key={rule}>{rule}</li>)}</ol></section>;
+  return <section className="detail-section" id="reglas"><details><summary>Ver reglas de la rifa</summary><ol className="rules-list">{raffle.rules.map(rule => <li key={rule}>{rule}</li>)}</ol></details></section>;
 }

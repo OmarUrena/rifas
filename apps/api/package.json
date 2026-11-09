@@ -22,7 +22,8 @@
     "test:recovery": "node -r ts-node/register --test --test-concurrency=1 --test-name-pattern=\"recuperación B[34]\" test/checkout.integration.ts test/orders.integration.ts",
     "test:schema": "node -r ts-node/register --test test/schema.integration.ts",
     "test:lottery": "node -r ts-node/register --test --test-name-pattern=\"etapa 4\" test/payments.integration.ts",
-    "test:lookup": "node -r ts-node/register --test --test-name-pattern=\"etapa 5\" test/payments.integration.ts"
+    "test:lookup": "node -r ts-node/register --test --test-name-pattern=\"etapa 5\" test/payments.integration.ts",
+    "test:sales": "node -r ts-node/register --test --test-name-pattern=\"etapa 6\" test/payments.integration.ts"
   },
   "dependencies": {
     "undici": "7.30.2",

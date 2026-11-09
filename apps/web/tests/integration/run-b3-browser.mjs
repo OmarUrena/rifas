@@ -32,7 +32,7 @@ test('F3: dos navegadores, respuesta perdida, recarga, cancelación, vencimiento
     const one=await browser.newContext({viewport:{width:390,height:844}}),two=await browser.newContext({viewport:{width:1280,height:900}});contexts.push(one,two);
     const a=await one.newPage(),b=await two.newPage();
     await Promise.all([a.goto(url(id)),b.goto(url(id))]);
-    const reserve=(page)=>page.getByRole('button',{name:'Consultar y reservar cupo temporal'});
+    const reserve=(page)=>page.getByRole('button',{name:'Confirmar cupo'});
     await expect(reserve(a)).toBeEnabled();await expect(reserve(b)).toBeEnabled();
     assert.equal(await count(id),0);
     for (const value of ['0','1.5','3']) { await a.getByRole('spinbutton').fill(value); await expect(reserve(a)).toBeDisabled(); }

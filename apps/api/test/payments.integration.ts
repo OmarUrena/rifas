@@ -547,3 +547,21 @@ test('etapa 5: resumen censurado por teléfono, aislamiento, cancelación y lím
   const stillLimited=await search(undefined,other.raffle);assert.equal(stillLimited.status,429);
   const schema=(await db.query("SELECT relrowsecurity FROM pg_class WHERE oid='sorteos.ticket_lookup_limits'::regclass")).rows[0];assert.equal(schema.relrowsecurity,true);
 });
+
+
+test('etapa 6: proyección de compra respeta fechas, estado y cupo mínimo sin crear holds',async()=>{
+ const c=await order(1);
+ const detail=async()=>await (await globalThis.fetch(base+'/api/v1/raffles/demo-'+c.raffle)).json() as {canPurchase:boolean};
+ assert.equal((await detail()).canPurchase,true);
+ const list=await (await globalThis.fetch(base+'/api/v1/raffles')).json() as {items:{id:string;canPurchase:boolean}[]};
+ assert.equal(list.items.find(r=>r.id===c.raffle)!.canPurchase,true);
+ const count=Number((await db.query('SELECT count(*) FROM sorteos.checkout_holds')).rows[0].count);
+ await db.query("UPDATE sorteos.raffles SET starts_at=now()+interval '1 hour' WHERE id=$1",[c.raffle]);
+ assert.equal((await detail()).canPurchase,false);
+ const rejected=await globalThis.fetch(base+'/api/v1/checkout-holds',{method:'POST',headers:{Origin:origin,Cookie:c.cookie,'Content-Type':'application/json','Idempotency-Key':randomUUID()},body:JSON.stringify({raffleId:c.raffle,quantity:1})});assert.equal(rejected.status,409);
+ await db.query("UPDATE sorteos.raffles SET starts_at=NULL,ends_at=now()-interval '1 minute' WHERE id=$1",[c.raffle]);assert.equal((await detail()).canPurchase,false);
+ await db.query('UPDATE sorteos.raffles SET ends_at=NULL,min_purchase=10,max_purchase=10 WHERE id=$1',[c.raffle]);assert.equal((await detail()).canPurchase,false);
+ await db.query("UPDATE sorteos.raffles SET min_purchase=1,max_purchase=5,status='PAUSED' WHERE id=$1",[c.raffle]);
+ assert.equal((await (await request('raffles/'+c.raffle)).json() as unknown as {canPurchase:boolean}).canPurchase,false);
+ assert.equal(Number((await db.query('SELECT count(*) FROM sorteos.checkout_holds')).rows[0].count),count);
+});
