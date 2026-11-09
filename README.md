@@ -19,6 +19,19 @@ Verificación reproducible: `npm run test:stage7:checks`; después ejecutar
 local desechable y `npm run test:e2e --workspace @sorteos/web`. Ejecutar estos
 bloques en serie. No aplican migraciones remotas ni despliegan.
 
+## Limpieza local
+
+`npm run clean:local` muestra los destinos desechables; `npm run clean:local -- -Apply`
+elimina copias de navegador, clústeres PostgreSQL de prueba detenidos, cachés,
+scripts temporales y salidas de pruebas. Ejecutarlo cuando no haya pruebas en curso.
+Valida que los destinos estén dentro del repositorio y no contengan archivos
+versionados; desvincula junctions sin recorrer sus destinos.
+
+Conserva `.env`, dependencias instaladas, builds de la aplicación, certificados,
+respaldos de consolidación/migraciones, comprobantes y medios locales, así como
+evidencia documental y capturas actuales. Las cachés eliminadas se regeneran al
+usar las herramientas; limpiar no afecta datos remotos.
+
 ## M6: seguridad y resiliencia
 
 Límite HTTP compartido PostgreSQL, telemetría sin PII, timeouts de transporte y

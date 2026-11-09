@@ -1,5 +1,11 @@
 # Changelog
 
+## Limpieza local posterior a etapa 7 — 2026-11-09
+
+- Eliminados 221 destinos y 127783 archivos desechables (12.27 GiB de contenido lógico): 68 copias aisladas de navegador, 78 clústeres de prueba detenidos, cachés y temporales acumulados. Se conservan dependencias, aplicación activa, configuración privada, respaldos, Storage local y evidencia útil.
+- Añadido `npm run clean:local`: revisión sin borrado por defecto y aplicación explícita con `-- -Apply`, límites de ruta, protección de archivos versionados/procesos y eliminación de junctions sin seguir destinos.
+- Verificación posterior: revisión de limpieza sin candidatos; `verify:delivery` PASS; dependencias, navegadores y rutas protegidas presentes; API y web HTTP 200. Sin cambios de negocio ni datos remotos.
+
 ## Etapa 7 — Regresión y entrega local — 2026-11-09
 
 - Regresión de inventario, objetivo, bendecidos, lotería, entregas, consulta y compra; tres casos adicionales cubren extremos, capacidad, reintentos, cancelación/reasignación y elegibilidad congelada.

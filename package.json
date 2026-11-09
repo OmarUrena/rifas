@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "dev:api": "npm run dev --workspace @sorteos/api",
+    "clean:local": "powershell -NoProfile -File scripts/clean-local.ps1",
     "build:api": "npm run build --workspace @sorteos/api && npm run build --workspace @sorteos/api-client",
     "typecheck:api": "npm run typecheck --workspace @sorteos/api && npm run typecheck --workspace @sorteos/api-client",
     "test:config": "node --experimental-strip-types --test apps/api/test/config.test.mjs",
