@@ -1,5 +1,10 @@
 # Changelog
 
+## Resultado manual en un campo — 2026-11-08
+
+- Registro administrativo con un único número de cinco cifras y conservación de ceros iniciales. Validación de longitud y dígitos antes de enviar; adaptación compatible con API y base de datos existentes.
+- Actualizados el recorrido de navegador y la prueba de envío del resultado.
+
 ## Corrección de catálogo — Migración autorizada — 2026-11-08
 
 - Aplicada exclusivamente la migración de etapa 2 en Supabase Rifas tras autorización explícita. El catálogo pasó de HTTP 500 a 200; readiness 200.

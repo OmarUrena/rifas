@@ -34,7 +34,9 @@ export function LotteryWorkspace({ id, role }: { id: string; role: AdminSession[
   const form = new FormData(event.currentTarget), value = (key: string) => String(form.get(key) ?? "").trim();
   setError(""); setNotice("");
   try {
-   const payload = action === "PRIZE" ? { action, title: value("title") } : action === "RESULT" ? { action, pick4: value("pick4"), fireball: value("fireball"), eventAt: localLotteryTime(value("eventAt")), reference: value("reference") } : action === "AWARD" ? { action, resultId: value("resultId"), prizeId: value("prizeId") } : { action, awardId: value("awardId"), source: value("source"), eventAt: localLotteryTime(value("eventAt")), reference: value("reference") };
+   const number = value("number");
+   if (action === "RESULT" && !/^[0-9]{5}$/.test(number)) throw new Error("Indica un número de exactamente cinco cifras.");
+   const payload = action === "PRIZE" ? { action, title: value("title") } : action === "RESULT" ? { action, pick4: number.slice(0, 4), fireball: number.slice(4), eventAt: localLotteryTime(value("eventAt")), reference: value("reference") } : action === "AWARD" ? { action, resultId: value("resultId"), prizeId: value("prizeId") } : { action, awardId: value("awardId"), source: value("source"), eventAt: localLotteryTime(value("eventAt")), reference: value("reference") };
    const body = JSON.stringify(payload); if (intent.current?.body !== body) intent.current = { body, key: crypto.randomUUID() };
    flight.current = true; setBusy(true);
    await adminFetch(root, { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": intent.current.key }, body });
@@ -43,13 +45,12 @@ export function LotteryWorkspace({ id, role }: { id: string; role: AdminSession[
   finally { flight.current = false; setBusy(false); }
  }
  return <section aria-labelledby="lottery-heading"><h2 id="lottery-heading">Lotería y entregas</h2>
-  <p>Pick 4 de Florida + FIREBALL al final: 0012 y 5 forman 00125. Usa el evento y horario establecidos en las reglas. Las horas del formulario son de Santo Domingo.</p>
+  <p>Introduce el número completo de cinco cifras, incluidos los ceros iniciales. Usa el evento y horario establecidos en las reglas. Las horas del formulario son de Santo Domingo.</p>
   {error && <Alert title="No se pudo completar la operación" tone="error">{error}</Alert>}{notice && <p role="status">{notice}</p>}
   {role === "OWNER" && <>
    <Card><h3>Registrar premio de lotería</h3><p>Una unidad por registro. Configurar antes de publicar. Los premios bendecidos tienen unidades independientes.</p><form className="admin-form" onSubmit={e => void submit(e, "PRIZE")}><fieldset disabled={busy}><Input id="lottery-prize-title" name="title" label="Premio principal o secundario" required maxLength={180} /><label className="admin-check"><input type="checkbox" required />Confirmo el premio definitivo.</label><Button>Guardar premio de lotería</Button></fieldset></form></Card>
    <Card><h3>Registrar resultado manual</h3><p>El resultado es preliminar. Para adjudicar, las ventas deben estar cerradas antes del registro y todos los pagos conciliados. Si no hay ganador, registra otra edición cuando corresponda; conserva los registros previos.</p><form className="admin-form" onSubmit={e => void submit(e, "RESULT")}><fieldset disabled={busy}>
-    <Input id="lottery-pick4" name="pick4" label="Pick 4 (cuatro cifras)" inputMode="numeric" pattern="[0-9]{4}" maxLength={4} required />
-    <Input id="lottery-fireball" name="fireball" label="FIREBALL (última cifra)" inputMode="numeric" pattern="[0-9]" maxLength={1} required />
+    <Input id="lottery-number" name="number" label="Número ganador (cinco cifras)" inputMode="numeric" pattern="[0-9]{5}" minLength={5} maxLength={5} required />
     <Input id="lottery-event" name="eventAt" label="Fecha y hora del evento (Santo Domingo)" type="datetime-local" step={1} required />
     <Input id="lottery-reference" name="reference" label="Edición, horario y referencia verificable del resultado" maxLength={1000} required />
     <label className="admin-check"><input type="checkbox" required />Verifiqué el resultado y el horario de las reglas.</label><Button>Registrar resultado y buscar boleto</Button>

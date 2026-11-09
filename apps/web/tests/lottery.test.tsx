@@ -14,11 +14,10 @@ test("ADMIN consulta historial pero no registra resultados ni entregas", async (
  await screen.findByText("No hay registros.");
  expect(screen.queryByRole("button", { name: "Registrar resultado y buscar boleto" })).not.toBeInTheDocument();
 });
-test("resultado manual conserva ceros, FIREBALL separado y referencia", async () => {
+test("resultado manual de un único campo conserva ceros y referencia", async () => {
  render(<LotteryWorkspace id="test" role="OWNER" />);
  await screen.findByText("No hay registros.");
- fireEvent.change(screen.getByLabelText("Pick 4 (cuatro cifras)"), { target: { value: "0012" } });
- fireEvent.change(screen.getByLabelText("FIREBALL (última cifra)"), { target: { value: "0" } });
+ fireEvent.change(screen.getByLabelText("Número ganador (cinco cifras)"), { target: { value: "00120" } });
  fireEvent.change(screen.getByLabelText("Fecha y hora del evento (Santo Domingo)"), { target: { value: "2026-11-01T14:30" } });
  fireEvent.change(screen.getByLabelText("Edición, horario y referencia verificable del resultado"), { target: { value: "EDICION DEMO" } });
  const button=screen.getByRole("button", { name: "Registrar resultado y buscar boleto" });

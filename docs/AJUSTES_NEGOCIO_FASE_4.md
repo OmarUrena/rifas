@@ -59,3 +59,8 @@ La primera prueba de navegador detectó rechazo local de fechas con segundos ant
 Administración → Rifa → Premios y números bendecidos → Lotería y entregas. Configurar premios en borrador antes de publicar. Antes del evento, conciliar pagos y cerrar ventas. Registrar después el resultado y su referencia, seleccionar premio/beneficiario elegibles, confirmar y documentar entrega. Una referencia de constancia no carga archivos ni realiza pagos.
 
 Siguiente etapa: consulta protegida de boletos por correo o teléfono (fase 5), con proveedor y verificación de identidad por definir. No se desplegó la aplicación ni se registró ganador real durante esta fase.
+
+
+Actualización del propietario (2026-11-08): el administrador introduce el resultado completo en un único campo de cinco cifras, conservando ceros iniciales (por ejemplo, `00120`). La web valida exactamente cinco dígitos y adapta el valor al contrato existente (`pick4` = primeras cuatro cifras; `fireball` = última). NestJS y PostgreSQL conservan sus validaciones y almacenamiento históricos. No requiere migración ni cambio de OpenAPI.
+
+Verificación del ajuste de campo único: `npm run test --workspace @sorteos/web` 55/55, `npm run typecheck`, `npm run lint --workspace @sorteos/web` y `npm run build --workspace @sorteos/web` correctos. El intento integrado con PostgreSQL 17 (`test-backend-local.ps1`, `test:stage4`) no llegó a ejecutar el navegador: `pg_ctl` no pudo crear el token restringido de Windows (errores 87/3). PostgreSQL 18 no está instalado en este equipo. No se acredita una nueva prueba integrada ni despliegue.

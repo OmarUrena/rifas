@@ -7,3 +7,6 @@ Resultados preliminares no son ganadores. La elegibilidad se congela al registra
 Premios de lotería son unidades independientes e inmutables; no consumen premios bendecidos. Los registros posteriores conservan los anteriores. No se elige sustituto si no hay ganador. Confirmación y entrega requieren OWNER/MFA y transacción bajo bloqueo de rifa; cada premio y cada entrega tiene unicidad en PostgreSQL. La clave de idempotencia y su huella quedan en auditoría, sin PII en metadata.
 
 Las entregas son constancias administrativas de acciones ya ocurridas, con referencia privada, fecha y responsable. No hay movimientos bancarios ni publicación de beneficiarios. Se bloquean cambios de estado de órdenes con entregas; su resolución excepcional queda fuera de alcance hasta que el propietario apruebe procedimiento.
+
+
+Actualización del propietario (2026-11-08): el administrador introduce el resultado completo en un único campo de cinco cifras, conservando ceros iniciales (por ejemplo, `00120`). La web valida exactamente cinco dígitos y adapta el valor al contrato existente (`pick4` = primeras cuatro cifras; `fireball` = última). NestJS y PostgreSQL conservan sus validaciones y almacenamiento históricos. No requiere migración ni cambio de OpenAPI.

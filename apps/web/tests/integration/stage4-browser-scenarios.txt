@@ -16,7 +16,7 @@ test('etapa 4: panel conectado, resultado, adjudicación y entrega en escritorio
  try{
   await page.goto(origin+'/admin/login');await page.getByLabel('Correo administrativo').fill('owner@example.invalid');await page.getByLabel('Contraseña',{exact:true}).fill(m4Password);await page.getByRole('button',{name:'Iniciar sesión',exact:true}).click();await page.waitForURL('**/admin/mfa');await page.getByLabel('Código de autenticación').fill('123456');await page.getByRole('button',{name:'Verificar código',exact:true}).click();await page.waitForURL('**/admin/ordenes');
   await page.goto(origin+`/admin/rifas/${fixture.raffle}/premios`);
-  await page.getByLabel('Pick 4 (cuatro cifras)').fill('0000');await page.getByLabel('FIREBALL (última cifra)').fill(String(n));
+  await page.getByLabel('Número ganador (cinco cifras)').fill(String(n).padStart(5,'0'));
   await page.getByLabel('Fecha y hora del evento (Santo Domingo)').fill(localNow());
   await page.getByLabel('Edición, horario y referencia verificable del resultado').fill('EVENTO DEMO SIN SORTEO REAL');
   await page.getByLabel('Verifiqué el resultado y el horario de las reglas.').check();
