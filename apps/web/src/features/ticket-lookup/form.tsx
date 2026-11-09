@@ -4,6 +4,9 @@ import type { components } from '@sorteos/api-client';
 import { Alert, Button, Card, Input } from '@/components/ui';
 import { ticketLookupApi } from './api';
 type Schemas=components['schemas'];
+const orderLabels:Record<Schemas['TicketLookupPersonDto']['orderStatus'],string>={
+  PENDING_REVIEW:'Pendiente de revisión',UNDER_REVIEW:'En revisión',NEEDS_RESOLUTION:'Requiere resolución',PAID:'Pago confirmado',
+};
 export function TicketLookup({baseUrl}:{baseUrl:string}) {
   const api=useMemo(()=>ticketLookupApi(baseUrl),[baseUrl]);
   const [raffles,setRaffles]=useState<Schemas['LookupRafflesDto']|null>(null);
@@ -55,6 +58,7 @@ export function TicketLookup({baseUrl}:{baseUrl:string}) {
           <div><dt>Nombre</dt><dd>{person.maskedName}</dd></div>
           <div><dt>Correo</dt><dd style={{overflowWrap:'anywhere'}}>{person.maskedEmail??'No registrado'}</dd></div>
           <div><dt>Boletos registrados</dt><dd>{person.ticketCount}</dd></div>
+          <div><dt>Estado de la orden</dt><dd>{orderLabels[person.orderStatus]??'Estado no disponible'}</dd></div>
         </dl></li>)}</ul>
         {result.total>12&&<div className="lookup-pagination"><Button disabled={busy||page===1} onClick={()=>void search(page-1)}>Anteriores</Button><span>Página {page}</span><Button disabled={busy||page*12>=result.total} onClick={()=>void search(page+1)}>Siguientes</Button></div>}
       </>}

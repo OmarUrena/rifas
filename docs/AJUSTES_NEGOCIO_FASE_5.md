@@ -4,9 +4,9 @@ Estado: implementada y verificada localmente en API/datos/web. Migración remota
 
 ## Alcance
 
-`/consultar-boletos`, accesible desde la cabecera, menú móvil y navegación inferior. Rifa + teléfono → nombre y correo parcialmente censurados y cantidad registrada. No entrega números, códigos de orden, identidad completa, estados de pagos ni premios. Las órdenes completas mantienen la sesión protegida original. La consulta pública no verifica la identidad del visitante.
+`/consultar-boletos`, accesible desde la cabecera, menú móvil y navegación inferior. Rifa + teléfono → nombre y correo parcialmente censurados, cantidad y estado de cada orden no cancelada. No entrega números, códigos de orden, identidad completa, datos bancarios ni premios. Las órdenes completas mantienen la sesión protegida original. La consulta pública no verifica la identidad del visitante.
 
-Incluye órdenes pendientes/en revisión/en resolución y pagadas; excluye canceladas y pre-reservas técnicas. Paginar rifas y grupos de registros; no asumir una sola orden/persona por teléfono. Correo ausente muestra «No registrado». Ver [ADR 0028](decisions/0028-public-masked-phone-summary.md) para reglas exactas, privacidad y límites.
+Incluye órdenes pendientes/en revisión/en resolución y pagadas; excluye canceladas y pre-reservas técnicas. Paginar rifas y órdenes; no asumir una sola orden/persona por teléfono. Correo ausente muestra «No registrado». Ver [ADR 0028](decisions/0028-public-masked-phone-summary.md) para reglas exactas, privacidad y límites.
 
 ## Datos y contrato
 
@@ -46,3 +46,7 @@ Verificación previa/posterior mediante consultas SQL: 3 rifas, 3 clientes, 3 ó
 API local conectada a la base remota: readiness 200, listado de rifas de consulta 200 y POST de búsqueda sintética con rifa inexistente 200, sin coincidencias y Cache-Control no-store. El POST crea únicamente contadores efímeros y auditoría de consulta. Bajo `sorteos_runtime`, una transacción revertida comprobó visibilidad de contadores y ejecución de la consulta de órdenes/clientes sin devolver datos personales. No se ejecutaron compras, pagos ni envíos.
 
 Asesores sin avisos nuevos. Persisten las advertencias previas de [ejecución anónima](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable) y [autenticada](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) de `public.rls_auto_enable`, y [protección de contraseñas filtradas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). No se alteraron ajustes Auth ni objetos ajenos a la etapa 5.
+
+## Ampliación: estado en la consulta
+
+Por solicitud expresa, cada orden no cancelada muestra también su estado: pendiente de revisión, en revisión, requiere resolución o pago confirmado. La respuesta ahora tiene una fila por orden (sin código ni identificador), en lugar de agrupar compras con estados distintos. `total` cuenta órdenes; `totalTickets` sigue sumando boletos. El diseño anterior de agrupación queda como evidencia histórica. API/cliente 0.11.1; no requiere migración ni nuevas variables. Verificación actual: `npm run generate:api`, `npm run typecheck`, ambos lint, `npm run build:api` y build web aprobados; web 59/59. Runner PostgreSQL 17 con `test:lookup`: 1/1, incluye PENDING_REVIEW, UNDER_REVIEW, NEEDS_RESOLUTION y PAID, dos órdenes del mismo contacto con estados distintos, cancelación y cuotas compartidas. Runner con `test:stage5` y PLAYWRIGHT_CHANNEL=chrome: 1/1 móvil/escritorio con estado visible, privacidad, axe y ausencia de desbordamiento. No requiere otra migración; no se desplegó.

@@ -211,7 +211,7 @@ La entrega registra fecha, responsable y constancia/referencia. Documentos sensi
 
 ## 5. Consulta pública de boletos
 
-**Revisión expresa del propietario (2026-11-08):** sin OTP. Buscar por rifa y teléfono y mostrar únicamente nombre con la mitad censurada, correo parcialmente censurado si existe y cantidad de boletos registrados. No devuelve números ni códigos de orden ni acceso a datos completos. El diseño OTP de los apartados siguientes queda como referencia histórica y NO es el alcance vigente. Reglas y evidencia actuales en [fase 5](AJUSTES_NEGOCIO_FASE_5.md) y [ADR 0028](decisions/0028-public-masked-phone-summary.md).
+**Revisión expresa del propietario (2026-11-08):** sin OTP. Buscar por rifa y teléfono y mostrar únicamente nombre con la mitad censurada, correo parcialmente censurado si existe, cantidad de boletos y estado de cada orden no cancelada. No devuelve números ni códigos de orden ni acceso a datos completos. El diseño OTP de los apartados siguientes queda como referencia histórica y NO es el alcance vigente. Reglas y evidencia actuales en [fase 5](AJUSTES_NEGOCIO_FASE_5.md) y [ADR 0028](decisions/0028-public-masked-phone-summary.md).
 
 ### 5.1. Experiencia
 

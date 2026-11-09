@@ -19,6 +19,8 @@ export class TicketLookupPersonDto {
   @ApiProperty() maskedName!:string;
   @ApiProperty({type:String,nullable:true}) maskedEmail!:string|null;
   @ApiProperty({type:'integer'}) ticketCount!:number;
+  @ApiProperty({enum:['PENDING_REVIEW','UNDER_REVIEW','NEEDS_RESOLUTION','PAID']})
+  orderStatus!:'PENDING_REVIEW'|'UNDER_REVIEW'|'NEEDS_RESOLUTION'|'PAID';
 }
 export class TicketLookupResultDto {
   @ApiProperty({type:[TicketLookupPersonDto]}) items!:TicketLookupPersonDto[];

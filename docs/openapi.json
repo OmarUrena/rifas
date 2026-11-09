@@ -7473,7 +7473,7 @@
   "info": {
     "title": "App Sorteos API",
     "description": "Etapa 5: resumen público por rifa y teléfono, nombre/correo censurados y cantidad de boletos. Los números de boletos y las órdenes conservan acceso protegido.",
-    "version": "0.11.0",
+    "version": "0.11.1",
     "contact": {}
   },
   "tags": [],
@@ -7556,12 +7556,22 @@
           },
           "ticketCount": {
             "type": "integer"
+          },
+          "orderStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING_REVIEW",
+              "UNDER_REVIEW",
+              "NEEDS_RESOLUTION",
+              "PAID"
+            ]
           }
         },
         "required": [
           "maskedName",
           "maskedEmail",
-          "ticketCount"
+          "ticketCount",
+          "orderStatus"
         ]
       },
       "TicketLookupResultDto": {

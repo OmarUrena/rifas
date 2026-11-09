@@ -1,5 +1,11 @@
 # Changelog
 
+## Estado de orden en consulta pública — 2026-11-08
+
+- La consulta censurada por teléfono muestra estado y cantidad de cada orden no cancelada, separando compras con estados diferentes y conservando el total de boletos.
+- Contrato/cliente 0.11.1; sin identificadores públicos nuevos, datos bancarios ni cambios de esquema.
+
+
 ## Migración autorizada de etapa 5 — 2026-11-08
 
 - Aplicada solo la migración de consulta censurada en Supabase Rifas, con autorización expresa. Archivo alineado a la versión remota `20261109024246`, SQL intacto.

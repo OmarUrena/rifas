@@ -666,6 +666,8 @@ export interface components {
             maskedName: string;
             maskedEmail: string | null;
             ticketCount: number;
+            /** @enum {string} */
+            orderStatus: "PENDING_REVIEW" | "UNDER_REVIEW" | "NEEDS_RESOLUTION" | "PAID";
         };
         TicketLookupResultDto: {
             items: components["schemas"]["TicketLookupPersonDto"][];

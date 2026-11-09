@@ -505,7 +505,7 @@ test('etapa 5: resumen censurado por teléfono, aislamiento, cancelación y lím
   const first=await search('809 555-0100');assert.equal(first.status,200);
   assert.equal(first.headers.get('cache-control'),'no-store');
   const body=await first.json() as TicketLookupResultDto;
-  assert.deepEqual(body,{items:[{maskedName:maskHalf('CLIENTE DEMO B5'),maskedEmail:maskLookupEmail('b5-demo@example.invalid'),ticketCount:2}],total:1,totalTickets:2});
+  assert.deepEqual(body,{items:[{maskedName:maskHalf('CLIENTE DEMO B5'),maskedEmail:maskLookupEmail('b5-demo@example.invalid'),ticketCount:2,orderStatus:'PENDING_REVIEW'}],total:1,totalTickets:2});
   const text=JSON.stringify(body);
   for(const secret of ['CLIENTE DEMO B5','b5-demo@example.invalid',fixture.orderCode,fixture.path,'+18095550100','ticketNumbers','orderCode','receipt'])assert.equal(text.includes(secret),false);
   assert.equal((await search('+18095550101')).status,200);
@@ -516,7 +516,7 @@ test('etapa 5: resumen censurado por teléfono, aislamiento, cancelación y lím
   assert.equal((await search(undefined,undefined,{origin:'https://outside.invalid'})).status,403);
   assert.equal((await search(undefined,undefined,{extra:{includeTickets:true}})).status,400);
   assert.equal((await globalThis.fetch(base+'/api/v1/orders/'+fixture.orderCode)).status,401);
-  // A second real order for the same recorded contact must aggregate, not overwrite.
+  // A second real order for the same recorded contact must preserve each order and its state.
   const againHold=await globalThis.fetch(base+'/api/v1/checkout-holds',{method:'POST',headers:{Origin:origin,Cookie:fixture.cookie,'Idempotency-Key':randomUUID(),'Content-Type':'application/json'},body:JSON.stringify({raffleId:fixture.raffle,quantity:1})});
   assert.equal(againHold.status,201);const againHoldId=(await againHold.json() as {holdId:string}).holdId;
   const form=new FormData();
@@ -524,10 +524,18 @@ test('etapa 5: resumen censurado por teléfono, aislamiento, cancelación y lím
   form.append('receipt',new Blob([new Uint8Array(png)],{type:'image/png'}),'fixture.png');
   assert.equal((await globalThis.fetch(base+'/api/v1/orders',{method:'POST',headers:{Origin:origin,Cookie:fixture.cookie,'Idempotency-Key':randomUUID()},body:form})).status,201);
   const multiple=await (await search()).json() as TicketLookupResultDto;
-  assert.equal(multiple.total,1);assert.equal(multiple.totalTickets,3);assert.equal(multiple.items[0]!.ticketCount,3);
+  assert.equal(multiple.total,2);assert.equal(multiple.totalTickets,3);assert.deepEqual(multiple.items.map(row=>row.ticketCount).sort(),[1,2]);
+  assert.ok(multiple.items.every(row=>row.orderStatus==='PENDING_REVIEW'));
+  const started=await action(fixture,'start-review',{});assert.equal(started.status,200);fixture.version=(await started.json()).version;
+  assert.deepEqual((await (await search()).json() as TicketLookupResultDto).items.map(row=>row.orderStatus).sort(),['PENDING_REVIEW','UNDER_REVIEW']);
+  const resolution=await action(fixture,'request-resolution',{reason:'Conciliación DEMO pendiente.',reportStatus:'INVALID'});
+  assert.equal(resolution.status,200);fixture.version=(await resolution.json()).version;
+  assert.deepEqual((await (await search()).json() as TicketLookupResultDto).items.map(row=>row.orderStatus).sort(),['NEEDS_RESOLUTION','PENDING_REVIEW']);
   assert.equal((await action(fixture,'cancel',cancellation())).status,200);
   const remaining=await (await search()).json() as TicketLookupResultDto;
   assert.equal(remaining.totalTickets,1);assert.equal(remaining.items[0]!.ticketCount,1);
+  assert.equal((await action(other,'approve',approval(other))).status,200);
+  assert.equal((await (await search(undefined,other.raffle)).json() as TicketLookupResultDto).items[0]!.orderStatus,'PAID');
   const counters=await db.query('SELECT key FROM sorteos.ticket_lookup_limits');
   assert.ok(counters.rows.every(row=>/^(ip|phone):[a-f0-9]{64}$/.test(row.key)));
   const audit=await db.query("SELECT * FROM sorteos.audit_logs WHERE action='PUBLIC_TICKET_SUMMARY'");assert.ok(audit.rowCount!>0);

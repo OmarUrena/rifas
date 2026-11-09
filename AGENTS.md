@@ -66,3 +66,5 @@ Un premio por número bendecido; configuración guardada inmutable. Lotería: Pi
 ## Consulta pública limitada (propietario, 2026-11-08)
 
 La etapa 5 no usa OTP: búsqueda por rifa y teléfono con nombre al menos medio censurado, correo parcialmente censurado si existe y cantidad de boletos de órdenes no canceladas, incluidas pendientes. Esta excepción a RN15 permite solo ese resumen; números de boletos, códigos de orden, identidad completa y comprobantes conservan autorización protegida. Aplicar límites y auditoría sin PII. Ver ADR 0028.
+
+Actualización expresa: la consulta también muestra el estado de cada orden no cancelada (PENDING_REVIEW, UNDER_REVIEW, NEEDS_RESOLUTION o PAID), con una fila por orden. No expone identificadores/códigos ni datos bancarios.

@@ -14,6 +14,7 @@ test('etapa 5: búsqueda pública censurada en escritorio y móvil',{timeout:240
   const text=await page.locator('body').innerText();
   for(const secret of ['CLIENTE DEMO B5','b5-demo@example.invalid',fixture.orderCode,fixture.path])assert.equal(text.includes(secret),false);
   await expect(page.getByLabel('Código de verificación')).toHaveCount(0);
+  await expect(page.getByRole('region',{name:'Resultado de la búsqueda'})).toContainText('Pendiente de revisión');
   await page.screenshot({path:path.join(m4Workspace,'.tmp/stage5-browser/desktop.png'),fullPage:true});
   const AxeBuilder=m4WebRequire('@axe-core/playwright').default;
   assert.equal((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations.length,0);

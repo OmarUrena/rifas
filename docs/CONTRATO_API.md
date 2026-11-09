@@ -1,13 +1,13 @@
 # Contrato REST compartido — App Sorteos / API v1
 
-## Etapa 5 revisada — OpenAPI 0.11.0
+## Etapa 5 revisada — OpenAPI 0.11.1
 
 Decisión del propietario: búsqueda pública por teléfono sin OTP, exclusivamente para resumen censurado. No concede sesión ni acceso a órdenes/boletos completos.
 
 - `GET /api/v1/ticket-lookup/raffles?page=1&pageSize=12`: rifas publicadas alguna vez, incluidas pausadas/cerradas; `{items:[{id,title}],total}`.
-- `POST /api/v1/ticket-lookup/search?page=1&pageSize=12`: cuerpo `{raffleId,phone}`, Origin permitido. HTTP 200 `{items:[{maskedName,maskedEmail,ticketCount}],total,totalTickets}`; correo nullable. Máximo efectivo 12 grupos/página.
-- Cuenta órdenes no canceladas, incluidas pendientes; no HELD. Agrupa por nombre/correo exactos dentro del teléfono y rifa. Sin coincidencia devuelve lista y conteos vacíos, incluso para rifa no publicada/inexistente.
-- Censura al menos la mitad del nombre y de cada parte del correo en servidor. Nunca devuelve nombres/correos completos, números, códigos de orden, contactos, premios, comprobantes o datos de pago.
+- `POST /api/v1/ticket-lookup/search?page=1&pageSize=12`: cuerpo `{raffleId,phone}`, Origin permitido. HTTP 200 `{items:[{maskedName,maskedEmail,ticketCount,orderStatus}],total,totalTickets}`; correo nullable. Máximo efectivo 12 órdenes/página.
+- Cuenta órdenes no canceladas, incluidas pendientes; no HELD. Devuelve una fila por orden, con su estado PENDING_REVIEW/UNDER_REVIEW/NEEDS_RESOLUTION/PAID; distintas órdenes no comparten un estado inferido. Sin coincidencia devuelve lista y conteos vacíos, incluso para rifa no publicada/inexistente.
+- Censura al menos la mitad del nombre y de cada parte del correo en servidor. Nunca devuelve nombres/correos completos, números, códigos de orden, contactos, premios, comprobantes o datos bancarios.
 - Teléfono internacional o formas dominicanas con prefijos 809/829/849; normalización exacta sin cambios históricos. No admite búsquedas parciales.
 - Sin OTP, cookies nuevas ni proveedor. POST/no-store, auditoría sin parámetros, límite durable de 20 consultas/IP/hora y 30/teléfono/hora (incluye páginas y vacíos). 429 al exceder, 503 `LOOKUP_UNAVAILABLE` sin migración. Se conserva la protección de `GET /orders/:code`.
 
