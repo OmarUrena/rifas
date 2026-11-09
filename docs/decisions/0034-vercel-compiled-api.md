@@ -20,7 +20,15 @@ Versionar `apps/api/vercel.json` con:
   el build incluso con `NODE_ENV=production`.
 - Build Command `pnpm run build`, que utiliza `tsconfig.build.json` y NodeNext.
 - Output Directory `dist`, de modo que el constructor busque y use `dist/main.js`.
-- Inclusión explícita de `dist/orders/receipt.worker.js`, cargado por ruta en ejecución.
+- Referencia estática de `dist/orders/receipt.worker.js` mediante `require.resolve`
+  en `ReceiptService`, para que el trazado incluya el worker y sus dependencias.
+
+Corrección del mismo día tras el primer reintento remoto: se elimina la sección
+`functions` inicialmente añadida con `dist/main.js`. Vercel la rechazó con
+`unused_function` al validar ese patrón como función de un directorio `api`, antes
+del empaquetado de NestJS. La función única la genera el preset NestJS; su
+configuración conserva build y Output Directory. La referencia estática del
+worker sustituye el `includeFiles` incompatible con esa validación.
 
 El constructor oficial de NestJS en Vercel ejecuta el build antes de seleccionar
 el punto de entrada y, al configurar Output Directory, lo busca dentro de ese
@@ -45,6 +53,13 @@ evidencia de la revisión anterior; no se presentan como repetidas en esta revis
 El Root Directory del proyecto sigue siendo `apps/api`. La configuración de
 archivo prevalece sobre los valores de build/output/install del panel. El primer
 reintento debe usar el nuevo commit y omitir la caché de build anterior.
+
+Verificación de la corrección `unused_function`: build, lint, typecheck y las dos
+regresiones compiladas pasan. Se repitió `npm test`: 27 pruebas aprobadas, ninguna
+omitida. El trazador `@vercel/nft` disponible con Next en
+este workspace encuentra el worker JavaScript y los módulos de `pdf-lib` y `jose`
+desde `dist/main.js`, sin la sección `functions`. Esta comprobación local del
+trazado no equivale a ejecutar el empaquetador remoto de Vercel.
 
 No cambian el contrato HTTP, las variables ni las reglas de autorización. Las
 pruebas locales no certifican el paquete final de Vercel: comprobar después salud,

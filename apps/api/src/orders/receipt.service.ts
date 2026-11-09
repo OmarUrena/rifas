@@ -21,7 +21,8 @@ export class ReceiptService {
     try {
       return await new Promise<ValidReceipt>((accept,reject)=>{
         const source=__filename.endsWith('.ts');
-        const path=resolve(__dirname,`receipt.worker.${source?'ts':'js'}`);
+        // A static module reference lets the deployment trace include the JS worker and its imports.
+        const path=source?resolve(__dirname,'receipt.worker.ts'):require.resolve('./receipt.worker.js');
         if(source&&!this.workerCode) {
           // Compilar una vez el código local de confianza, en vez de arrancar
           // ts-node para cada comprobante. Producción ejecuta el JS del build.

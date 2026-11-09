@@ -7,6 +7,8 @@ La configuración versionada [apps/api/vercel.json](apps/api/vercel.json) instal
 las dependencias de compilación, ejecuta `pnpm run build` y fija `dist` como
 Output Directory. Vercel debe empaquetar `dist/main.js`, la misma salida JavaScript
 que verifica la regresión local. Ver [ADR 0034](docs/decisions/0034-vercel-compiled-api.md).
+El worker de comprobantes se referencia mediante `require.resolve` para que el
+empaquetador siga sus dependencias dentro de la función NestJS.
 El punto de entrada `src/main.ts` importa directamente `@nestjs/core` porque el
 detector de Vercel inspecciona ese archivo, sin seguir la importación a
 `bootstrap.ts`. La configuración compartida y el arranque conservan el mismo flujo.
