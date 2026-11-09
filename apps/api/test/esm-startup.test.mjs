@@ -10,6 +10,21 @@ const require = createRequire(import.meta.url);
 // Load the CommonJS build with require(ESM) disabled by the test command.
 const { createApp } = require('../dist/bootstrap.js');
 const { parseConfig } = require('../dist/config/config.js');
+const { ReceiptService } = require('../dist/orders/receipt.service.js');
+const { PDFDocument } = require('pdf-lib');
+
+test('worker del build valida un PDF con el archivo JavaScript incluido en Vercel', { timeout: 15000 }, async () => {
+  const config = parseConfig({ NODE_ENV: 'test' });
+  const pdf = await PDFDocument.create();
+  pdf.addPage();
+  const bytes = await pdf.save();
+  const receipt = await new ReceiptService(config).validate({
+    buffer: bytes, size: bytes.length, mimetype: 'application/pdf',
+  });
+  assert.equal(receipt.mime, 'application/pdf');
+  assert.equal(receipt.extension, 'pdf');
+  assert.deepEqual(new Uint8Array(receipt.bytes), bytes);
+});
 
 test('build CommonJS arranca y verifica JWT con jose ESM sin require(ESM)', { timeout: 20000 }, async () => {
   const subject = randomUUID();
