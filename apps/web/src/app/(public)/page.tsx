@@ -13,7 +13,7 @@ export default async function HomePage() {
   return <><SectionContainer>
     <div className="home-intro"><div><p className="eyebrow">App Sorteos · República Dominicana</p><h1 id="hero-title">Grandes premios.<br /><em>Nuevas historias.</em></h1></div><div className="home-intro-description"><p>Tu próxima gran ilusión puede empezar aquí. Descubre cada premio y conoce sus reglas antes de participar.</p><Link href="/ayuda" className="text-link">Cómo funciona <Icon name="arrow" /></Link></div></div>
     <section className={`hero ${image ? "hero-photographic" : "hero-offline"}`} aria-labelledby="hero-title">
-      {image && <Image src={image.src} alt="" fill preload sizes="(max-width: 767px) 100vw, 1200px" className="hero-photo" />}
+      {image && <Image src={image.src} alt="" fill preload sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1263px) calc(100vw - 64px), 1200px" className="hero-photo" />}
       <div className="hero-shade" />
       <div className="hero-copy"><p className="eyebrow"><Icon name="spark" />{featured ? "El premio destacado" : "Imagina lo que viene"}</p><h2>{featured?.title ?? "Una nueva ilusión está por llegar."}</h2><p>{featured?.subtitle || "Conoce los detalles de nuestras próximas rifas."}</p><ButtonLink href={featured ? `/rifas/${featured.slug}` : "/rifas"}>{featured ? "Descubrir el premio" : "Explorar rifas"}<Icon name="arrow" /></ButtonLink><span className="hero-caption">{image ? (mode === "mock" ? "Imagen conceptual de demostración" : "Conoce el premio y sus reglas") : "Estamos preparando nuestras próximas rifas"}</span></div>
     </section>

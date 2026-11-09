@@ -1,5 +1,11 @@
 # Changelog
 
+## Optimización de visualización de imágenes — 2026-11-09
+
+- Versiones responsive desde 360 px, límite superior de 1920 px y tamaños ajustados a la portada y galería. Evita la descarga mínima anterior de 640 px para imágenes que se muestran a unos 350 px en móviles de densidad 1x.
+- Solo la primera tarjeta del catálogo recibe prioridad alta; se conservan WebP, carga diferida, galería sin recorte y estados de error. Sin cambios en comprobantes, subida de archivos, datos remotos ni contrato.
+- Misma imagen WebP en portada de 390 px/1x: 42002 a 20298 bytes (51.7% menos), al seleccionar 360 en lugar de 640 px. Es ahorro de bytes de esa imagen, no de tiempo global. Lint/tipos/build, 65 unitarias y 27 E2E Chromium móvil/tablet/escritorio aprobados.
+
 ## Limpieza local posterior a etapa 7 — 2026-11-09
 
 - Eliminados 221 destinos y 127783 archivos desechables (12.27 GiB de contenido lógico): 68 copias aisladas de navegador, 78 clústeres de prueba detenidos, cachés y temporales acumulados. Se conservan dependencias, aplicación activa, configuración privada, respaldos, Storage local y evidencia útil.

@@ -19,7 +19,13 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   turbopack: { root: fileURLToPath(new URL("../..", import.meta.url)) },
   transpilePackages: ["@sorteos/api-client"],
-  images: { remotePatterns },
+  images: {
+    remotePatterns,
+    // Match mobile displays without downloading the default 640px minimum.
+    // Uploaded prize photos are normalized to at most 2000px by the API.
+    deviceSizes: [360, 384, 480, 640, 750, 828, 1080, 1200, 1600, 1920],
+    imageSizes: [32, 48, 64, 96, 128, 192, 256],
+  },
   async headers() {
     return [{ source: "/:path*", headers: [
       { key: "X-Content-Type-Options", value: "nosniff" },

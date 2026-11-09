@@ -32,6 +32,27 @@ respaldos de consolidación/migraciones, comprobantes y medios locales, así com
 evidencia documental y capturas actuales. Las cachés eliminadas se regeneran al
 usar las herramientas; limpiar no afecta datos remotos.
 
+## Imágenes públicas
+
+Next sirve versiones WebP adaptadas al dispositivo. Se configuraron anchos desde
+360 hasta 1920 px, tamaños acordes con el contenedor de portada/galería y una sola
+tarjeta prioritaria en el catálogo; las demás conservan carga diferida. La API
+ya normaliza fotos nuevas a un máximo de 2000 px. Tarjetas y galería conservan
+la presentación completa del premio.
+
+La primera descarga y transformación desde almacenamiento remoto puede tardar más
+que una respuesta en caché; las mediciones de desarrollo no son un SLA de hosting.
+El adaptador de medios local conserva su excepción de optimización, sin habilitar
+acceso general del optimizador a IP privadas. No cambian variables ni contratos.
+Referencia: [imágenes responsive de Next](https://nextjs.org/docs/app/api-reference/components/image#sizes).
+
+Comprobación local: portada a 390 px y densidad 1x, misma foto WebP/calidad:
+antes se elegían 640 px (42002 bytes); después, 360 px (20298 bytes), un 51.7%
+menos de contenido de esa imagen. No es una medición de aceleración global ni
+un resultado extensible a todas las densidades. Lint, tipos, build, 65 pruebas
+unitarias y 27 recorridos de catálogo/imágenes en Chromium móvil/tablet/escritorio
+aprobados; sin despliegue ni modificación de archivos remotos.
+
 ## M6: seguridad y resiliencia
 
 Límite HTTP compartido PostgreSQL, telemetría sin PII, timeouts de transporte y
