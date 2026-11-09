@@ -1,5 +1,11 @@
 # Changelog
 
+## Migración autorizada de etapa 5 — 2026-11-08
+
+- Aplicada solo la migración de consulta censurada en Supabase Rifas, con autorización expresa. Archivo alineado a la versión remota `20261109024246`, SQL intacto.
+- Conteos y huellas de rifas/clientes/órdenes/boletos preservados; RLS, cuatro políticas, tres índices y acceso runtime verificados. Sin nuevos avisos de seguridad.
+- Readiness, listado y búsqueda sintética sin coincidencias responden 200. Sin compras, pagos, comunicaciones ni despliegue. Evidencia en docs/AJUSTES_NEGOCIO_FASE_5.md.
+
 ## Etapa 5 — Consulta pública censurada — 2026-11-08
 
 - Por decisión del propietario, búsqueda por rifa y teléfono sin OTP: nombre y correo censurados en servidor y cantidad de boletos no cancelados. No concede acceso a órdenes, números, pagos ni comprobantes.

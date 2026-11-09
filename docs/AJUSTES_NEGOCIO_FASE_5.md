@@ -1,6 +1,6 @@
 # Etapa 5 — Consulta pública censurada por teléfono
 
-Estado: implementada y verificada localmente en API/datos/web. Sustituye expresamente el diseño OTP original por instrucción del propietario del 2026-11-08. No declarar desplegada ni migrada remotamente sin evidencia.
+Estado: implementada y verificada localmente en API/datos/web. Migración remota aplicada tras autorización expresa «Aplica la migración» el 2026-11-08, hora de Santo Domingo. Sustituye el diseño OTP original por instrucción del propietario. No se desplegó la aplicación.
 
 ## Alcance
 
@@ -10,7 +10,7 @@ Incluye órdenes pendientes/en revisión/en resolución y pagadas; excluye cance
 
 ## Datos y contrato
 
-- Migración aditiva `20261109021312_ticket_recovery_stage5.sql`: tabla RLS `ticket_lookup_limits`, índices de teléfono normalizado y cliente/rifa. Ninguna modificación de clientes, órdenes ni boletos.
+- Migración aditiva `20261109024246_ticket_recovery_stage5.sql`: tabla RLS `ticket_lookup_limits`, índices de teléfono normalizado y cliente/rifa. Ninguna modificación de clientes, órdenes ni boletos.
 - Recuperación: `infra/recovery/stage5-down.sql`, limitada a contadores e índices nuevos. Conservar auditoría e histórico.
 - DEMO: reutiliza `infra/seeds/demo.sql`; la prueba integrada crea compras sintéticas con comprobantes del adaptador privado local y correos `.invalid`. No hay filas funcionales que sembrar en la tabla de contadores.
 - OpenAPI/cliente 0.11.0: `GET /api/v1/ticket-lookup/raffles` y `POST /api/v1/ticket-lookup/search`. Paginación, validación, Origin permitido, respuesta no-store y DTO exclusivamente censurado.
@@ -35,4 +35,14 @@ No se ejecutó la regresión global de etapa 7 ni Auth/Storage productivos. Los 
 
 ## Siguiente paso
 
-Etapa 6: simplificación pública restante. La migración remota y el despliegue requieren autorización explícita; la continuación de etapa 5 no los presupone.
+Etapa 6: simplificación pública restante. El despliegue requiere autorización explícita y no está incluido en la aplicación de esta migración.
+
+## Aplicación remota autorizada
+
+Proyecto Rifas (`vukzxpwnfbavlwaeqkki`). Aplicada únicamente `ticket_recovery_stage5`, versión nativa `20261109024246`, mediante Supabase conectado. Se renombró el archivo local para coincidir con el historial remoto, sin cambiar SQL. Las demás migraciones pendientes, incluida M6, no fueron aplicadas por esta autorización.
+
+Verificación previa/posterior mediante consultas SQL: 3 rifas, 3 clientes, 3 órdenes y 200 boletos; huellas de filas completas idénticas antes y después en las cuatro tablas. RLS activada, cuatro políticas runtime, tres índices nuevos y lectura directa denegada para anon/authenticated. No se modificó ningún registro de negocio.
+
+API local conectada a la base remota: readiness 200, listado de rifas de consulta 200 y POST de búsqueda sintética con rifa inexistente 200, sin coincidencias y Cache-Control no-store. El POST crea únicamente contadores efímeros y auditoría de consulta. Bajo `sorteos_runtime`, una transacción revertida comprobó visibilidad de contadores y ejecución de la consulta de órdenes/clientes sin devolver datos personales. No se ejecutaron compras, pagos ni envíos.
+
+Asesores sin avisos nuevos. Persisten las advertencias previas de [ejecución anónima](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable) y [autenticada](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) de `public.rls_auto_enable`, y [protección de contraseñas filtradas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). No se alteraron ajustes Auth ni objetos ajenos a la etapa 5.
