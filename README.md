@@ -9,6 +9,11 @@ Output Directory. Vercel debe empaquetar `dist/main.js`, la misma salida JavaScr
 que verifica la regresión local. Ver [ADR 0034](docs/decisions/0034-vercel-compiled-api.md).
 El worker de comprobantes se referencia mediante `require.resolve` para que el
 empaquetador siga sus dependencias dentro de la función NestJS.
+En Vercel, `main.js` exporta un handler HTTP y reutiliza la aplicación NestJS entre
+peticiones; el runtime gestiona el puerto. El arranque local conserva `app.listen`.
+Las variables se leen del entorno de Vercel. Si falla su validación, los logs
+indican `CONFIGURATION_INVALID` y los nombres en `settings`, sin valores secretos.
+Ver [ADR 0035](docs/decisions/0035-vercel-http-handler.md).
 El punto de entrada `src/main.ts` importa directamente `@nestjs/core` porque el
 detector de Vercel inspecciona ese archivo, sin seguir la importación a
 `bootstrap.ts`. La configuración compartida y el arranque conservan el mismo flujo.
