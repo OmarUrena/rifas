@@ -58,3 +58,7 @@
 - README, variables de entorno, changelog/ADR actualizados.
 - No se introduce dato bancario real, PII ficticia confundible con real, ni URL pública de comprobante.
 - Informe final: resumen de cambios, comandos ejecutados y resultados, limitaciones, riesgos y propuesta de siguiente fase. No declarar completado lo no probado.
+
+## Reglas adicionales de premios (propietario, 2026-11-08)
+
+Un premio por número bendecido; configuración guardada inmutable. Lotería: Pick 4 de Florida seguido del dígito FIREBALL al final, cinco cifras conservando ceros. Registro manual del administrador según horario en las reglas. Si no se vendió, el administrador decide externamente la edición posterior y registra otro evento; no automatizar sustitución. Premios entregados conservan histórico y no admiten resolución financiera automática.

@@ -18,7 +18,10 @@
     "db:migrate:local": "node -r ts-node/register src/database/migrate-local.ts",
     "db:seed:demo": "node -r ts-node/register src/database/seed-demo.ts",
     "admin:provision:local": "node -r ts-node/register src/auth/provision-local-admin.ts",
-    "openapi": "node -r ts-node/register src/export-openapi.ts"
+    "openapi": "node -r ts-node/register src/export-openapi.ts",
+    "test:recovery": "node -r ts-node/register --test --test-concurrency=1 --test-name-pattern=\"recuperación B[34]\" test/checkout.integration.ts test/orders.integration.ts",
+    "test:schema": "node -r ts-node/register --test test/schema.integration.ts",
+    "test:lottery": "node -r ts-node/register --test --test-name-pattern=\"etapa 4\" test/payments.integration.ts"
   },
   "dependencies": {
     "undici": "7.30.2",

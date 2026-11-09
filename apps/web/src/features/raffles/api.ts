@@ -15,6 +15,7 @@ export function publicImage(url: string | null, base?: string): boolean {
 export function mapCard(dto: Schemas["RaffleCardDto"], imageBase?: string): RaffleSummary {
   return { slug: dto.slug, title: dto.title, status: dto.status, ticketPriceMinor: dto.ticketPriceMinor,
     total: dto.totalTickets, sold: dto.confirmedSoldCount, available: dto.availableCount, demo: false, progressPercent: dto.progressPercent,
+    blessedNumbers: dto.blessedNumbers, blessedNumberCount: dto.blessedNumberCount,
     images: publicImage(dto.prizeImageUrl, imageBase) ? [{ src: dto.prizeImageUrl!, alt: dto.title }] : [] };
 }
 export function mapDetail(dto: Schemas["RaffleDetailDto"], inventory: Schemas["AvailabilityDto"], imageBase?: string): RaffleView {
@@ -42,6 +43,10 @@ export function catalogApi(baseUrl: string, imageBase?: string) {
       ]);
       if (!detail.data || !availability.data) throw new ApiError("INVALID_RESPONSE", 502);
       return mapDetail(detail.data, availability.data, imageBase);
+    },
+    async blessedNumbers(slug: string, page = 1) {
+      const { data } = await client.GET("/api/v1/raffles/{slug}/blessed-numbers", { params: { path: { slug }, query: { page, pageSize: 100 } }, signal: signal() });
+      if (!data) throw new ApiError("INVALID_RESPONSE", 502); return data;
     },
     async bankAccounts() {
       const { data } = await client.GET("/api/v1/bank-accounts/public", { signal: signal() });

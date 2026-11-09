@@ -5,6 +5,12 @@ export class AdminClientError extends Error {
 export function navigateAdmin(path: string) { window.location.replace(new URL(path, window.location.origin).href); }
 export function adminMessage(code: string) {
   const messages: Record<string, string> = {
+    LOTTERY_NOT_ELIGIBLE: "El premio no tiene una adjudicación elegible con pago confirmado. Para lotería, verifica también el cierre previo al evento.",
+    PRIZES_NOT_READY: "Falta aplicar la migración de premios en el servidor. Los pedidos existentes siguen disponibles.",
+    PRIZES_LOCKED: "Los premios y números bendecidos se fijan antes de publicar y no pueden modificarse.",
+    INVALID_PRIZE: "Revisa el premio, el importe y los números de cinco cifras.",
+    PRIZE_CAPACITY_EXCEEDED: "No hay suficientes unidades del premio o números libres para esta configuración.",
+    BLESSED_NUMBER_EXISTS: "Uno de esos números ya tiene un premio bendecido.",
     ORIGIN_NOT_ALLOWED: "La dirección de acceso no coincide. Abre el enlace administrativo habitual y vuelve a intentarlo.",
     CLOSE_REQUIRES_PAUSE: "Pausa la rifa antes de cerrarla.", ACTIVE_HOLDS_EXIST: "Hay pre-reservas vigentes. Espera a que terminen y vuelve a consultar las cifras.",
     EXPORT_TOO_LARGE: "El reporte supera 10 000 órdenes. Acota las fechas o selecciona una rifa.",

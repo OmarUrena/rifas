@@ -2,7 +2,7 @@
 
 Fecha: 2026-11-08.
 
-Estado: fase 1 documental y etapa 2 integrada completadas localmente, con incidencias y límites de pruebas registrados; etapas 3–7 pendientes. Diseño histórico en [fase 1](AJUSTES_NEGOCIO_FASE_1.md), resultados actuales en [fase 2](AJUSTES_NEGOCIO_FASE_2.md). El propietario autorizó aplicar la migración de etapa 2 al proyecto Rifas el 2026-11-08; aplicación y catálogo verificados. No se autorizó despliegue web ni aplicación de otras migraciones.
+Estado: fases 1 y 2 conservan su evidencia histórica. Etapas 3 y 4 implementadas; ver [fase 3](AJUSTES_NEGOCIO_FASE_3.md) y [fase 4](AJUSTES_NEGOCIO_FASE_4.md) para verificaciones actuales y límites. El propietario autorizó las migraciones necesarias durante esta sesión; las de bendecidos y lotería están aplicadas al proyecto Rifas. No se autorizó despliegue. Etapas 5–7 pendientes.
 
 Corrección explícita del propietario el 2026-11-08: 100000 es el **rango**, no una cantidad de filas a generar al crear la rifa. Materializar únicamente números seleccionados al pre-reservar; conservar filas históricas.
 
@@ -335,6 +335,8 @@ Implementar cinco cifras, universo de nuevas rifas, objetivo configurable, cálc
 Implementar catálogo, configuración administrativa, selección manual/aleatoria, congelación al publicar, detección transaccional, aviso persistente, confirmación por pago y anulación conciliada con histórico.
 
 ### Etapa 4 — Lotería y entregas
+
+Reglas aprobadas por el propietario: Pick 4 de Florida + FIREBALL al final, cinco cifras conservando ceros. Registro manual según el horario de las reglas de la rifa. Si no se vendió, el administrador elige externamente otra edición y registra un resultado posterior; no existe sustitución automática. Implementación y evidencia en [fase 4](AJUSTES_NEGOCIO_FASE_4.md).
 
 Implementar registro preliminar, búsqueda, selección de premio, elegibilidad, confirmación idempotente, entrega e histórico. Bloquear adjudicación real definitiva hasta aprobar reglas concretas de lotería.
 

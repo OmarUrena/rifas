@@ -2,6 +2,7 @@ import { Transform } from 'class-transformer';
 import { Equals, IsBoolean, IsEnum, IsInt, IsISO8601, IsOptional, IsString, IsUUID, Length, Matches, Max, Min } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PageQueryDto } from '../catalog/catalog.dto';
+import { BlessedAwardDto } from '../prizes/prizes.dto';
 const trim=({value}:{value:unknown})=>typeof value==='string'?value.trim():value;
 export enum OrderStatus {PENDING_REVIEW='PENDING_REVIEW',UNDER_REVIEW='UNDER_REVIEW',NEEDS_RESOLUTION='NEEDS_RESOLUTION',PAID='PAID',CANCELLED='CANCELLED'}
 export class AdminOrdersQueryDto extends PageQueryDto {
@@ -100,6 +101,7 @@ export class IncidentDto {
   @ApiProperty({type:String,nullable:true}) resolution!:string|null;
 }
 export class AdminOrderDetailDto extends AdminOrderSummaryDto {
+  @ApiProperty({type:[BlessedAwardDto]}) blessedAwards!:BlessedAwardDto[];
   @ApiProperty({type:BuyerDto}) customer!:BuyerDto;
   @ApiProperty({type:[String]}) ticketNumbers!:string[];
   @ApiProperty({type:ReportDto}) paymentReport!:ReportDto;

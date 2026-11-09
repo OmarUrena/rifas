@@ -1,0 +1,9 @@
+.public-app .blessed-preview { margin-block: 20px; padding: 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--recessed); overflow-wrap: anywhere; }
+.public-app .blessed-heading { color: var(--accent); }
+.public-app .blessed-preview p { font-size: 12px; margin-block: 8px; }
+.public-app .blessed-prizes { list-style: none; margin: 12px 0; padding: 0; display: grid; gap: 14px; }
+.public-app .blessed-digits { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.public-app .blessed-digits code { color: var(--ink); background: var(--surface); border: 1px solid var(--control); padding: 4px 8px; border-radius: 4px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.public-app .blessed-award-message { margin-block: 20px; border: 2px solid var(--accent); padding: 20px; border-radius: 8px; background: var(--surface); }
+.public-app .blessed-award-message h2 { font-size: 24px; margin-bottom: 10px; }
+.public-app .blessed-award-message li { margin-block: 12px; }

@@ -8,6 +8,7 @@ import { ReceiptService, ReceiptUpload } from './receipt.service';
 import { PrivateStorageService } from './private-storage.service';
 import { APP_CONFIG, AppConfig } from '../config/config';
 import { developmentToken } from '../development/capability';
+import { createOrderAwards, orderAwards } from '../prizes/prizes.core';
 
 const sha=(bytes:Buffer|string)=>createHash('sha256').update(bytes).digest('hex');
 function fail(code:string,status:number):never{throw new HttpException({code},status);}
@@ -56,7 +57,7 @@ export class OrdersService implements OnModuleInit,OnModuleDestroy {
     const numbers=await c.query<{number:number}>(`SELECT t.number FROM sorteos.order_tickets ot JOIN sorteos.tickets t ON t.id=ot.ticket_id
       WHERE ot.order_id=$1 ORDER BY t.number`,[order.id]);
     const payment=await c.query<{status:string}>('SELECT status FROM sorteos.payment_reports WHERE order_id=$1 AND active',[order.id]);
-    return {orderCode:order.order_code,status:order.status,paymentReportStatus:payment.rows[0]!.status,
+    return {blessedAwards:await orderAwards(c,order.id),orderCode:order.order_code,status:order.status,paymentReportStatus:payment.rows[0]!.status,
       raffleId:order.raffle_id,raffleTitle:raffle.rows[0]!.title,quantity:order.ticket_quantity,
       ticketNumbers:numbers.rows.map(row=>String(row.number).padStart(Math.max(5,raffle.rows[0]!.ticket_width),'0')),
       totalMinor:Number(order.total_minor),currency:'DOP',createdAt:order.created_at.toISOString(),
@@ -114,6 +115,7 @@ export class OrdersService implements OnModuleInit,OnModuleDestroy {
         if(changed.rowCount!==hold.quantity)throw new Error('Inventory invariant');
         await c.query("UPDATE sorteos.checkout_holds SET status='CONSUMED' WHERE id=$1",[hold.id]);
         await c.query("UPDATE sorteos.receipt_staging SET status='ATTACHED',order_id=$1 WHERE id=$2",[row.id,stage.id]);
+        await createOrderAwards(c,row.id);
         return this.response(c,row);
       });
       // También limpia el intento perdedor de dos uploads concurrentes con la misma clave.

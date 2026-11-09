@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { components, paths } from "@sorteos/api-client";
 import { AdminError, backendClient, checked, jsonBody, privateHeaders } from "./server";
+import { prizeRoute, proxyPrizes } from "./prizes-proxy";
+import { lotteryRoute, proxyLottery } from "./lottery-proxy";
 type Schemas = components["schemas"];
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export function operationRoute(method: string, path: string[]) {
+  if (lotteryRoute(method, path)) return true;
+  if (prizeRoute(method, path)) return true;
   if (method === "GET" && (path.join("/") === "dashboard" || path.join("/") === "reports/orders.csv")) return true;
   if (method === "POST" && path.join("/") === "media") return true;
   if (path[0] !== "raffles") return false;
   return (path.length === 1 && ["GET", "POST"].includes(method)) || (path.length === 2 && uuid.test(path[1] ?? "") && ["GET", "PATCH"].includes(method)) || (path.length === 3 && uuid.test(path[1] ?? "") && (method === "GET" ? path[2] === "summary" : method === "POST" && ["publish", "pause", "resume", "close", "fundraising-target"].includes(path[2] ?? "")));
 }
 export async function proxyOperation(request: NextRequest, path: string[], client: ReturnType<typeof backendClient>) {
+  if (lotteryRoute(request.method, path)) return proxyLottery(request, path, client);
+  if (prizeRoute(request.method, path)) return proxyPrizes(request, path, client);
   const id = path[1] ?? "", params = { path: { id } };
   let data: unknown;
   if (path[0] === "dashboard") data = await checked(await client.GET("/api/v1/admin/dashboard"));

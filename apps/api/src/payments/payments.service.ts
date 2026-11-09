@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
+import { syncOrderAwards, orderAwards } from '../prizes/prizes.core';
 import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { PoolClient } from 'pg';
 import { AdminIdentity, AdminProof } from '../auth/admin.guard';
@@ -61,7 +62,7 @@ export class PaymentsService {
         FROM sorteos.admin_actions WHERE order_id=$1 ORDER BY created_at DESC,id DESC LIMIT 100`,[id]);
       const incidents=await c.query('SELECT id,category,status,resolution FROM sorteos.payment_incidents WHERE order_id=$1 ORDER BY created_at DESC,id LIMIT 100',[id]);
       await this.audit(c,admin,'ORDER_DETAIL_ACCESS','orders',id,requestId);
-      return {...this.summary(order),customer,ticketNumbers:tickets.rows.map(row=>String(row.number).padStart(Math.max(5,row.ticket_width),'0')),
+      return {...this.summary(order),blessedAwards:await orderAwards(c,id),customer,ticketNumbers:tickets.rows.map(row=>String(row.number).padStart(Math.max(5,row.ticket_width),'0')),
         paymentReport:{verifiedAmountMinor:report.verified_amount_minor===null?null:Number(report.verified_amount_minor),
           id:report.id,bankAccountId:report.bankAccountId,reference:report.reference,status:report.status,
           transferDate:report.transferDate.toISOString(),reportedAt:report.reportedAt.toISOString(),
@@ -176,6 +177,7 @@ export class PaymentsService {
         const freed=await c.query("UPDATE sorteos.tickets SET status='AVAILABLE',current_order_id=NULL WHERE current_order_id=$1 AND status='RESERVED'",[id]);
         if(freed.rowCount!==order.ticket_quantity)throw new Error('Inventory invariant');released=freed.rowCount;
       }
+      if(action==='APPROVE'||action==='CANCEL')await syncOrderAwards(c,id,action==='APPROVE'?'CONFIRMED':'VOIDED');
       const counts=(await c.query<{sold:number;reserved:number}>(`SELECT count(*) FILTER(WHERE status='SOLD')::int AS sold,
         count(*) FILTER(WHERE status='RESERVED')::int AS reserved FROM sorteos.tickets WHERE current_order_id=$1`,[id])).rows[0]!;
       const result:FinancialResultDto={actionId,orderCode:order.order_code,status,version:updated.version,soldTicketCount:counts.sold,

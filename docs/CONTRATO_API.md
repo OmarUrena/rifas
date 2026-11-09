@@ -1,5 +1,23 @@
 # Contrato REST compartido — App Sorteos / API v1
 
+## Extensión de etapas 3 y 4 — OpenAPI 0.10.0
+
+Todas las rutas siguientes llevan prefijo `/api/v1`. Escrituras administrativas con OWNER, sesión/MFA vigente e `Idempotency-Key` UUID; lecturas privadas disponibles para ADMIN/OWNER y auditadas. Las respuestas no se almacenan en caché.
+
+- `GET/POST /admin/raffles/:id/prizes`: configuración inmutable de premios bendecidos.
+- `GET/POST /admin/raffles/:id/blessed-numbers`: consulta y asignación MANUAL o RANDOM, cinco cifras; no crea boletos.
+- `GET /admin/raffles/:id/blessed-awards`: beneficiarios privados, paginación y estado.
+- `GET /raffles/:slug/blessed-numbers`: números configurados públicos de rifas publicadas, sin beneficiarios.
+- Catálogo incluye `blessedNumbers` y `blessedNumberCount`; orden protegida incluye `blessedAwards`.
+- `GET /admin/raffles/:id/lottery/:kind`: `prizes`, `results`, `awards` o `deliveries`, con `page` y `pageSize`. Responde `{items,total}`. Los registros incluyen identificador, premio, número, estado, referencia, fecha, orden, contacto privado y actor según el tipo.
+- `POST /admin/raffles/:id/lottery`: `action: PRIZE` con `title`; `RESULT` con `pick4` de cuatro cifras, `fireball` de una, `eventAt` ISO UTC y `reference`; `AWARD` con `resultId,prizeId`; `DELIVERY` con `source: LOTTERY|BLESSED`, `awardId,eventAt,reference`. Responde `{id}`. Misma clave y cuerpo recuperan el resultado, cuerpo distinto devuelve 409.
+- Formación exacta en servidor y PostgreSQL: Pick 4 + FIREBALL al final (`0012` + `5` = `00125`). Registro manual; no existe conexión a Florida Lottery.
+- Registrar un resultado no declara ganador ni cambia estado de rifa. Solo la venta cerrada antes del evento, orden ya PAID y boleto SOLD permiten congelar elegibilidad. Confirmación exige además cero órdenes pendientes y cero holds vigentes. No existe resultado sustituto automático.
+- Premios de lotería: una unidad por registro, separados de las unidades bendecidas. Entregas únicas, confirmadas y documentadas; historial inmutable. No se ejecutan pagos bancarios ni se publican datos personales.
+- Errores conocidos: `PRIZES_LOCKED`, `PRIZE_CAPACITY_EXCEEDED`, `BLESSED_NUMBER_EXISTS`, `LOTTERY_NOT_ELIGIBLE`, `IDEMPOTENCY_CONFLICT`. Requisitos de integridad fallidos: 422; unidad o entrega duplicada: 409.
+
+Las secciones previas a continuación describen los hitos históricos; el contrato generado actual es `docs/openapi.json`.
+
 > Ajustes etapa 2 (2026-11-08), OpenAPI 0.8.0: rango implícito 00000..99999 para
 > nuevas rifas, generación al pre-reservar, objetivo privado y progreso público.
 > Detalles en [fase 2](AJUSTES_NEGOCIO_FASE_2.md). Bendecidos, premios y OTP

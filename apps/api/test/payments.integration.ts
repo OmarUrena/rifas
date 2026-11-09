@@ -105,9 +105,10 @@ after(async()=>{
   await app?.close();await peer?.close();if(server)await new Promise<void>(resolve=>server.close(()=>resolve()));await db?.end();
   if(connected){if(created)await root.query(`DROP DATABASE ${name} WITH(FORCE)`);if(loginCreated)await root.query(`DROP ROLE ${login}`);await root.end();}
 });
-async function order(quantity=3) {
+async function order(quantity=3,beforePublish?:(raffle:string)=>Promise<void>) {
   const raffle=randomUUID();
   await db.query(`INSERT INTO sorteos.raffles(inventory_policy,id,slug,title,description,prize,total_tickets,ticket_price_minor,min_purchase,max_purchase,rules,rules_version) VALUES ('LEGACY',$1,$2,'RIFA DEMO B5','SOLO TEST','PREMIO FICTICIO',10,10025,1,5,'NO TRANSFERIR','B5-1')`,[raffle,`demo-${raffle}`]);
+  if(beforePublish)await beforePublish(raffle);
   await db.query("INSERT INTO sorteos.raffle_media(raffle_id,storage_key,alt,position,rights_confirmed) VALUES($1,'prizes/test.webp','Fixture',0,true)",[raffle]);
   await db.query("UPDATE sorteos.raffles SET status='PUBLISHED',publication_approved_by=$2,publication_approved_at=now(),approved_rules_version=rules_version WHERE id=$1",[raffle,ownerId]);
   const session=await fetch(`${base}/api/v1/checkout-session`,{method:'POST',headers:{Origin:origin}});assert.equal(session.status,201);const cookie=session.headers.get('set-cookie')!.split(';')[0]!;
@@ -332,7 +333,7 @@ test('recuperación B5 conserva datos Auth, retira solo sus políticas/permisos,
     assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,15);
     assert.equal((await recovery.query('SELECT count(*)::int AS n FROM auth.mfa_factors')).rows[0].n,1);
     assert.equal((await recovery.query("SELECT has_column_privilege('sorteos_runtime','auth.sessions','id','SELECT') AS allowed")).rows[0].allowed,false);
-    migrateLocal(url.toString());assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,18);
+    migrateLocal(url.toString());assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,25);
   }finally{await recovery.end();await root.query(`DROP DATABASE ${recoveryName} WITH(FORCE)`);}
 });
 
@@ -432,4 +433,63 @@ test('M5 fotos propias normalizadas: Auth/MFA, Storage público separado, format
   const created=await request('raffles',{method:'POST',body:draft});assert.equal(created.status,201);const id=(await created.json()).id;
   assert.equal((await request(`raffles/${id}/publish`,{method:'POST',body:{rulesApproved:true,requirementsReviewed:true,mediaRightsConfirmed:true}})).status,200);
   assert.throws(()=>parseConfig({NODE_ENV:'production',DEVELOPMENT_LOCAL_MEDIA:'true'}),/Fotos locales/);
+});
+
+test('etapa 4: Pick4 + FIREBALL, premio, resultado, adjudicación, entrega e idempotencia con runtime real',async()=>{
+ let prizeId='';
+ const c=await order(1,async raffle=>{
+  const created=await request(`raffles/${raffle}/lottery`,{method:'POST',key:randomUUID(),body:{action:'PRIZE',title:'PREMIO DEMO LOTERIA'}});
+  assert.equal(created.status,200,JSON.stringify(await created.clone().json()));prizeId=String((await created.json()).id);
+ });
+ const route=`raffles/${c.raffle}/lottery`;
+ assert.equal((await request(route+'/results',{token:null})).status,401);
+ assert.equal((await request(route,{method:'POST',key:randomUUID(),token:staffToken,body:{action:'RESULT',pick4:'0000',fireball:'0',eventAt:new Date().toISOString(),reference:'DEMO'}})).status,403);
+ const n=Number((await db.query('SELECT number FROM sorteos.tickets WHERE current_order_id=$1',[c.id])).rows[0].number);
+ const body={action:'RESULT',pick4:'0000',fireball:String(n),eventAt:new Date().toISOString(),reference:'EDICION DEMO - NO RESULTADO REAL'};
+ const preliminary=await request(route,{method:'POST',key:randomUUID(),body});assert.equal(preliminary.status,200);
+ const preliminaryId=String((await preliminary.json()).id);
+ assert.equal((await request(route,{method:'POST',key:randomUUID(),body:{action:'AWARD',resultId:preliminaryId,prizeId}})).status,409);
+ assert.equal((await action(c,'approve',approval(c))).status,200);
+ assert.equal((await request(`raffles/${c.raffle}/pause`,{method:'POST',body:{}})).status,200);
+ const version=(await db.query('SELECT version FROM sorteos.raffles WHERE id=$1',[c.raffle])).rows[0].version;
+ assert.equal((await request(`raffles/${c.raffle}/close`,{method:'POST',body:{expectedVersion:version}})).status,200);
+ const unsold=await request(route,{method:'POST',key:randomUUID(),body:{...body,fireball:String((n+1)%10),eventAt:new Date().toISOString()}});
+ assert.equal(unsold.status,200);const unsoldId=String((await unsold.json()).id);
+ assert.equal((await request(route,{method:'POST',key:randomUUID(),body:{action:'AWARD',resultId:unsoldId,prizeId}})).status,409);
+ const key=randomUUID(),finalBody={...body,eventAt:new Date().toISOString()};
+ const result=await request(route,{method:'POST',key,body:finalBody});assert.equal(result.status,200,JSON.stringify(await result.clone().json()));
+ const resultId=String((await result.json()).id);
+ assert.equal(String((await (await request(route,{method:'POST',key,api:peerBase,body:finalBody})).json()).id),resultId);
+ const rows=(await (await request(route+'/results')).json()) as unknown as {items:{number:string;status:string}[]};
+ assert.ok(rows.items.some(r=>r.number===String(n).padStart(5,'0')&&r.status==='ELIGIBLE'));
+ const awardBody={action:'AWARD',resultId,prizeId},awardKey=randomUUID();
+ const award=await request(route,{method:'POST',key:awardKey,body:awardBody});assert.equal(award.status,200,JSON.stringify(await award.clone().json()));
+ const awardId=String((await award.json()).id);
+ assert.equal(String((await (await request(route,{method:'POST',key:awardKey,body:awardBody})).json()).id),awardId);
+ const delivery={action:'DELIVERY',source:'LOTTERY',awardId,eventAt:new Date().toISOString(),reference:'CONSTANCIA DEMO SIN ENTREGA REAL'};
+ const deliveryKey=randomUUID(),delivered=await request(route,{method:'POST',key:deliveryKey,body:delivery});assert.equal(delivered.status,200,JSON.stringify(await delivered.clone().json()));
+ assert.equal((await request(route,{method:'POST',key:deliveryKey,body:delivery})).status,200);
+ assert.equal((await request(route,{method:'POST',key:randomUUID(),body:delivery})).status,409);
+ assert.equal((await db.query('SELECT count(*)::int n FROM sorteos.prize_deliveries WHERE lottery_award_id=$1',[awardId])).rows[0].n,1);
+ await assert.rejects(()=>db.query('UPDATE sorteos.lottery_results SET reference=reference WHERE id=$1',[resultId]));
+ await assert.rejects(()=>db.query('DELETE FROM sorteos.prize_deliveries WHERE lottery_award_id=$1',[awardId]));
+ const history=await request(route+'/deliveries');assert.equal(history.status,200);assert.match(JSON.stringify(await history.json()),/DELIVERED/);
+});
+
+test('etapa 4: entrega bendecida exige confirmación del pago y conserva un único histórico',async()=>{
+ const c=await order(1,async raffle=>{
+  let version=Number((await db.query('SELECT version FROM sorteos.raffles WHERE id=$1',[raffle])).rows[0].version);
+  const prize=await request(`raffles/${raffle}/prizes`,{method:'POST',key:randomUUID(),body:{title:'PREMIO BENDECIDO DEMO',description:'Sin entrega real',kind:'ITEM',quantity:10,expectedVersion:version}});
+  assert.equal(prize.status,200,JSON.stringify(await prize.clone().json()));const data=await prize.json() as unknown as {prizeId:string;version:number};version=data.version;
+  const assigned=await request(`raffles/${raffle}/blessed-numbers`,{method:'POST',key:randomUUID(),body:{prizeId:data.prizeId,mode:'MANUAL',numbers:Array.from({length:10},(_,n)=>String(n).padStart(5,'0')),expectedVersion:version}});
+  assert.equal(assigned.status,200,JSON.stringify(await assigned.clone().json()));
+ });
+ const award=(await db.query('SELECT id,status FROM sorteos.blessed_awards WHERE order_id=$1',[c.id])).rows[0];assert.equal(award.status,'PENDING_PAYMENT');
+ const route=`raffles/${c.raffle}/lottery`,body={action:'DELIVERY',source:'BLESSED',awardId:award.id,eventAt:new Date().toISOString(),reference:'CONSTANCIA BENDECIDA DEMO'};
+ assert.equal((await request(route,{method:'POST',key:randomUUID(),body})).status,409);
+ assert.equal((await action(c,'approve',approval(c))).status,200);
+ const delivered={...body,eventAt:new Date().toISOString()},key=randomUUID();
+ const result=await request(route,{method:'POST',key,body:delivered});assert.equal(result.status,200,JSON.stringify(await result.clone().json()));
+ assert.equal((await request(route,{method:'POST',key,body:delivered,api:peerBase})).status,200);
+ assert.equal((await db.query('SELECT count(*)::int n FROM sorteos.prize_deliveries WHERE blessed_award_id=$1',[award.id])).rows[0].n,1);
 });

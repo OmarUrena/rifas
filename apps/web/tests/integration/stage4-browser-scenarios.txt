@@ -1,0 +1,53 @@
+test('etapa 4: panel conectado, resultado, adjudicación y entrega en escritorio y móvil',{timeout:240000},async()=>{
+ const {chromium,expect}=m4Playwright;
+ let prizeId='';
+ const fixture=await order(1,async raffle=>{
+  const response=await request(`raffles/${raffle}/lottery`,{method:'POST',key:randomUUID(),body:{action:'PRIZE',title:'PREMIO DEMO FASE 4'}});
+  assert.equal(response.status,200);prizeId=String((await response.json()).id);
+ });
+ assert.equal((await action(fixture,'approve',approval(fixture))).status,200);
+ assert.equal((await request(`raffles/${fixture.raffle}/pause`,{method:'POST',body:{}})).status,200);
+ const version=(await db.query('SELECT version FROM sorteos.raffles WHERE id=$1',[fixture.raffle])).rows[0].version;
+ assert.equal((await request(`raffles/${fixture.raffle}/close`,{method:'POST',body:{expectedVersion:version}})).status,200);
+ const n=Number((await db.query('SELECT number FROM sorteos.tickets WHERE current_order_id=$1',[fixture.id])).rows[0].number);
+ const browser=await chromium.launch(),context=await browser.newContext({viewport:{width:1280,height:900}}),page=await context.newPage();
+ page.setDefaultTimeout(30000);page.setDefaultNavigationTimeout(60000);
+ const localNow=()=>new Date(Date.now()-4*3600000).toISOString().slice(0,19);
+ try{
+  await page.goto(origin+'/admin/login');await page.getByLabel('Correo administrativo').fill('owner@example.invalid');await page.getByLabel('Contraseña',{exact:true}).fill(m4Password);await page.getByRole('button',{name:'Iniciar sesión',exact:true}).click();await page.waitForURL('**/admin/mfa');await page.getByLabel('Código de autenticación').fill('123456');await page.getByRole('button',{name:'Verificar código',exact:true}).click();await page.waitForURL('**/admin/ordenes');
+  await page.goto(origin+`/admin/rifas/${fixture.raffle}/premios`);
+  await page.getByLabel('Pick 4 (cuatro cifras)').fill('0000');await page.getByLabel('FIREBALL (última cifra)').fill(String(n));
+  await page.getByLabel('Fecha y hora del evento (Santo Domingo)').fill(localNow());
+  await page.getByLabel('Edición, horario y referencia verificable del resultado').fill('EVENTO DEMO SIN SORTEO REAL');
+  await page.getByLabel('Verifiqué el resultado y el horario de las reglas.').check();
+  await page.getByRole('button',{name:'Registrar resultado y buscar boleto'}).click();
+  await expect(page.locator('.alert-error')).toHaveCount(0);
+  await page.getByText('Registro guardado. El historial se conserva.',{exact:true}).waitFor();
+  await expect.poll(()=>page.getByLabel('Resultado y beneficiario').locator('option').count()).toBe(2);
+  const resultId=await page.getByLabel('Resultado y beneficiario').locator('option').nth(1).getAttribute('value');
+  await page.getByLabel('Resultado y beneficiario').selectOption(resultId);await page.getByLabel('Premio disponible').selectOption(prizeId);
+  await page.getByLabel('Confirmo número, beneficiario, premio y fuente; esta adjudicación es definitiva.').check();
+  const confirmed=page.waitForResponse((r:any)=>r.request().method()==='POST'&&r.url().endsWith('/lottery')&&r.status()===200);
+  await page.getByRole('button',{name:'Confirmar premio',exact:true}).click();await confirmed;
+  const awardId=String((await db.query('SELECT id FROM sorteos.lottery_awards WHERE raffle_id=$1',[fixture.raffle])).rows[0].id);
+  await page.setViewportSize({width:390,height:844});
+  await page.getByLabel('Identificador de adjudicación').fill(awardId);
+  // The reference records an actual simulated delivery after confirmation, never an earlier time.
+  await new Promise(resolve=>setTimeout(resolve,1100));
+  await page.getByLabel('Fecha y hora de entrega (Santo Domingo)').fill(localNow());
+  await page.getByLabel('Referencia privada de constancia de entrega').fill('ENTREGA DEMO SIN MOVIMIENTO REAL');
+  await page.getByLabel('Confirmo que la entrega ya ocurrió y está documentada.').check();
+  const delivered=page.waitForResponse((r:any)=>r.request().method()==='POST'&&r.url().endsWith('/lottery')&&r.status()===200);
+  await page.getByRole('button',{name:'Registrar entrega',exact:true}).click();await delivered;
+  await page.getByLabel('Registros',{exact:true}).selectOption('deliveries');await page.getByText('ENTREGA DEMO SIN MOVIMIENTO REAL',{exact:false}).waitFor();
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  const fs=require('node:fs'),path=require('node:path'),dir=path.join(m4Workspace,'.tmp/stage4-browser');fs.mkdirSync(dir,{recursive:true});
+  await page.screenshot({path:path.join(dir,'mobile.png'),fullPage:true});await page.setViewportSize({width:1280,height:900});await page.screenshot({path:path.join(dir,'desktop.png'),fullPage:true});
+  assert.equal((await db.query('SELECT count(*)::int n FROM sorteos.prize_deliveries WHERE lottery_award_id=$1',[awardId])).rows[0].n,1);
+ }catch(error){
+  const fs=require('node:fs'),path=require('node:path'),dir=path.join(m4Workspace,'.tmp/stage4-browser');fs.mkdirSync(dir,{recursive:true});
+  await page.screenshot({path:path.join(dir,'failure.png'),fullPage:true});
+  fs.writeFileSync(path.join(dir,'failure.txt'),(await page.locator('.alert-error').allTextContents()).join('\n'));
+  throw error;
+ }finally{await context.close();await browser.close();}
+});

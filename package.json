@@ -32,7 +32,11 @@
     "db:seed:demo": "npm run db:seed:demo --workspace @sorteos/api",
     "admin:provision:local": "npm run admin:provision:local --workspace @sorteos/api",
     "generate:api": "npm run openapi --workspace @sorteos/api && npm run generate --workspace @sorteos/api-client",
-    "dev:web": "powershell -NoProfile -File scripts/start-web.ps1"
+    "dev:web": "powershell -NoProfile -File scripts/start-web.ps1",
+    "test:stage4": "node apps/web/tests/integration/run-stage4-browser.mjs",
+    "test:recovery": "npm run test:recovery --workspace @sorteos/api",
+    "test:stage4:verify": "npm run test:recovery --workspace @sorteos/api && npm run test:schema --workspace @sorteos/api && npm run test:stage4",
+    "test:lottery": "npm run test:lottery --workspace @sorteos/api"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.3",

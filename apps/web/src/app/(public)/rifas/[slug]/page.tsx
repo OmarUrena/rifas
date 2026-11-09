@@ -5,6 +5,7 @@ import { Alert, Badge, Button, ButtonLink, SectionContainer } from "@/components
 import { Icon } from "@/components/ui/icon";
 import { AvailabilityMeter, PricePanel, RaffleRules } from "@/features/raffles/components";
 import { getRaffle } from "@/features/raffles/data";
+import { BlessedNumbers } from "@/features/raffles/blessed-numbers";
 import { PrizeGallery } from "@/features/raffles/gallery";
 import { PurchaseQuantity } from "@/features/raffles/quantity";
 import { formatDate } from "@/lib/format";
@@ -52,7 +53,7 @@ export default async function RaffleDetailPage({ params }: Props) {
       <div className="detail-more">
         {raffle.demo && <div className="detail-highlights">{raffle.highlights.map((highlight, index) => <div key={highlight}><Icon name={index === 0 ? "image" : index === 1 ? "ticket" : "shield"} /><span>{highlight}</span></div>)}</div>}
         {raffle.demo ? <section className="detail-section" aria-labelledby="description-title"><h2 id="description-title">El inicio de otra historia.</h2><p>Esta presentación te permite conocer cómo se mostrará un premio: imágenes claras, información del cupo y reglas accesibles antes de decidir.</p><p>La imagen es conceptual. No representa un premio anunciado, una marca patrocinadora ni especificaciones confirmadas.</p></section> : <section className="detail-section"><h2>Información de participación</h2><p>Premio: {raffle.prize}</p><p>Formato de números: {String(0).padStart(raffle.numberWidth ?? 1, "0")}–{String(raffle.total - 1).padStart(raffle.numberWidth ?? 1, "0")}. La asignación se realiza en el servidor; no eliges los números.</p>{raffle.startsAt && <p>Inicio de participación: {formatDate(raffle.startsAt)}</p>}{raffle.endsAt && <p>Cierre de participación: {formatDate(raffle.endsAt)}</p>}</section>}
-        <RaffleRules raffle={raffle} />
+        <BlessedNumbers numbers={raffle.blessedNumbers} total={raffle.blessedNumberCount} slug={raffle.slug} /><RaffleRules raffle={raffle} />
         <section className="detail-section"><h2>Conoce el siguiente paso.</h2><p>En una compra habilitada, primero confirmarás cupo temporal. Después enviarás tus datos y el comprobante juntos. Solo entonces recibirás los números asignados.</p><Link href="/ayuda" className="text-link">Cómo funciona <Icon name="arrow" /></Link></section>
       </div>
     </div>

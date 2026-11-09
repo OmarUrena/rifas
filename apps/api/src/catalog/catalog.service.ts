@@ -10,6 +10,7 @@ import { developmentToken } from '../development/capability';
 import { createHash } from 'node:crypto';
 import { confirmedAmount, progress, ticketWidth } from './progress';
 import { inventory } from './inventory';
+import { publicBlessings } from '../prizes/prizes.core';
 import { FundraisingTargetResultDto, UpdateFundraisingTargetDto } from './catalog.dto';
 
 interface RaffleRow {
@@ -39,11 +40,13 @@ export class CatalogService {
     const price = Number(row.ticket_price_minor);
     const amount=await confirmedAmount(client,row.id);
     const percentages=progress(amount,row.fundraising_target_minor);
+    const blessings=await publicBlessings(client,row.id);
     if (!Number.isSafeInteger(price)) throw new Error('Moneda fuera de rango');
     const dto: RaffleDetailDto = {
       id:row.id,slug:row.slug,title:row.title,description:row.description,prize:row.prize,status:row.status,
       totalTickets:row.total_tickets,numberWidth:ticketWidth(row.total_tickets,row.ticket_width),ticketPriceMinor:price,
       progressPercent:percentages.progressPercent,
+      blessedNumbers:blessings.items,blessedNumberCount:blessings.total,
       minPurchase:row.min_purchase,maxPurchase:row.max_purchase,rules:row.rules,rulesVersion:row.rules_version,
       startsAt:row.starts_at?.toISOString()??null,endsAt:row.ends_at?.toISOString()??null,
       images:images.map(image=>({url:this.media.url(image.storage_key),alt:image.alt})),
@@ -67,7 +70,8 @@ export class CatalogService {
         const full = await this.map(client,row,admin);
         items.push(admin?full:{id:full.id,slug:full.slug,title:full.title,prizeImageUrl:full.prizeImageUrl,
           status:full.status,ticketPriceMinor:full.ticketPriceMinor,totalTickets:full.totalTickets,
-          confirmedSoldCount:full.confirmedSoldCount,availableCount:full.availableCount,progressPercent:full.progressPercent});
+          confirmedSoldCount:full.confirmedSoldCount,availableCount:full.availableCount,progressPercent:full.progressPercent,
+          blessedNumbers:full.blessedNumbers,blessedNumberCount:full.blessedNumberCount});
       }
       return {items,pagination:{page:query.page,pageSize:query.pageSize,total:total.rows[0]!.total}};
     },true);

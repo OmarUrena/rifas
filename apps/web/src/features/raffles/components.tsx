@@ -4,6 +4,7 @@ import { Badge, ButtonLink } from "@/components/ui";
 import { Icon } from "@/components/ui/icon";
 import { formatMoney } from "@/lib/format";
 import { availabilityLabel, type RaffleView, type RaffleSummary } from "./types";
+import { BlessedNumbers } from "./blessed-numbers";
 
 export function StatusTag({ raffle }: { raffle: Pick<RaffleView, "status" | "available"> }) {
   const open = raffle.status === "PUBLISHED" && raffle.available > 0;
@@ -30,6 +31,7 @@ export function RaffleCard({ raffle, priority = false }: { raffle: RaffleSummary
     <div className="raffle-card-content"><div className="raffle-card-title"><h3><Link href={`/rifas/${raffle.slug}`}>{raffle.title}</Link></h3><p>{raffle.subtitle}</p></div>
       <div className="raffle-meta"><div><Icon name="tag" /><span><strong>{formatMoney(raffle.ticketPriceMinor)}</strong><small>por boleto{raffle.demo ? " · demo" : ""}</small></span></div><div><Icon name="users" /><span><strong>{new Intl.NumberFormat("es-DO").format(raffle.total)}</strong><small>boletos totales</small></span></div></div>
       <StatusTag raffle={raffle} /><AvailabilityMeter raffle={raffle} compact />
+      <BlessedNumbers numbers={raffle.blessedNumbers} total={raffle.blessedNumberCount} slug={raffle.slug} />
       <ButtonLink href={`/rifas/${raffle.slug}`}>Ver detalles <Icon name="arrow" /></ButtonLink>
     </div>
   </article>;

@@ -230,6 +230,6 @@ test('recuperación B3 rechaza datos; vacía restaura permisos B2, repara histor
     assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,13);
     assert.equal((await recovery.query("SELECT has_table_privilege('sorteos_runtime','sorteos.guest_sessions','SELECT') AS allowed")).rows[0].allowed,false);
     revertLocalMigrationHistory(url.toString(),version);migrateLocal(url.toString());
-    assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,18);
+    assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,25);
   }finally{await recovery.end();await root.query(`DROP DATABASE ${recoveryName} WITH(FORCE)`);}
 });

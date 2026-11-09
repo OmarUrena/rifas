@@ -70,7 +70,7 @@ function RaffleForm({ current, role, onSaved, onReload }: { current: AdminRaffle
   const actionName = { publish: "Publicar rifa", pause: "Pausar rifa", resume: "Reanudar rifa", close: "Cerrar rifa" };
   return <>
     <div className="admin-record-toolbar"><div><ButtonLink className="button-secondary" href="/admin/rifas" prefetch={false}>← Volver a rifas</ButtonLink><AdminStatus status={current?.status ?? "DRAFT"}>{current ? raffleStates[current.status] : "Nuevo borrador"}</AdminStatus></div>{current && <Button className="button-secondary" onClick={onReload} disabled={busy}>Recargar datos guardados</Button>}</div>
-    {current && <h2 className="admin-record-title">{current.title}</h2>}
+    {current && <><h2 className="admin-record-title">{current.title}</h2><ButtonLink href={`/admin/rifas/${current.id}/premios`} prefetch={false}>Premios y números bendecidos</ButtonLink></>}
     {error && !action && <Alert title="No se pudo completar la operación" tone="error">{error}</Alert>}{saved && <p role="status">Rifa guardada.</p>}
     {!editable && <Alert title="Edición bloqueada">{current?.status === "CLOSED" ? "Esta rifa está cerrada. Su configuración e historial se conservan." : "Para editar la configuración, pausa la rifa desde el panel de publicación."}</Alert>}
     <div className="admin-raffle-workbench"><div className="admin-raffle-main">

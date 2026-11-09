@@ -470,3 +470,7 @@ La migración B5 requiere permisos sobre metadatos de sesiones/factores Auth;
 no concede lectura de secretos. Verificar su aplicación y MFA con sesión real
 en staging antes de operar. Aplicación remota B3–B5, Storage privado real y
 validación de esa sesión siguen pendientes. Estado en [B5](docs/ESTADO_BACKEND.md#b5).
+
+## Lotería y premios (etapa 4)
+
+Registro manual de Pick 4 Florida + FIREBALL al final, adjudicación privada y constancias de entrega en Administración → Rifa → Premios y números bendecidos. Configurar premios de lotería antes de publicar. Para adjudicar, cerrar ventas antes del evento y conciliar todos los pagos. Ver [detalle y verificaciones](docs/AJUSTES_NEGOCIO_FASE_4.md) y [contrato](docs/CONTRATO_API.md). No requiere nuevas variables de entorno ni conexión a la lotería.

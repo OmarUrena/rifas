@@ -1,4 +1,5 @@
 // Presentation model for F1. This does not replace backend-generated DTOs.
+import type { BlessedNumber } from "./blessed-numbers";
 export type RaffleStatus = "DRAFT" | "PUBLISHED" | "PAUSED" | "CLOSED" | "DRAWN";
 export type RaffleImage = { src: string; alt: string };
 export type RaffleView = {
@@ -16,6 +17,8 @@ export type RaffleView = {
   maxPurchase: number;
   total: number;
   progressPercent?: number | null;
+  blessedNumbers?: BlessedNumber[];
+  blessedNumberCount?: number;
   sold: number;
   reserved: number;
   held: number;
@@ -31,7 +34,7 @@ export type RaffleView = {
   rulesVersion?: string;
 };
 
-export type RaffleSummary = Pick<RaffleView, "slug" | "title" | "images" | "status" | "ticketPriceMinor" | "total" | "sold" | "available" | "demo" | "featured" | "progressPercent"> & Partial<Pick<RaffleView, "category" | "subtitle">>;
+export type RaffleSummary = Pick<RaffleView, "slug" | "title" | "images" | "status" | "ticketPriceMinor" | "total" | "sold" | "available" | "demo" | "featured" | "progressPercent" | "blessedNumbers" | "blessedNumberCount"> & Partial<Pick<RaffleView, "category" | "subtitle">>;
 
 export function availabilityLabel(raffle: Pick<RaffleView, "status" | "available">) {
   if (raffle.status === "PAUSED") return "Pausada";

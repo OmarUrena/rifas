@@ -2,12 +2,11 @@ import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from '@nestjs
 import { Type } from 'class-transformer';
 import { ArrayMaxSize, Equals, IsArray, IsBoolean, IsEnum, IsInt, IsISO8601, IsOptional,
   IsString, Matches, Max, MaxLength, Min, MinLength, ValidateNested } from 'class-validator';
+import { PageQueryDto, PaginationDto } from '../common/pagination';
+export { PageQueryDto, PaginationDto } from '../common/pagination';
+import { BlessedNumberDto } from '../prizes/prizes.dto';
 
 export enum RaffleStatus { DRAFT='DRAFT', PUBLISHED='PUBLISHED', PAUSED='PAUSED', CLOSED='CLOSED', DRAWN='DRAWN' }
-export class PageQueryDto {
-  @ApiPropertyOptional({type:'integer',default:1,minimum:1,maximum:1000000}) @IsOptional() @Type(()=>Number) @IsInt() @Min(1) @Max(1000000) page = 1;
-  @ApiPropertyOptional({type:'integer',default:12,minimum:1,maximum:100}) @IsOptional() @Type(()=>Number) @IsInt() @Min(1) @Max(100) pageSize = 12;
-}
 export class AdminPageQueryDto extends PageQueryDto {
   @ApiPropertyOptional({enum:RaffleStatus}) @IsOptional() @IsEnum(RaffleStatus) status?: RaffleStatus;
 }
@@ -54,16 +53,13 @@ export class PublicationApprovalDto {
   @ApiProperty({enum:[true]}) @Equals(true) requirementsReviewed!: boolean;
   @ApiProperty({enum:[true]}) @Equals(true) mediaRightsConfirmed!: boolean;
 }
-export class PaginationDto {
-  @ApiProperty({type:'integer',minimum:1}) page!: number;
-  @ApiProperty({type:'integer',minimum:1,maximum:100}) pageSize!: number;
-  @ApiProperty({type:'integer',minimum:0}) total!: number;
-}
 export class ImageDto {
   @ApiProperty({format:'uri'}) url!: string;
   @ApiProperty() alt!: string;
 }
 export class RaffleCardDto {
+  @ApiProperty({type:[BlessedNumberDto],description:'Vista previa de hasta 12 números y premios; lista completa paginada.'}) blessedNumbers!:BlessedNumberDto[];
+  @ApiProperty({type:'integer',minimum:0}) blessedNumberCount!:number;
   @ApiProperty({type:'integer',minimum:0,maximum:100,nullable:true,description:'Progreso de la rifa; null si no tiene objetivo configurado.'}) progressPercent!:number|null;
   @ApiProperty({format:'uuid'}) id!: string;
   @ApiProperty() slug!: string;

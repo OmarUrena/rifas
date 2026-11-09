@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, Matches, MaxLength } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BlessedAwardDto } from '../prizes/prizes.dto';
 const trim=({value}:{value:unknown})=>typeof value==='string'?value.trim():value;
 export class SubmitOrderDto {
   @ApiProperty({format:'uuid'}) @IsUUID() holdId!:string;
@@ -15,6 +16,7 @@ export class SubmitOrderDto {
   @ApiProperty({maxLength:100}) @Transform(trim) @IsString() @Length(1,100) acceptedRulesVersion!:string;
 }
 export class OrderDto {
+  @ApiProperty({type:[BlessedAwardDto]}) blessedAwards!:BlessedAwardDto[];
   @ApiProperty() orderCode!:string;
   @ApiProperty({enum:['PENDING_REVIEW','UNDER_REVIEW','NEEDS_RESOLUTION','PAID','CANCELLED']}) status!:string;
   @ApiProperty() paymentReportStatus!:string;
