@@ -1,3 +1,5 @@
+// Vercel detects NestJS from a direct import in the server entrypoint.
+import '@nestjs/core';
 import { createApp } from './bootstrap';
 import { loadConfig } from './config/load-config';
 import { startupFailure } from './common/startup-error';

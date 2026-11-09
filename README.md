@@ -1,5 +1,16 @@
 # App Sorteos — paquete de implementación progresiva para Codex
 
+## Despliegue de la API en Vercel
+
+Importar este repositorio como un proyecto NestJS con Root Directory `apps/api`.
+El punto de entrada `src/main.ts` importa directamente `@nestjs/core` porque el
+detector de Vercel inspecciona ese archivo, sin seguir la importación a
+`bootstrap.ts`. La configuración compartida y el arranque conservan el mismo flujo.
+Ver [ADR 0031](docs/decisions/0031-vercel-nestjs-entrypoint.md).
+Las variables del servidor se documentan en [apps/api/.env.example](apps/api/.env.example);
+el despliegue requiere configurar las credenciales reales y verificar la base de
+datos y Storage. La corrección de detección no acredita el funcionamiento remoto.
+
 ## Ajustes de negocio
 
 Fase 1 documental completada. La [etapa 2](docs/AJUSTES_NEGOCIO_FASE_2.md) implementa
