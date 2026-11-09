@@ -2,6 +2,12 @@
 
 ## Despliegue de la API en Vercel
 
+**Verificación remota 2026-11-09:** tras aplicar la migración M6 autorizada,
+`/api/v1/health`, `/api/v1/health/ready` y `/api/v1/raffles` responden 200 en
+`https://rifas-api-omega.vercel.app`. Se verificaron conexión PostgreSQL, RLS y
+permisos del contador compartido. Esto no certifica todavía compras, Auth y
+Storage remotos. Ver [evidencia y respaldo](docs/decisions/0036-remote-http-rate-limits.md).
+
 Importar este repositorio como un proyecto NestJS con Root Directory `apps/api`.
 La configuración versionada [apps/api/vercel.json](apps/api/vercel.json) instala
 las dependencias de compilación, ejecuta `pnpm run build` y fija `dist` como

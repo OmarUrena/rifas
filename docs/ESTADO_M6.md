@@ -1,5 +1,12 @@
 # M6 — Seguridad, calidad y resiliencia conjunta
 
+**Actualización remota autorizada — 2026-11-09:** se aplicó
+`20261107194617_http_rate_limits_m6.sql` al proyecto Rifas tras el respaldo de
+esquema e historial. Readiness y catálogo de la API en Vercel devuelven 200;
+RLS y permisos verificados. Las comprobaciones locales de abajo son evidencia
+histórica. M6/M7 conservan sus pendientes de pruebas operativas y lanzamiento.
+Ver [registro de aplicación y límites](decisions/0036-remote-http-rate-limits.md).
+
 Fecha: 2026-11-07. Autorizado por el propietario: «Continuar con M6».
 Trabajo exclusivamente en main. Estado: implementación local verificada; M6
 permanece abierto por requisitos externos explícitos. No habilita ventas reales.
