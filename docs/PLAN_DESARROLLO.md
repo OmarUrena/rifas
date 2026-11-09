@@ -20,7 +20,7 @@ El propietario solicitó comenzar solo su fase 1: reglas y diseño documental,
 completada en [AJUSTES_NEGOCIO_FASE_1.md](AJUSTES_NEGOCIO_FASE_1.md).
 Etapa 2 implementada y verificada localmente: [rango y recaudación](AJUSTES_NEGOCIO_FASE_2.md), con incidencias de ejecución y límites documentados.
 El propietario aclaró generación bajo demanda: rango fijo no implica crear
-100000 filas. Etapas 3 y 4 implementadas según sus entregas; etapa 5 implementada y verificada localmente con consulta pública censurada por teléfono (sin OTP), por decisión expresa del propietario. Ver AJUSTES_NEGOCIO_FASE_5.md. Etapa 6 implementada y verificada localmente (AJUSTES_NEGOCIO_FASE_6.md); etapa 7 y M6/M7 conservan sus pendientes.
+100000 filas. Etapas 3 y 4 implementadas según sus entregas; etapa 5 implementada y verificada localmente con consulta pública censurada por teléfono (sin OTP), por decisión expresa del propietario. Ver AJUSTES_NEGOCIO_FASE_5.md. Etapa 6 implementada y verificada localmente (AJUSTES_NEGOCIO_FASE_6.md); Etapa 7 completada como regresión local por bloques; ver [resultados y límites](AJUSTES_NEGOCIO_FASE_7.md). M6/M7 conservan los pendientes externos de staging y publicación.
 
 ### Estado de los hitos existentes
 

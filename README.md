@@ -8,8 +8,16 @@ objetivo privado editable y progreso público calculado con pagos confirmados.
 La migración fue aplicada con autorización al proyecto Supabase Rifas el 2026-11-08;
 catálogo y conexión verificados con HTTP 200. En otros entornos, migrar antes de ejecutar el código.
 Las rifas históricas conservan su universo y esperan objetivo del propietario.
-Premios, bendecidos y consulta OTP siguen en las etapas posteriores del
+Las etapas 3–6 incorporan premios y bendecidos inmutables, resultado manual en
+un campo de cinco cifras, entregas auditadas, consulta censurada por teléfono
+con estado por orden (sin OTP) y compra simplificada. La regresión y los límites
+de entrega se registran en [etapa 7](docs/AJUSTES_NEGOCIO_FASE_7.md) y el
 [plan de ajustes](docs/PLAN_AJUSTES_NEGOCIO.md).
+
+Verificación reproducible: `npm run test:stage7:checks`; después ejecutar
+`test:adjustments` mediante `scripts/test-backend-local.ps1` sobre PostgreSQL
+local desechable y `npm run test:e2e --workspace @sorteos/web`. Ejecutar estos
+bloques en serie. No aplican migraciones remotas ni despliegan.
 
 ## M6: seguridad y resiliencia
 
@@ -71,6 +79,8 @@ Requiere los navegadores Playwright; no ejecutarla contra datos compartidos.
 El proyecto se desarrolla exclusivamente en `main`, desde esta carpeta. Backend, frontend y documentación se guardan juntos en commits de esa rama. No crear ramas por fase, por capa ni worktrees adicionales. Las referencias a `feat/*` en informes históricos se conservan para trazabilidad. Decisión: [ADR 0013](docs/decisions/0013-main-only.md).
 
 ## Administración local — activada el 2026-11-06
+
+Los párrafos de esta sección son evidencia histórica de aquella preparación local, no una renovación de la excepción MFA ni una comprobación actual del proveedor. Para el estado actual de entrega y pendientes, consultar la etapa 7.
 
 Prueba temporal ampliada por el propietario: en este equipo se permite el proceso M1–M4 sin TOTP hasta las **8:53 p. m. del 6 de noviembre de 2026**, hora de Santo Domingo. Login real, compra DEMO con archivo privado, revisión, aprobación y cancelación, conservando permisos y conciliación. [Rifa DEMO](http://127.0.0.1:3000/rifas/demo-prueba-completa/participar), [PDF de prueba](http://127.0.0.1:3000/development/comprobante-demo.pdf) y [operación/verificaciones](docs/DESARROLLO_PRUEBA_COMPLETA.md). No transferir dinero; la excepción vence automáticamente y el perfil se rechaza en producción. El entorno privado no se publica al clonar.
 

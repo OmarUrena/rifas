@@ -55,6 +55,7 @@ test("navegación por teclado y regreso desde catálogo", async ({ page }) => {
   await page.waitForURL(/\/rifas$/);
   await expect(page).toHaveURL(/\/rifas$/);
   await page.getByRole("link", { name: "Volver al inicio" }).click();
+  await page.waitForURL("/");
   await expect(page).toHaveURL("/");
 });
 test("admin no expone datos y las rutas inexistentes devuelven 404", async ({ page }) => {

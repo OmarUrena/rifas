@@ -22,6 +22,7 @@ import { csvCell } from '../src/operations/operations.service';
 import { FinancialAuthorization } from '../src/auth/financial.guard';
 import { TicketLookupResultDto } from '../src/ticket-lookup/lookup.dto';
 import { maskHalf, maskLookupEmail } from '../src/ticket-lookup/lookup.core';
+import { PrizeMutationDto } from '../src/prizes/prizes.dto';
 
 type TestBody=FinancialResultDto & AdminOrderDetailDto & AdminOrdersPageDto & {error:{code:string};url:string;access:string;holdId:string};
 async function fetch(...args:Parameters<typeof globalThis.fetch>){return await globalThis.fetch(...args) as Omit<Response,'json'>&{json():Promise<TestBody>};}
@@ -113,6 +114,9 @@ async function order(quantity=3,beforePublish?:(raffle:string)=>Promise<void>) {
   if(beforePublish)await beforePublish(raffle);
   await db.query("INSERT INTO sorteos.raffle_media(raffle_id,storage_key,alt,position,rights_confirmed) VALUES($1,'prizes/test.webp','Fixture',0,true)",[raffle]);
   await db.query("UPDATE sorteos.raffles SET status='PUBLISHED',publication_approved_by=$2,publication_approved_at=now(),approved_rules_version=rules_version WHERE id=$1",[raffle,ownerId]);
+  return purchase(raffle,quantity);
+}
+async function purchase(raffle:string,quantity:number) {
   const session=await fetch(`${base}/api/v1/checkout-session`,{method:'POST',headers:{Origin:origin}});assert.equal(session.status,201);const cookie=session.headers.get('set-cookie')!.split(';')[0]!;
   const hold=await fetch(`${base}/api/v1/checkout-holds`,{method:'POST',headers:{Origin:origin,Cookie:cookie,'Idempotency-Key':randomUUID(),'Content-Type':'application/json'},body:JSON.stringify({raffleId:raffle,quantity})});assert.equal(hold.status,201);
   const holdId=(await hold.json()).holdId,reference=`REF-DEMO-${randomUUID()}`;
@@ -335,7 +339,7 @@ test('recuperación B5 conserva datos Auth, retira solo sus políticas/permisos,
     assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,15);
     assert.equal((await recovery.query('SELECT count(*)::int AS n FROM auth.mfa_factors')).rows[0].n,1);
     assert.equal((await recovery.query("SELECT has_column_privilege('sorteos_runtime','auth.sessions','id','SELECT') AS allowed")).rows[0].allowed,false);
-    migrateLocal(url.toString());assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,25);
+    migrateLocal(url.toString());assert.equal((await recovery.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos'")).rows[0].n,26);
   }finally{await recovery.end();await root.query(`DROP DATABASE ${recoveryName} WITH(FORCE)`);}
 });
 
@@ -564,4 +568,77 @@ test('etapa 6: proyección de compra respeta fechas, estado y cupo mínimo sin c
  await db.query("UPDATE sorteos.raffles SET min_purchase=1,max_purchase=5,status='PAUSED' WHERE id=$1",[c.raffle]);
  assert.equal((await (await request('raffles/'+c.raffle)).json() as unknown as {canPurchase:boolean}).canPurchase,false);
  assert.equal(Number((await db.query('SELECT count(*) FROM sorteos.checkout_holds')).rows[0].count),count);
+});
+
+
+test('etapa 7: bendecidos extremos, aleatoriedad sin duplicados, capacidad, retry y configuración congelada',async()=>{
+ const created=await request('raffles',{method:'POST',body:{slug:'qa-stage7-'+randomUUID(),title:'RIFA DEMO QA',description:'SOLO PRUEBAS',prize:'PREMIO DEMO',totalTickets:100000,fundraisingTargetMinor:1000000,ticketPriceMinor:10025,minPurchase:1,maxPurchase:10,rules:'NO TRANSFERIR DINERO REAL',rulesVersion:'QA7-1'}});
+ assert.equal(created.status,201);const raffle=await created.json() as unknown as {id:string;version:number};
+ const prize=await request('raffles/'+raffle.id+'/prizes',{method:'POST',key:randomUUID(),body:{title:'PREMIO DEMO QA',description:'Sin entrega real',kind:'ITEM',quantity:3,expectedVersion:raffle.version}});
+ assert.equal(prize.status,200);let config=await prize.json() as unknown as PrizeMutationDto;
+ const route='raffles/'+raffle.id+'/blessed-numbers',manual={prizeId:config.prizeId,mode:'MANUAL',numbers:['00000','99999'],expectedVersion:config.version},key=randomUUID();
+ for(const numbers of [['-0001'],['00.01'],['100000'],['00000','00000']])assert.equal((await request(route,{method:'POST',key:randomUUID(),body:{...manual,numbers}})).status,400);
+ assert.equal((await request(route,{method:'POST',key:randomUUID(),token:staffToken,body:manual})).status,403);
+ const assigned=await request(route,{method:'POST',key,body:manual});assert.equal(assigned.status,200);config=await assigned.json() as unknown as PrizeMutationDto;
+ assert.deepEqual(config.numbers.map(n=>n.number),['00000','99999']);
+ assert.deepEqual(await (await request(route,{method:'POST',key,body:manual,api:peerBase})).json(),config);
+ const random={prizeId:config.prizeId,mode:'RANDOM',quantity:1,expectedVersion:config.version};
+ const chosen=await request(route,{method:'POST',key:randomUUID(),body:random});assert.equal(chosen.status,200);config=await chosen.json() as unknown as PrizeMutationDto;
+ assert.equal(config.numbers.length,1);assert.ok(Number(config.numbers[0]!.number)>0&&Number(config.numbers[0]!.number)<99999);
+ assert.equal((await request(route,{method:'POST',key:randomUUID(),body:{...random,expectedVersion:config.version}})).status,422);
+ assert.equal((await db.query('SELECT count(*)::int n FROM sorteos.tickets WHERE raffle_id=$1',[raffle.id])).rows[0].n,0);
+ await assert.rejects(()=>db.query('UPDATE sorteos.raffle_prizes SET quantity=quantity WHERE id=$1',[config.prizeId]));
+ await db.query("INSERT INTO sorteos.raffle_media(raffle_id,storage_key,alt,position,rights_confirmed) VALUES($1,'prizes/test.webp','QA DEMO',0,true)",[raffle.id]);
+ await db.query("UPDATE sorteos.raffles SET status='PUBLISHED',publication_approved_by=$2,publication_approved_at=now(),approved_rules_version=rules_version WHERE id=$1",[raffle.id,ownerId]);
+ const locked=await request(route,{method:'POST',key:randomUUID(),body:{...random,expectedVersion:config.version}});assert.equal(locked.status,409);
+ assert.equal((await locked.json()).error.code,'PRIZES_LOCKED');
+});
+
+test('etapa 7: cancelación y reasignación bendecida preservan histórico y una sola adjudicación vigente',async()=>{
+ const first=await order(1,async raffle=>{
+  await db.query('UPDATE sorteos.raffles SET max_purchase=10 WHERE id=$1',[raffle]);
+  const version=Number((await db.query('SELECT version FROM sorteos.raffles WHERE id=$1',[raffle])).rows[0].version);
+  const prize=await request('raffles/'+raffle+'/prizes',{method:'POST',key:randomUUID(),body:{title:'PREMIO BENDECIDO QA',description:'SOLO TEST',kind:'ITEM',quantity:10,expectedVersion:version}});assert.equal(prize.status,200);
+  const config=await prize.json() as unknown as PrizeMutationDto;
+  assert.equal((await request('raffles/'+raffle+'/blessed-numbers',{method:'POST',key:randomUUID(),body:{prizeId:config.prizeId,mode:'MANUAL',numbers:Array.from({length:10},(_,n)=>String(n).padStart(5,'0')),expectedVersion:config.version}})).status,200);
+ });
+ const original=(await db.query('SELECT id,blessing_id FROM sorteos.blessed_awards WHERE order_id=$1',[first.id])).rows[0];
+ const originalInput=(await db.query('SELECT o.idempotency_key,p.transfer_date FROM sorteos.orders o JOIN sorteos.payment_reports p ON p.order_id=o.id AND p.active WHERE o.id=$1',[first.id])).rows[0];
+ const retry=new FormData();
+ for(const [key,value]of Object.entries({holdId:first.holdId,customerName:'CLIENTE DEMO B5',customerPhone:'+18095550100',customerEmail:'b5-demo@example.invalid',bankAccountId:bankId,bankReference:first.reference,transferDate:originalInput.transfer_date.toISOString(),acceptedRulesVersion:'B5-1'}))retry.append(key,String(value));
+ retry.append('receipt',new Blob([new Uint8Array(png)],{type:'image/png'}),'fixture.png');
+ const recovered=await globalThis.fetch(peerBase+'/api/v1/orders',{method:'POST',headers:{Origin:origin,Cookie:first.cookie,'Idempotency-Key':originalInput.idempotency_key},body:retry});
+ assert.equal(recovered.status,201);
+ const recoveredBody=await recovered.json() as {orderCode:string;blessedAwards:{status:string}[]};
+ assert.equal(recoveredBody.orderCode,first.orderCode);assert.equal(recoveredBody.blessedAwards.length,1);assert.equal(recoveredBody.blessedAwards[0]!.status,'PENDING_PAYMENT');
+ assert.equal((await action(first,'cancel',cancellation())).status,200);
+ assert.equal((await db.query('SELECT status FROM sorteos.blessed_awards WHERE id=$1',[original.id])).rows[0].status,'VOIDED');
+ const next=await purchase(first.raffle,10);
+ const rows=(await db.query('SELECT order_id,status FROM sorteos.blessed_awards WHERE blessing_id=$1 ORDER BY created_at,id',[original.blessing_id])).rows;
+ assert.equal(rows.length,2);assert.equal(rows.filter(r=>r.status!=='VOIDED').length,1);assert.ok(rows.some(r=>r.order_id===next.id&&r.status==='PENDING_PAYMENT'));
+ assert.equal((await db.query('SELECT count(*)::int n FROM sorteos.blessed_awards WHERE order_id=$1',[next.id])).rows[0].n,10);
+ assert.equal((await globalThis.fetch(base+'/api/v1/orders/'+next.orderCode,{headers:{Cookie:first.cookie}})).status,404);
+ const priorVersion=next.version,approvalBody=approval(next),key=randomUUID();const approved=await action(next,'approve',approvalBody,{key});assert.equal(approved.status,200);next.version=(await approved.json()).version;
+ const repeated=await request('orders/'+next.id+'/approve',{method:'POST',key,api:peerBase,body:{expectedVersion:priorVersion,...approvalBody}});assert.equal(repeated.status,200);
+ assert.equal((await db.query("SELECT count(*)::int n FROM sorteos.blessed_awards WHERE order_id=$1 AND status='CONFIRMED'",[next.id])).rows[0].n,10);
+ assert.equal((await db.query('SELECT status FROM sorteos.blessed_awards WHERE id=$1',[original.id])).rows[0].status,'VOIDED');
+});
+
+test('etapa 7: pendientes bloquean adjudicación y aprobar después del evento no crea ganador retroactivo',async()=>{
+ let prizeId='';const first=await order(1,async raffle=>{const prize=await request('raffles/'+raffle+'/lottery',{method:'POST',key:randomUUID(),body:{action:'PRIZE',title:'PREMIO LOTERIA QA'}});assert.equal(prize.status,200);prizeId=String((await prize.json()).id);});
+ const second=await purchase(first.raffle,1);assert.equal((await action(first,'approve',approval(first))).status,200);
+ assert.equal((await request('raffles/'+first.raffle+'/pause',{method:'POST',body:{}})).status,200);
+ const version=(await db.query('SELECT version FROM sorteos.raffles WHERE id=$1',[first.raffle])).rows[0].version;
+ assert.equal((await request('raffles/'+first.raffle+'/close',{method:'POST',body:{expectedVersion:version}})).status,200);
+ const route='raffles/'+first.raffle+'/lottery';
+ const result=async(c:Fixture)=>{const n=Number((await db.query('SELECT number FROM sorteos.tickets WHERE current_order_id=$1',[c.id])).rows[0].number);const r=await request(route,{method:'POST',key:randomUUID(),body:{action:'RESULT',pick4:'0000',fireball:String(n),eventAt:new Date().toISOString(),reference:'EDICION QA SIN RESULTADO REAL'}});assert.equal(r.status,200);return String((await r.json()).id);};
+ const validId=await result(first),unpaidId=await result(second);
+ const award=(resultId:string)=>request(route,{method:'POST',key:randomUUID(),body:{action:'AWARD',resultId,prizeId}});
+ assert.equal((await award(validId)).status,422);
+ assert.equal((await action(second,'approve',approval(second))).status,200);
+ assert.equal((await award(unpaidId)).status,409);
+ assert.equal((await award(validId)).status,200);
+ const laterId=await result(second);assert.equal((await award(laterId)).status,409);
+ assert.equal((await db.query('SELECT count(*)::int n FROM sorteos.lottery_results WHERE raffle_id=$1',[first.raffle])).rows[0].n,3);
+ assert.equal((await db.query('SELECT eligible_order_id FROM sorteos.lottery_results WHERE id=$1',[unpaidId])).rows[0].eligible_order_id,null);
 });

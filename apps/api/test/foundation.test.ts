@@ -76,7 +76,9 @@ test('proceso API con puerto ocupado termina con diagnostico EADDRINUSE y salida
   try {
     const child = spawnSync(process.execPath, ['-r', 'ts-node/register', 'src/main.ts'], {
       cwd: resolve(__dirname, '..'), encoding: 'utf8', timeout: 20000, windowsHide: true,
-      env: { ...process.env, NODE_ENV: 'test', PORT: String(port), HOST: '127.0.0.1',
+      // This child checks runtime startup, not a second whole-project typecheck.
+      // CI/typecheck validates types separately; retain the same 20s deadline and assertions.
+      env: { ...process.env, TS_NODE_TRANSPILE_ONLY: 'true', NODE_ENV: 'test', PORT: String(port), HOST: '127.0.0.1',
         LOG_LEVEL: 'silent', DATABASE_URL: '', SUPABASE_URL: '', SUPABASE_STORAGE_KEY: '',
         SUPABASE_PUBLISHABLE_KEY: '', SWAGGER_ENABLED: 'false' },
     });

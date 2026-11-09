@@ -21,6 +21,7 @@ test('watcher ignora dependencias y cambios de fechas, pero detecta contenido y 
     await utimes(main,new Date(),new Date(Date.now()+10000));await delay(180);assert.equal(changes,0);
     await writeFile(main,'// changed code');await expectChanges(1);
     await writeFile(resolve(root,'.env'),'PORT=3001');await expectChanges(2);
+    await writeFile(resolve(root,'.env'),'');await delay(60);
     await writeFile(resolve(root,'.env'),'PORT=3002');await expectChanges(3);
     await writeFile(resolve(root,'src/added.ts'),'// new file');await expectChanges(4);
     await rm(resolve(root,'src/added.ts'));await expectChanges(5);

@@ -2,7 +2,7 @@
 
 Fecha: 2026-11-08.
 
-Estado: fases 1 y 2 conservan su evidencia histórica. Etapas 3 y 4 implementadas; ver [fase 3](AJUSTES_NEGOCIO_FASE_3.md) y [fase 4](AJUSTES_NEGOCIO_FASE_4.md) para verificaciones actuales y límites. El propietario autorizó las migraciones necesarias durante esta sesión; las de bendecidos y lotería están aplicadas al proyecto Rifas. No se autorizó despliegue. Etapa 5 implementada y verificada localmente con alcance revisado: resumen censurado por teléfono, sin OTP; ver [fase 5](AJUSTES_NEGOCIO_FASE_5.md). Migración de etapa 5 aplicada tras autorización expresa del propietario; sin despliegue. Etapa 6 implementada y verificada localmente; ver [fase 6](AJUSTES_NEGOCIO_FASE_6.md). Etapa 7 pendiente.
+Estado: fases 1 y 2 conservan su evidencia histórica. Etapas 3 y 4 implementadas; ver [fase 3](AJUSTES_NEGOCIO_FASE_3.md) y [fase 4](AJUSTES_NEGOCIO_FASE_4.md) para verificaciones actuales y límites. El propietario autorizó las migraciones necesarias durante esta sesión; las de bendecidos y lotería están aplicadas al proyecto Rifas. No se autorizó despliegue. Etapa 5 implementada y verificada localmente con alcance revisado: resumen censurado por teléfono, sin OTP; ver [fase 5](AJUSTES_NEGOCIO_FASE_5.md). Migración de etapa 5 aplicada tras autorización expresa del propietario; sin despliegue. Etapa 6 implementada y verificada localmente; ver [fase 6](AJUSTES_NEGOCIO_FASE_6.md). Etapa 7 completada como regresión y entrega local por bloques; ver [fase 7](AJUSTES_NEGOCIO_FASE_7.md) para resultados, incidencias y pendientes externos M6/M7.
 
 Corrección explícita del propietario el 2026-11-08: 100000 es el **rango**, no una cantidad de filas a generar al crear la rifa. Materializar únicamente números seleccionados al pre-reservar; conservar filas históricas.
 
@@ -20,9 +20,9 @@ Implementar sobre el proyecto existente:
 6. Progreso público calculado según un objetivo de recaudación configurable.
 7. Numeración única de cinco cifras: `00000` a `99999`.
 8. Registro administrativo del resultado de lotería y búsqueda del posible ganador.
-9. Consulta pública de boletos por rifa y correo o teléfono, con verificación de identidad.
+9. Consulta pública por rifa y teléfono: resumen censurado, cantidad y estado por orden, sin OTP por decisión posterior del propietario. Los números siguen bajo sesión protegida.
 
-Trabajar exclusivamente en `main`, en `C:\Users\Alexander\Desktop\Rifas`, siguiendo `AGENTS.md`. Conservar cambios existentes y registrar avances en commits pequeños y claros. No crear ramas ni worktrees.
+Trabajar exclusivamente en `main`, en la carpeta principal actual indicada por `AGENTS.md`. Conservar cambios existentes y registrar avances en commits pequeños y claros. No crear ramas ni worktrees.
 
 Esta solicitud modifica algunas reglas anteriores de manera explícita. No elimina las protecciones de pagos, privacidad, inventario, comprobantes privados, auditoría ni asignación aleatoria en servidor.
 
@@ -340,7 +340,7 @@ Implementar catálogo, configuración administrativa, selección manual/aleatori
 
 Reglas aprobadas por el propietario: Pick 4 de Florida + FIREBALL al final, cinco cifras conservando ceros. Registro manual según el horario de las reglas de la rifa. Si no se vendió, el administrador elige externamente otra edición y registra un resultado posterior; no existe sustitución automática. Implementación y evidencia en [fase 4](AJUSTES_NEGOCIO_FASE_4.md).
 
-Implementar registro preliminar, búsqueda, selección de premio, elegibilidad, confirmación idempotente, entrega e histórico. Bloquear adjudicación real definitiva hasta aprobar reglas concretas de lotería.
+Implementar registro preliminar, búsqueda, selección de premio, elegibilidad, confirmación idempotente, entrega e histórico. La aprobación de estas reglas no habilita operaciones reales ni sustituye la aprobación operativa de publicación.
 
 ### Etapa 5 — Consulta de boletos
 
@@ -356,75 +356,79 @@ Verificar flujos afectados y preparar changelog, README, contrato, ADR, migracio
 
 ## 9. Criterios mínimos de aceptación
 
+Comprobados en el alcance local automatizado de la [etapa 7](AJUSTES_NEGOCIO_FASE_7.md), con la matriz y los límites allí descritos. Las casillas no certifican staging, servicios externos ni una auditoría manual completa de accesibilidad.
+
 ### Numeración e inventario
 
-- [ ] `00000` y `99999` funcionan; negativos, decimales y fuera de rango se rechazan.
-- [ ] Presentación siempre de cinco cifras.
-- [ ] Nuevas rifas tienen el universo establecido sin duplicados.
-- [ ] Asignación no favorece bendecidos; `HELD` no revela números.
+- [x] `00000` y `99999` funcionan; negativos, decimales y fuera de rango se rechazan.
+- [x] Presentación siempre de cinco cifras.
+- [x] Nuevas rifas tienen el universo establecido sin duplicados.
+- [x] Asignación no favorece bendecidos; `HELD` no revela números.
 
 ### Progreso
 
-- [ ] Pendientes no aumentan recaudación confirmada.
-- [ ] Aprobación incrementa una sola vez.
-- [ ] Cambiar objetivo actualiza porcentaje; aumentarlo puede reducirlo.
-- [ ] Al 100% se puede comprar si hay stock.
-- [ ] Sin stock se bloquea aunque el porcentaje sea inferior al 100%.
-- [ ] No se filtra objetivo en API pública.
-- [ ] Agregación correcta con órdenes de varios boletos.
+- [x] Pendientes no aumentan recaudación confirmada.
+- [x] Aprobación incrementa una sola vez.
+- [x] Cambiar objetivo actualiza porcentaje; aumentarlo puede reducirlo.
+- [x] Al 100% se puede comprar si hay stock.
+- [x] Sin stock se bloquea aunque el porcentaje sea inferior al 100%.
+- [x] No se filtra objetivo en API pública.
+- [x] Agregación correcta con órdenes de varios boletos.
 
 ### Bendecidos
 
-- [ ] Rifa sin bendecidos funciona.
-- [ ] Selección manual/aleatoria respeta rango y unicidad.
-- [ ] No hay modificación tras publicar bajo la política propuesta.
-- [ ] Orden con cero, uno o varios bendecidos.
-- [ ] Reintentos no duplican; respuesta perdida recupera felicitación.
-- [ ] Pendiente no permite entrega; aprobación confirma una vez.
-- [ ] Cancelación conserva histórico.
-- [ ] Reasignación no deja dos beneficiarios vigentes.
+- [x] Rifa sin bendecidos funciona.
+- [x] Selección manual/aleatoria respeta rango y unicidad.
+- [x] No hay modificación tras publicar bajo la política propuesta.
+- [x] Orden con cero, uno o varios bendecidos.
+- [x] Reintentos no duplican; respuesta perdida recupera felicitación.
+- [x] Pendiente no permite entrega; aprobación confirma una vez.
+- [x] Cancelación conserva histórico.
+- [x] Reasignación no deja dos beneficiarios vigentes.
 
 ### Lotería y premios
 
-- [ ] `SOLD` permite identificar al comprador autorizado.
-- [ ] Número sin vender no inventa ganador; reservado no equivale a vendido.
-- [ ] Pendientes bloquean resolución definitiva.
-- [ ] No se adjudican premios incompatibles o agotados.
-- [ ] Reintentos no duplican premios/entregas.
-- [ ] Correcciones preservan resultado anterior.
-- [ ] Ventas posteriores no crean ganadores retroactivos.
+- [x] `SOLD` permite identificar al comprador autorizado.
+- [x] Número sin vender no inventa ganador; reservado no equivale a vendido.
+- [x] Pendientes bloquean resolución definitiva.
+- [x] No se adjudican premios incompatibles o agotados.
+- [x] Reintentos no duplican premios/entregas.
+- [x] Correcciones preservan resultado anterior.
+- [x] Ventas posteriores no crean ganadores retroactivos.
 
 ### Consulta y privacidad
 
-- [ ] Contacto conocido no basta para obtener boletos.
-- [ ] Solicitud OTP no revela existencia de órdenes.
-- [ ] Código incorrecto, vencido o reutilizado se rechaza.
-- [ ] Límites de intentos/reenvíos.
-- [ ] Sesión no accede a otra rifa/contacto sin autorización.
-- [ ] Múltiples órdenes del contacto se consultan correctamente.
-- [ ] No se exponen comprobantes ni PII adicional.
-- [ ] Fallo del proveedor no salta verificación.
+Los criterios OTP originales quedan sustituidos por la decisión expresa del propietario (etapa 5); no se marcan como pruebas ejecutadas.
+
+- [x] Contacto conocido solo devuelve nombre/correo censurados, cantidad y estado de cada orden no cancelada.
+- [x] Números, códigos, comprobantes y datos bancarios no aparecen en el resumen público.
+- [x] Se exige rifa y teléfono completo; no hay búsqueda parcial ni por nombre/correo.
+- [x] Límites durables por IP y contacto, incluidas páginas y búsquedas vacías.
+- [x] La sesión invitada no accede a órdenes de otra sesión, aunque coincida el teléfono.
+- [x] Múltiples órdenes y estados distintos se consultan sin mezclar compras.
+- [x] Nombre corto y correo ausente conservan la censura/estado vacío correctos.
+- [x] No existe dependencia de proveedor OTP ni envío simulado.
 
 ### Interfaz
 
-- [ ] Operable a 360 px sin desplazamiento horizontal.
-- [ ] Teclado, foco y contraste correctos.
-- [ ] Felicitación accesible/persistente.
-- [ ] «Comprar» coherente con disponibilidad.
-- [ ] Estados de error, carga, vacío y reintento.
-- [ ] Comprobante obligatorio y envío único preservados.
-- [ ] Administración mantiene permisos y tema independiente.
+- [x] Operable a 360 px sin desplazamiento horizontal.
+- [x] Teclado, foco y contraste correctos.
+- [x] Felicitación accesible/persistente.
+- [x] «Comprar» coherente con disponibilidad.
+- [x] Estados de error, carga, vacío y reintento.
+- [x] Comprobante obligatorio y envío único preservados.
+- [x] Administración mantiene permisos y tema independiente.
 
 ## 10. Decisiones explícitas y pendientes
 
-Propuestas de este plan: progreso público limitado al 100%; recaudación basada en pagos confirmados; bendecidos antes de publicar; premio confirmado después del pago; OTP; histórico privado; asignación uniforme independiente de bendecidos.
+Decisiones vigentes: progreso público truncado y limitado al 100% sobre PAID; bendecidos/premios inmutables; confirmación de premios tras pago; histórico privado; asignación CSPRNG independiente de bendecidos. Consulta pública censurada sin OTP, con estado por orden. La elección original de OTP se descartó expresamente.
 
 Requieren definición antes de habilitar operaciones dependientes:
 
-1. Modalidad concreta de Lotería Nacional y correspondencia de cinco cifras.
-2. Tratamiento del resultado sobre número no vendido.
-3. Proveedores de correo y canal telefónico OTP.
-4. Migración del universo de rifas existentes con compromisos.
-5. Procedimiento excepcional para incidencias financieras de premios entregados.
+1. Resuelto: Pick 4 de Florida + FIREBALL al final, registrado manualmente en un campo de cinco cifras; horario en reglas de cada rifa.
+2. Resuelto: si no se vendió, el propietario elige externamente otra edición y registra otro evento; no hay sustitución automática.
+3. Descartado para este alcance: proveedor OTP. No se solicita correo/SMS para la consulta censurada aprobada.
+4. Sigue fuera de alcance: migrar universos legacy comprometidos requiere decisión específica; se conservan sin ampliación.
+5. Sigue fuera de alcance: procedimiento excepcional para incidencias financieras de premios entregados; la resolución automática permanece bloqueada.
 
 El ejecutor debe completar lo autorizado, identificar los bloqueos y no sustituirlos por simulaciones o decisiones silenciosas.

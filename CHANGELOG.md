@@ -1,5 +1,12 @@
 # Changelog
 
+## Etapa 7 — Regresión y entrega local — 2026-11-09
+
+- Regresión de inventario, objetivo, bendecidos, lotería, entregas, consulta y compra; tres casos adicionales cubren extremos, capacidad, reintentos, cancelación/reasignación y elegibilidad congelada.
+- Corregidos el watcher ante escrituras intermedias de archivos, conteos de recuperación SQL y selectores/formato de fecha de recorridos históricos. Sin cambios en transiciones financieras ni ampliación de sus timeouts.
+- Scripts reproducibles, CI para recorridos integrados y control de artefactos públicos; capturas actuales en .tmp para conservar evidencia histórica.
+- README, contrato y planes alineados con consulta censurada por teléfono y estado por orden, sin OTP. OpenAPI/cliente 0.12.0 conservados; sin migraciones ni variables nuevas. Resultados, incidencias y pendientes externos en docs/AJUSTES_NEGOCIO_FASE_7.md; sin despliegue ni escrituras remotas.
+
 ## Etapa 6 — Compra pública simplificada — 2026-11-08
 
 - Comprar condicionado a estado, fechas y cupo mínimo de la API; catálogo con imagen, precio y progreso. Detalle sin cantidad de vista previa y con reglas/información ampliada desplegables.

@@ -26,6 +26,7 @@ jobs:
           API_BASE_URL: https://api.example.test/api/v1
           APP_ENV: production
           NEXT_TELEMETRY_DISABLED: 1
+      - run: pnpm verify:delivery
       - run: pnpm --filter @sorteos/web exec playwright install --with-deps chromium firefox webkit
       - run: pnpm --filter @sorteos/web test:e2e
       - uses: actions/upload-artifact@v4

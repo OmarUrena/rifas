@@ -40,7 +40,13 @@
     "test:lookup": "npm run test:lookup --workspace @sorteos/api",
     "test:stage5": "node apps/web/tests/integration/run-stage5-browser.mjs",
     "test:stage6": "node apps/web/tests/integration/run-stage6-browser.mjs",
-    "test:sales": "npm run test:sales --workspace @sorteos/api"
+    "test:sales": "npm run test:sales --workspace @sorteos/api",
+    "test:stage7:browser": "npm run test:m4 && npm run test:stage7:flows",
+    "test:stage7:flows": "npm run test:m5 && npm run test:stage4 && npm run test:stage5 && npm run test:stage6",
+    "test:adjustments": "npm run test:integration && npm run test:stage7:browser",
+    "test:adjustments:edge": "npm run test:adjustments:edge --workspace @sorteos/api",
+    "verify:delivery": "node scripts/verify-delivery.mjs",
+    "test:stage7:checks": "npm run generate:api && git diff --exit-code -- docs/openapi.json packages/api-client/src/generated.ts && npm run lint && npm run lint --workspace @sorteos/web && npm run typecheck && npm run test:config && npm test && npm run test:core --workspace @sorteos/web && npm run test --workspace @sorteos/web && npm run build && npm run verify:delivery"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.3",

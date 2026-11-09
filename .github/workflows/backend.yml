@@ -7,7 +7,7 @@ permissions:
 jobs:
   quality:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     services:
       postgres:
         image: postgres:17-alpine
@@ -47,15 +47,18 @@ jobs:
           TEST_PG_BIN: /usr/lib/postgresql/17/bin
       - run: pnpm build:api
       - run: pnpm --filter @sorteos/web exec playwright install --with-deps chromium firefox webkit
-      - run: pnpm test:m4
-        env:
-          TEST_DATABASE_URL: postgres://demo_test:demo_ci_only@127.0.0.1:5432/sorteos_test
-      - run: pnpm test:m5
+      - run: pnpm test:stage7:browser
         env:
           TEST_DATABASE_URL: postgres://demo_test:demo_ci_only@127.0.0.1:5432/sorteos_test
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: m6-local-evidence
-          path: .tmp/m6/*.json
+          name: business-adjustments-evidence
+          path: |
+            .tmp/m6/*.json
+            .tmp/m4-browser-screenshots/*.png
+            .tmp/m5-browser-screenshots/*.png
+            .tmp/stage4-browser/*.png
+            .tmp/stage5-browser/*.png
+            .tmp/stage6-browser/*.png
           if-no-files-found: ignore

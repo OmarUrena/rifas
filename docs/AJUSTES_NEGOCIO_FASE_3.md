@@ -1,6 +1,6 @@
 # Etapa 3 — Premios y números bendecidos
 
-Estado: implementación en curso. Migración aplicada a Supabase remoto el 2026-11-08 con autorización explícita del propietario para las migraciones necesarias en esta sesión.
+Estado: implementación integrada con la etapa 4. Migración aplicada a Supabase remoto el 2026-11-08 con autorización explícita del propietario para las migraciones necesarias en esta sesión. La evidencia siguiente conserva su fecha original; la regresión actual está en [etapa 7](AJUSTES_NEGOCIO_FASE_7.md).
 
 ## Decisión del propietario
 

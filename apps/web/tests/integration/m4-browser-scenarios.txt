@@ -46,7 +46,7 @@ test('M4: web, API, PostgreSQL, JWT/JWKS y adaptadores locales Auth/Storage', {t
   const {chromium,firefox,webkit,expect}=m4Playwright;
   const AxeBuilder=m4WebRequire('@axe-core/playwright').default;
   const browser=await chromium.launch(),contexts:any[]=[];
-  const screenshot=require('node:path').join(m4Workspace,'docs/frontend/screenshots/m4');require('node:fs').mkdirSync(screenshot,{recursive:true});
+  const screenshot=require('node:path').join(m4Workspace,'.tmp/m4-browser-screenshots');require('node:fs').mkdirSync(screenshot,{recursive:true});
   const context=await browser.newContext({viewport:{width:1280,height:900}});contexts.push(context);const page=await context.newPage();
   async function login(view:any,email='owner@example.invalid'){
     await view.goto(origin+'/admin/login');await view.getByLabel('Correo administrativo').fill(email);await view.getByLabel('Contraseña',{exact:true}).fill(m4Password);

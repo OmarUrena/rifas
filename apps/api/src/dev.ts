@@ -20,8 +20,17 @@ export function sourceFingerprint(root:string):string {
 
 export function watchDevelopmentSources(root:string,onChange:()=>void,intervalMs=750):()=>void {
   let previous=sourceFingerprint(root);
+  let candidate:string|undefined,candidateSince=0;
   const timer=setInterval(()=>{
-    try{const current=sourceFingerprint(root);if(current!==previous){previous=current;onChange();}}
+    try{
+      const current=sourceFingerprint(root);
+      if(current===previous){candidate=undefined;return;}
+      if(current!==candidate){candidate=current;candidateSince=Date.now();return;}
+      // Editors can truncate a file before writing its replacement. Wait for
+      // stable content to avoid restarting on a brief empty .env snapshot.
+      if(Date.now()-candidateSince<Math.max(150,intervalMs))return;
+      previous=current;candidate=undefined;onChange();
+    }
     catch{/* An editor may briefly replace a file; inspect the next complete snapshot. */}
   },intervalMs);
   return ()=>clearInterval(timer);

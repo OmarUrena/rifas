@@ -7,7 +7,7 @@ test('M5: editor, imágenes propias, compra, cierre, conciliación, indicadores 
   const browser=await chromium.launch(),context=await browser.newContext({viewport:{width:1280,height:900}}),page=await context.newPage();
   const buyer=await browser.newContext({viewport:{width:390,height:844}}),purchase=await buyer.newPage();
   page.setDefaultTimeout(15000);purchase.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(45000);purchase.setDefaultNavigationTimeout(45000);
-  const screenshots=process.env.STAGE2_QA==='1'?path.join(m4Workspace,'.tmp/stage2-browser-screenshots'):path.join(m4Workspace,'docs/frontend/screenshots',process.env.ADMIN_VISUAL_QA==='1'?'admin-redesign':'m5');fs.mkdirSync(screenshots,{recursive:true});
+  const screenshots=path.join(m4Workspace,'.tmp',process.env.STAGE2_QA==='1'?'stage2-browser-screenshots':process.env.ADMIN_VISUAL_QA==='1'?'admin-redesign':'m5-browser-screenshots');fs.mkdirSync(screenshots,{recursive:true});
   let raffleId:string,code:string,orderId:string;
   const orderStatuses:number[]=[];purchase.on('response',(response:any)=>{if(new URL(response.url()).pathname==='/api/v1/orders')orderStatuses.push(response.status());});
   const slug='m5-'+randomUUID();
@@ -41,8 +41,8 @@ test('M5: editor, imágenes propias, compra, cierre, conciliación, indicadores 
     });
     if(!raffleId)throw new Error('No se creó la rifa; detener los pasos dependientes.');
     await t.test('pre-reserva vigente bloquea cierre; pausa permite enviar orden con comprobante',async()=>{
-      await purchase.getByRole('link',{name:'Participar',exact:true}).click();await purchase.waitForURL('**/participar');
-      await purchase.getByLabel('Cantidad de boletos',{exact:true}).fill('2');
+      await purchase.locator('#participacion').getByRole('link',{name:'Comprar',exact:true}).click();await purchase.waitForURL('**/participar');
+      await purchase.getByRole('spinbutton',{name:'Cantidad de boletos',exact:true}).fill('2');
       await purchase.getByRole('button',{name:'Confirmar cupo'}).click();await purchase.getByText('Cupo reservado temporalmente',{exact:true}).waitFor();
       await transition('Pausar rifa');await page.getByRole('button',{name:'Cerrar rifa',exact:true}).waitFor();
       const dialog=await transition('Cerrar rifa');await dialog.getByText('Hay pre-reservas vigentes.',{exact:false}).waitFor();await dialog.getByRole('button',{name:'Volver sin cambiar'}).click();
@@ -57,7 +57,7 @@ test('M5: editor, imágenes propias, compra, cierre, conciliación, indicadores 
     if(!orderId)throw new Error('No se creó la orden; detener los pasos dependientes.');
     await t.test('conciliación después del cierre, consulta protegida y totales confirmados',async()=>{
       await page.goto(origin+'/admin/ordenes/'+orderId);await page.getByRole('button',{name:'Aprobar pago',exact:true}).click();const dialog=page.getByRole('dialog');await dialog.getByLabel('Importe verificado en RD$').fill('200');await dialog.getByLabel('Fecha y hora del ingreso').fill(new Date(Date.now()-14460000).toISOString().slice(0,16));await dialog.getByLabel('Referencia de confirmación bancaria').fill('CONFIRMACION-DEMO-M5');await dialog.getByLabel('Nota de verificación').fill('Ingreso de prueba confirmado sin transferencia real.');await dialog.getByLabel('Confirmo que verifiqué').check();await dialog.getByLabel('Revisé las posibles').check();await dialog.getByRole('button',{name:'Revisar decisión',exact:true}).click();await dialog.getByRole('button',{name:'Confirmar decisión',exact:true}).click();await expect(dialog).not.toBeVisible();
-      await purchase.reload();await purchase.getByRole('heading',{name:'Pago confirmado.',exact:true}).waitFor();
+      await purchase.reload();await purchase.getByRole('heading',{name:'Pago confirmado',exact:true}).waitFor();
       assert.equal((await globalThis.fetch(base+'/api/v1/orders/'+code)).status,401);
       const summary=await (await request('raffles/'+raffleId+'/summary')).json() as any;assert.equal(summary.confirmedAmountMinor,'20000');assert.equal(summary.pendingAmountMinor,'0');assert.equal(summary.sold,2);assert.equal(summary.available,99998);
       await page.goto(origin+'/admin/rifas/'+raffleId);await expect(page.getByLabel('Objetivo (DOP)',{exact:true})).toHaveValue('400.00');

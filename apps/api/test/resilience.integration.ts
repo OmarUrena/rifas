@@ -118,15 +118,21 @@ test('S06 M6: pg_dump custom + pg_restore en DB nueva conservan datos, inventari
     pgTool('pg_restore',restoreUrl,['--dbname',restoredName,'--exit-on-error','--single-transaction','--no-owner',archive]);
     await restored.connect();assert.deepEqual(await snapshot(restored),expected);
     const rls=await restored.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='sorteos' AND rowsecurity");
-    assert.equal(rls.rows[0].n,25);
+    assert.equal(rls.rows[0].n,26);
+    // Plain PostgreSQL fixtures need not have Supabase's anon/authenticated roles.
+    // Inspect the restored ACL itself, including PUBLIC, rather than assuming they exist.
+    const exposure=await restored.query(`SELECT EXISTS(SELECT 1 FROM pg_class c CROSS JOIN LATERAL aclexplode(c.relacl) a
+      LEFT JOIN pg_roles r ON r.oid=a.grantee WHERE c.oid='sorteos.ticket_lookup_limits'::regclass
+      AND a.privilege_type='SELECT' AND (a.grantee=0 OR r.rolname IN ('anon','authenticated'))) AS allowed`);
+    assert.equal(exposure.rows[0].allowed,false);
     assert.equal((await restored.query("SELECT has_table_privilege('sorteos_runtime','sorteos.http_rate_limits','UPDATE') AS allowed")).rows[0].allowed,true);
     const pending=await restored.query(`SELECT o.ticket_quantity AS quantity,(SELECT count(*)::int FROM sorteos.order_tickets ot JOIN sorteos.tickets t ON t.id=ot.ticket_id WHERE ot.order_id=o.id AND t.status='RESERVED') AS reserved FROM sorteos.orders o WHERE o.status='PENDING_REVIEW'`);
     assert.equal(pending.rowCount,1);assert.equal(pending.rows[0].quantity,pending.rows[0].reserved);
     await assert.rejects(()=>restored.query("INSERT INTO sorteos.tickets(raffle_id,number) SELECT raffle_id,number FROM sorteos.tickets LIMIT 1"),{code:'23505'});
     await assert.rejects(()=>restored.query("UPDATE sorteos.raffles SET status='DRAWN'"),{code:'23514'});
     migrateLocal(restoreUrl.toString());
-    assert.equal((await restored.query('SELECT count(*)::int AS n FROM supabase_migrations.schema_migrations')).rows[0].n,15);
-    const report={scenario:'S06',result:'PASS',tables:25,archiveSha256:archiveHash,durationMs:Math.round(performance.now()-started),
+    assert.equal((await restored.query('SELECT count(*)::int AS n FROM supabase_migrations.schema_migrations')).rows[0].n,16);
+    const report={scenario:'S06',result:'PASS',tables:26,archiveSha256:archiveHash,durationMs:Math.round(performance.now()-started),
       pendingOrderPreserved:true,rls:true,constraints:true,storageBytes:'NOT_INCLUDED_IN_SQL_BACKUP'};
     await writeFile(join(reports,'restore.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report));
   }finally{await restored.end();await root.query(`DROP DATABASE ${restoredName} WITH(FORCE)`);}

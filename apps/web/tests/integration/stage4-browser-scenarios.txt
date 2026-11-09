@@ -12,7 +12,8 @@ test('etapa 4: panel conectado, resultado, adjudicación y entrega en escritorio
  const n=Number((await db.query('SELECT number FROM sorteos.tickets WHERE current_order_id=$1',[fixture.id])).rows[0].number);
  const browser=await chromium.launch(),context=await browser.newContext({viewport:{width:1280,height:900}}),page=await context.newPage();
  page.setDefaultTimeout(30000);page.setDefaultNavigationTimeout(60000);
- const localNow=()=>new Date(Date.now()-4*3600000).toISOString().slice(0,19);
+ // datetime-local serializes zero seconds without the trailing :00.
+ const localNow=()=>new Date(Date.now()-4*3600000).toISOString().slice(0,19).replace(/:00$/,'');
  try{
   await page.goto(origin+'/admin/login');await page.getByLabel('Correo administrativo').fill('owner@example.invalid');await page.getByLabel('Contraseña',{exact:true}).fill(m4Password);await page.getByRole('button',{name:'Iniciar sesión',exact:true}).click();await page.waitForURL('**/admin/mfa');await page.getByLabel('Código de autenticación').fill('123456');await page.getByRole('button',{name:'Verificar código',exact:true}).click();await page.waitForURL('**/admin/ordenes');
   await page.goto(origin+`/admin/rifas/${fixture.raffle}/premios`);

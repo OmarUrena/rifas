@@ -8,7 +8,7 @@
     "start": "node dist/main.js",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "test": "node -r ts-node/register --test test/foundation.test.ts test/local-tools.test.ts test/dev-runner.test.ts test/stage2.test.ts test/lookup.test.ts",
+    "test": "node -r ts-node/register --test --test-concurrency=1 test/foundation.test.ts test/local-tools.test.ts test/dev-runner.test.ts test/stage2.test.ts test/lookup.test.ts",
     "test:integration": "node -r ts-node/register --test --test-concurrency=1 test/database.integration.ts test/schema.integration.ts test/catalog.integration.ts test/checkout.integration.ts test/orders.integration.ts test/payments.integration.ts test/resilience.integration.ts",
     "test:resilience": "node -r ts-node/register --test test/resilience.integration.ts",
     "test:payments": "node -r ts-node/register --test test/payments.integration.ts",
@@ -23,7 +23,8 @@
     "test:schema": "node -r ts-node/register --test test/schema.integration.ts",
     "test:lottery": "node -r ts-node/register --test --test-name-pattern=\"etapa 4\" test/payments.integration.ts",
     "test:lookup": "node -r ts-node/register --test --test-name-pattern=\"etapa 5\" test/payments.integration.ts",
-    "test:sales": "node -r ts-node/register --test --test-name-pattern=\"etapa 6\" test/payments.integration.ts"
+    "test:sales": "node -r ts-node/register --test --test-name-pattern=\"etapa 6\" test/payments.integration.ts",
+    "test:adjustments:edge": "node -r ts-node/register --test --test-name-pattern=\"etapa 7\" test/payments.integration.ts"
   },
   "dependencies": {
     "undici": "7.30.2",

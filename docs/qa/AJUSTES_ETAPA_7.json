@@ -1,0 +1,31 @@
+{
+  "stage": "business-adjustments-7",
+  "date": "2026-11-09",
+  "result": "PASS_LOCAL_BY_BLOCK",
+  "branch": "main",
+  "checks": {
+    "generatedContractUnchanged": true,
+    "lint": "PASS",
+    "typecheck": "PASS",
+    "build": "PASS",
+    "configuration": {"passed": 10, "failed": 0},
+    "apiBase": {"passed": 27, "failed": 0},
+    "webCore": {"passed": 6, "failed": 0},
+    "webUnit": {"passed": 65, "failed": 0},
+    "postgresIntegration": {"passed": 108, "failed": 0, "skipped": 0},
+    "m4Browser": {"passed": 18, "failed": 0},
+    "m5Browser": {"passed": 5, "failed": 0},
+    "stage4Browser": {"passed": 1, "failed": 0},
+    "stage5Browser": {"passed": 1, "failed": 0},
+    "stage6Browser": {"passed": 1, "failed": 0},
+    "e2eChromiumAndWebKit": {"passed": 68, "failed": 0},
+    "e2eFirefoxRepeat": {"passed": 17, "failed": 0, "outsideSandbox": true, "workers": 1},
+    "productionDependencyAudit": {"vulnerabilities": 0, "dependencies": 251},
+    "developmentDependencyAudit": {"moderate": 1, "dependency": "minimatch", "path": "typescript-eslint lint tooling"}
+  },
+  "load": {"requests": 100, "instances": 2, "accepted": 20, "stockRejected": 80, "unexpectedErrors": 0, "retriedAccepted": 20, "duplicateHolds": 0, "duplicateTickets": 0, "p95Ms": 1060},
+  "restore": {"result": "PASS", "rlsTables": 26, "localMigrations": 16, "pendingOrderPreserved": true, "storageIncluded": false},
+  "delivery": {"newMigrations": 0, "newEnvironmentVariables": 0, "publicAssetsScanned": 28, "configuredPrivateValuesChecked": 3, "exposedConfiguredValues": 0, "deployed": false, "remoteWrites": false},
+  "qualification": "Passing blocks after documented failures; neither the aggregate adjustments command nor the 85-test E2E command had a single fully green run. See the stage report for repetitions and environment differences.",
+  "pending": ["M6 migration on remote database", "hosting and edge controls", "authorized staging exercise with real Auth and Storage", "existing remote security advisor warnings", "M7 publication approval"]
+}

@@ -4,6 +4,8 @@
 
 **Entornos de pruebas:** base de datos aislada, archivos y bancos ficticios, sin transferencias reales. Los escenarios deben ejecutarse automáticamente siempre que sea viable. Reportar PASS/FAIL/SKIPPED con evidencia; nunca marcar PASS por inferencia.
 
+**Ajustes de negocio:** cobertura y resultados de la regresión vigente en [etapa 7](AJUSTES_NEGOCIO_FASE_7.md). Los escenarios con universos pequeños son fixtures legacy de contención; las nuevas rifas usan exclusivamente 00000..99999 sin precarga.
+
 **M6 (2026-11-07):** ejecución y límites actuales en [ESTADO_M6.md](ESTADO_M6.md).
 H03 registra 100 peticiones entre dos instancias, 20 reintentos y p50/p95/p99.
 S06 ejecuta backup custom y restauración transaccional en DB nueva, con evidencia
@@ -16,13 +18,13 @@ separadas y no se marcan PASS por esos ensayos locales.
 
 | ID | Escenario | Esperado | Fase |
 |---|---|---|---|
-| R01 | Admin crea rifa de 10 números | Exactamente 10 tickets numerados 0..9, sin duplicados | B1/B2 |
-| R02 | Rifa con 10,000 números | Rango interno 0..9999; UI `0000`..`9999` | B1/F2 |
-| R03 | Rifa con N configurable no potencia de 10 (ej. 137) | 137 números válidos 0..136, formato consistente | B1/F2 |
-| R04 | Cantidad 0, negativa, no entera o demasiado grande | 422/validación según límite razonado | B1/B2 |
+| R01 | Admin crea una rifa nueva | Universo lógico 0..99999 y cero filas de tickets antes del hold | B1/B2 |
+| R02 | Rifa histórica con 10,000 números | Conserva rango 0..9999 sin ampliación; presentación mínima de cinco cifras | B1/F2 |
+| R03 | Fixture legacy no decimal (ej. 137) | Asigna únicamente entre 0..136; conserva universo y formato sin renumeración | B1/F2 |
+| R04 | Crear rifa con universo distinto de 100000 o cantidad inválida | Rechazo de validación, sin rifa/inventario parcial | B1/B2 |
 | R05 | Rifa DRAFT/PAUSED/CLOSED | No admite nuevos holds | B2/B3 |
 | R06 | Cambiar precio/N tras primer hold | Bloqueado o sujeto a política aprobada y auditada | B2 |
-| R07 | Cliente ve % vendido | No mezcla reservado con vendido | B2/F2 |
+| R07 | Cliente ve progreso | Porcentaje PAID/objetivo truncado y limitado a 100%; sin objetivo ni importes privados | B2/F2 |
 
 ## B. Pre-reservas
 
@@ -98,9 +100,9 @@ separadas y no se marcan PASS por esos ensayos locales.
 | ID | Escenario | Esperado | Fase |
 |---|---|---|---|
 | S01 | Total disponible+held+reserved+sold | Igual a N por rifa siempre | B6/B7 |
-| S02 | Rifas con 100% comprometido y pendientes | Sin nuevos holds, NO declarar 100% vendido | B6/F6 |
-| S03 | Intentar cerrar/sortear con pendientes | Cierre operativo según política, sorteo bloqueado | B6 |
-| S04 | Filtro público por teléfono/código de orden adivinable | No divulga información de otros | B6 |
+| S02 | Stock agotado y progreso de recaudación al 100% | Stock agotado bloquea holds; 100% de recaudación no bloquea con cupo | Ajustes 2/6 |
+| S03 | Cierre y adjudicación con pendientes | Cierre conserva reservas; adjudicación definitiva bloqueada hasta conciliación | M5/Ajustes 4 |
+| S04 | Consulta por teléfono o código de orden | Teléfono solo devuelve resumen censurado y estado por orden; código no autoriza orden completa | Ajustes 5 |
 | S05 | Secretos en bundle JS, logs o error HTTP | Ninguna credencial ni PII sensible | B7/F7 |
 | S06 | Restaurar backup en entorno aislado | Datos íntegros; procedimiento documentado | B7 |
 | S07 | 360px ancho: checkout, upload y confirmación | Sin scroll horizontal; teclado y lector operables | F7 |
@@ -110,7 +112,7 @@ separadas y no se marcan PASS por esos ensayos locales.
 
 ## Invariantes automáticas (ejecutar contra DB)
 
-1. Para cada rifa: `N = count(tickets)` si no se define estado VOID.
+1. Para cada rifa: `N = disponibles computados + HELD vigentes + RESERVED + SOLD`. En FIVE_DIGIT, ausencia de fila significa número libre y se materializan solo elegidos; no exigir `N = count(tickets)`. LEGACY conserva su universo y sus filas históricas.
 2. `count(distinct (raffle_id,number))=count(tickets)`.
 3. Cada ticket tiene **exactamente un** estado actual; no puede apuntar a dos órdenes activas.
 4. `PAID` implica `quantity` tickets SOLD; `PENDING_REVIEW`, `UNDER_REVIEW` y `NEEDS_RESOLUTION` implican `quantity` tickets RESERVED.
