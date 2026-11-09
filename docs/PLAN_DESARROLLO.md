@@ -20,7 +20,7 @@ El propietario solicitó comenzar solo su fase 1: reglas y diseño documental,
 completada en [AJUSTES_NEGOCIO_FASE_1.md](AJUSTES_NEGOCIO_FASE_1.md).
 Etapa 2 implementada y verificada localmente: [rango y recaudación](AJUSTES_NEGOCIO_FASE_2.md), con incidencias de ejecución y límites documentados.
 El propietario aclaró generación bajo demanda: rango fijo no implica crear
-100000 filas. Etapas 3–7 siguen pendientes; M6/M7 conservan sus pendientes externos.
+100000 filas. Etapas 3 y 4 implementadas según sus entregas; etapa 5 implementada y verificada localmente con consulta pública censurada por teléfono (sin OTP), por decisión expresa del propietario. Ver AJUSTES_NEGOCIO_FASE_5.md. Etapas 6–7 y M6/M7 conservan sus pendientes.
 
 ### Estado de los hitos existentes
 

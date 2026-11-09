@@ -2,7 +2,7 @@
 
 Fecha: 2026-11-08.
 
-Estado: fases 1 y 2 conservan su evidencia histórica. Etapas 3 y 4 implementadas; ver [fase 3](AJUSTES_NEGOCIO_FASE_3.md) y [fase 4](AJUSTES_NEGOCIO_FASE_4.md) para verificaciones actuales y límites. El propietario autorizó las migraciones necesarias durante esta sesión; las de bendecidos y lotería están aplicadas al proyecto Rifas. No se autorizó despliegue. Etapas 5–7 pendientes.
+Estado: fases 1 y 2 conservan su evidencia histórica. Etapas 3 y 4 implementadas; ver [fase 3](AJUSTES_NEGOCIO_FASE_3.md) y [fase 4](AJUSTES_NEGOCIO_FASE_4.md) para verificaciones actuales y límites. El propietario autorizó las migraciones necesarias durante esta sesión; las de bendecidos y lotería están aplicadas al proyecto Rifas. No se autorizó despliegue. Etapa 5 implementada y verificada localmente con alcance revisado: resumen censurado por teléfono, sin OTP; ver [fase 5](AJUSTES_NEGOCIO_FASE_5.md). Migración de etapa 5 pendiente de autorización remota. Etapas 6–7 pendientes.
 
 Corrección explícita del propietario el 2026-11-08: 100000 es el **rango**, no una cantidad de filas a generar al crear la rifa. Materializar únicamente números seleccionados al pre-reservar; conservar filas históricas.
 
@@ -211,6 +211,8 @@ La entrega registra fecha, responsable y constancia/referencia. Documentos sensi
 
 ## 5. Consulta pública de boletos
 
+**Revisión expresa del propietario (2026-11-08):** sin OTP. Buscar por rifa y teléfono y mostrar únicamente nombre con la mitad censurada, correo parcialmente censurado si existe y cantidad de boletos registrados. No devuelve números ni códigos de orden ni acceso a datos completos. El diseño OTP de los apartados siguientes queda como referencia histórica y NO es el alcance vigente. Reglas y evidencia actuales en [fase 5](AJUSTES_NEGOCIO_FASE_5.md) y [ADR 0028](decisions/0028-public-masked-phone-summary.md).
+
 ### 5.1. Experiencia
 
 Añadir «Consultar mis boletos», visible especialmente en móvil:
@@ -342,7 +344,7 @@ Implementar registro preliminar, búsqueda, selección de premio, elegibilidad, 
 
 ### Etapa 5 — Consulta de boletos
 
-Implementar rifa, correo/teléfono, proveedor OTP, verificación, sesión protegida, consulta limitada, rate limiting y auditoría. Sin proveedor, preparar integración y declarar pendiente; no marcar terminado.
+Alcance actualizado por el propietario: rifa + teléfono, resumen de nombre/correo censurados y cantidad registrada, sin OTP. Implementar validación, paginación, límites durables, auditoría sin PII y preservación del acceso protegido a órdenes y números. Ver fase 5.
 
 ### Etapa 6 — Simplificación pública
 

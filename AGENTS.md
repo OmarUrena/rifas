@@ -62,3 +62,7 @@
 ## Reglas adicionales de premios (propietario, 2026-11-08)
 
 Un premio por número bendecido; configuración guardada inmutable. Lotería: Pick 4 de Florida seguido del dígito FIREBALL al final, cinco cifras conservando ceros. Registro manual del administrador según horario en las reglas. Si no se vendió, el administrador decide externamente la edición posterior y registra otro evento; no automatizar sustitución. Premios entregados conservan histórico y no admiten resolución financiera automática.
+
+## Consulta pública limitada (propietario, 2026-11-08)
+
+La etapa 5 no usa OTP: búsqueda por rifa y teléfono con nombre al menos medio censurado, correo parcialmente censurado si existe y cantidad de boletos de órdenes no canceladas, incluidas pendientes. Esta excepción a RN15 permite solo ese resumen; números de boletos, códigos de orden, identidad completa y comprobantes conservan autorización protegida. Aplicar límites y auditoría sin PII. Ver ADR 0028.

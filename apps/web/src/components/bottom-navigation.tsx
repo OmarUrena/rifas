@@ -6,6 +6,7 @@ import { Icon, type IconName } from "./ui/icon";
 const destinations: { href: string; label: string; icon: IconName }[] = [
   { href: "/", label: "Inicio", icon: "home" },
   { href: "/rifas", label: "Rifas", icon: "ticket" },
+  { href: "/consultar-boletos", label: "Mis boletos", icon: "search" },
   { href: "/ayuda", label: "Ayuda", icon: "help" },
 ];
 export function BottomNavigation() {

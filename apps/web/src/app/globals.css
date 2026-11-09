@@ -414,3 +414,14 @@ main:focus { outline: none; }
 .raffle-preview { margin-block: 24px; overflow-wrap: anywhere; }
 @media (min-width: 768px) { .admin-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); } .admin-inventory { grid-template-columns: repeat(5, minmax(0, 1fr)); } .admin-photo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 768px) { .admin-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-order-list, .admin-detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Consulta pública por teléfono: estilos propios, sin depender del panel admin. */
+.lookup-layout { max-width: 760px; display: grid; gap: 24px; margin: 24px auto; }
+.lookup-form fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 20px; min-width: 0; }
+.lookup-form select { width: 100%; min-height: 48px; padding: 12px; border: 1px solid var(--border, #777); border-radius: 8px; color: inherit; background: var(--surface, #fff); }
+.lookup-pagination { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 20px; }
+.lookup-results { list-style: none; padding: 0; display: grid; gap: 16px; }
+.lookup-results li { border-top: 1px solid var(--border, #aaa); padding-top: 12px; }
+.lookup-results dl { display: grid; gap: 12px; margin: 0; }
+.lookup-results dd { margin: 4px 0 0; overflow-wrap: anywhere; }
+.lookup-results dt { font-weight: 600; }

@@ -20,6 +20,8 @@ import { DevelopmentWorkflowSetup } from '../src/development/prepare-workflow';
 import { OperationSummaryDto } from '../src/operations/operations.dto';
 import { csvCell } from '../src/operations/operations.service';
 import { FinancialAuthorization } from '../src/auth/financial.guard';
+import { TicketLookupResultDto } from '../src/ticket-lookup/lookup.dto';
+import { maskHalf, maskLookupEmail } from '../src/ticket-lookup/lookup.core';
 
 type TestBody=FinancialResultDto & AdminOrderDetailDto & AdminOrdersPageDto & {error:{code:string};url:string;access:string;holdId:string};
 async function fetch(...args:Parameters<typeof globalThis.fetch>){return await globalThis.fetch(...args) as Omit<Response,'json'>&{json():Promise<TestBody>};}
@@ -492,4 +494,48 @@ test('etapa 4: entrega bendecida exige confirmación del pago y conserva un úni
  const result=await request(route,{method:'POST',key,body:delivered});assert.equal(result.status,200,JSON.stringify(await result.clone().json()));
  assert.equal((await request(route,{method:'POST',key,body:delivered,api:peerBase})).status,200);
  assert.equal((await db.query('SELECT count(*)::int n FROM sorteos.prize_deliveries WHERE blessed_award_id=$1',[award.id])).rows[0].n,1);
+});
+
+
+test('etapa 5: resumen censurado por teléfono, aislamiento, cancelación y límites entre instancias',async()=>{
+  const fixture=await order(2),other=await order(1);
+  const search=async(phone='+18095550100',raffleId=fixture.raffle,options:{origin?:string;api?:string;extra?:Record<string,unknown>}={})=>
+    globalThis.fetch((options.api??base)+'/api/v1/ticket-lookup/search',{method:'POST',headers:{Origin:options.origin??origin,'Content-Type':'application/json'},
+      body:JSON.stringify({raffleId,phone,...options.extra})});
+  const first=await search('809 555-0100');assert.equal(first.status,200);
+  assert.equal(first.headers.get('cache-control'),'no-store');
+  const body=await first.json() as TicketLookupResultDto;
+  assert.deepEqual(body,{items:[{maskedName:maskHalf('CLIENTE DEMO B5'),maskedEmail:maskLookupEmail('b5-demo@example.invalid'),ticketCount:2}],total:1,totalTickets:2});
+  const text=JSON.stringify(body);
+  for(const secret of ['CLIENTE DEMO B5','b5-demo@example.invalid',fixture.orderCode,fixture.path,'+18095550100','ticketNumbers','orderCode','receipt'])assert.equal(text.includes(secret),false);
+  assert.equal((await search('+18095550101')).status,200);
+  assert.deepEqual(await (await search('+18095550101')).json(),{items:[],total:0,totalTickets:0});
+  assert.equal((await search('+18095550100',other.raffle)).status,200);
+  assert.deepEqual(await (await search('+18095550100',randomUUID())).json(),{items:[],total:0,totalTickets:0});
+  assert.equal((await search('12345')).status,400);
+  assert.equal((await search(undefined,undefined,{origin:'https://outside.invalid'})).status,403);
+  assert.equal((await search(undefined,undefined,{extra:{includeTickets:true}})).status,400);
+  assert.equal((await globalThis.fetch(base+'/api/v1/orders/'+fixture.orderCode)).status,401);
+  // A second real order for the same recorded contact must aggregate, not overwrite.
+  const againHold=await globalThis.fetch(base+'/api/v1/checkout-holds',{method:'POST',headers:{Origin:origin,Cookie:fixture.cookie,'Idempotency-Key':randomUUID(),'Content-Type':'application/json'},body:JSON.stringify({raffleId:fixture.raffle,quantity:1})});
+  assert.equal(againHold.status,201);const againHoldId=(await againHold.json() as {holdId:string}).holdId;
+  const form=new FormData();
+  for(const [key,value]of Object.entries({holdId:againHoldId,customerName:'CLIENTE DEMO B5',customerPhone:'+18095550100',customerEmail:'b5-demo@example.invalid',bankAccountId:bankId,bankReference:'DEMO MULTIPLE ORDERS',transferDate:new Date().toISOString(),acceptedRulesVersion:'B5-1'}))form.append(key,value);
+  form.append('receipt',new Blob([new Uint8Array(png)],{type:'image/png'}),'fixture.png');
+  assert.equal((await globalThis.fetch(base+'/api/v1/orders',{method:'POST',headers:{Origin:origin,Cookie:fixture.cookie,'Idempotency-Key':randomUUID()},body:form})).status,201);
+  const multiple=await (await search()).json() as TicketLookupResultDto;
+  assert.equal(multiple.total,1);assert.equal(multiple.totalTickets,3);assert.equal(multiple.items[0]!.ticketCount,3);
+  assert.equal((await action(fixture,'cancel',cancellation())).status,200);
+  const remaining=await (await search()).json() as TicketLookupResultDto;
+  assert.equal(remaining.totalTickets,1);assert.equal(remaining.items[0]!.ticketCount,1);
+  const counters=await db.query('SELECT key FROM sorteos.ticket_lookup_limits');
+  assert.ok(counters.rows.every(row=>/^(ip|phone):[a-f0-9]{64}$/.test(row.key)));
+  const audit=await db.query("SELECT * FROM sorteos.audit_logs WHERE action='PUBLIC_TICKET_SUMMARY'");assert.ok(audit.rowCount!>0);
+  assert.equal(JSON.stringify(audit.rows).includes('5550100'),false);
+  await db.query('TRUNCATE sorteos.ticket_lookup_limits');
+  const responses=await Promise.all(Array.from({length:24},(_,i)=>search(undefined,other.raffle,{api:i%2?base:peerBase})));
+  assert.equal(responses.filter(r=>r.status===200).length,20);
+  assert.equal(responses.filter(r=>r.status===429).length,4);
+  const stillLimited=await search(undefined,other.raffle);assert.equal(stillLimited.status,429);
+  const schema=(await db.query("SELECT relrowsecurity FROM pg_class WHERE oid='sorteos.ticket_lookup_limits'::regclass")).rows[0];assert.equal(schema.relrowsecurity,true);
 });

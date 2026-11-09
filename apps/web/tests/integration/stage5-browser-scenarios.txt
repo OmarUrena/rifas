@@ -1,0 +1,28 @@
+test('etapa 5: búsqueda pública censurada en escritorio y móvil',{timeout:240000},async()=>{
+ const {chromium,expect}=m4Playwright;
+ const fixture=await order(2);
+ const path=require('node:path');require('node:fs').mkdirSync(path.join(m4Workspace,'.tmp/stage5-browser'),{recursive:true});
+ const browser=await chromium.launch({channel:process.env.PLAYWRIGHT_CHANNEL||undefined}),context=await browser.newContext({viewport:{width:1280,height:900}}),page=await context.newPage();
+ page.setDefaultTimeout(30000);page.setDefaultNavigationTimeout(60000);
+ try {
+  await page.goto(origin+'/consultar-boletos');
+  await page.getByLabel('Rifa',{exact:true}).selectOption(fixture.raffle);
+  await page.getByLabel('Teléfono de la compra').fill('8095550100');
+  await page.getByRole('button',{name:'Buscar registro',exact:true}).click();
+  await expect(page.getByRole('region',{name:'Resultado de la búsqueda'})).toContainText('2 boletos registrados.');
+  await expect(page.getByRole('region',{name:'Resultado de la búsqueda'})).toContainText('CLIENTE********');
+  const text=await page.locator('body').innerText();
+  for(const secret of ['CLIENTE DEMO B5','b5-demo@example.invalid',fixture.orderCode,fixture.path])assert.equal(text.includes(secret),false);
+  await expect(page.getByLabel('Código de verificación')).toHaveCount(0);
+  await page.screenshot({path:path.join(m4Workspace,'.tmp/stage5-browser/desktop.png'),fullPage:true});
+  const AxeBuilder=m4WebRequire('@axe-core/playwright').default;
+  assert.equal((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations.length,0);
+  await page.setViewportSize({width:390,height:844});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  await page.screenshot({path:path.join(m4Workspace,'.tmp/stage5-browser/mobile.png'),fullPage:true});
+  await page.getByLabel('Teléfono de la compra').fill('8095550101');
+  await expect(page.getByRole('region',{name:'Resultado de la búsqueda'})).toHaveCount(0);
+  await page.getByRole('button',{name:'Buscar registro',exact:true}).click();
+  await expect(page.getByText('No encontramos boletos registrados con ese teléfono en esta rifa.')).toBeVisible();
+ } finally {await context.close();await browser.close();}
+});

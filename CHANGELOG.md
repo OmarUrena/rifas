@@ -1,5 +1,12 @@
 # Changelog
 
+## Etapa 5 — Consulta pública censurada — 2026-11-08
+
+- Por decisión del propietario, búsqueda por rifa y teléfono sin OTP: nombre y correo censurados en servidor y cantidad de boletos no cancelados. No concede acceso a órdenes, números, pagos ni comprobantes.
+- UI conectada, paginación, estados reales, acceso móvil/escritorio y aviso de privacidad actualizado.
+- Límites durables por IP/teléfono con HMAC, auditoría sin PII, migración e índices aditivos, recuperación y OpenAPI/cliente 0.11.0. Evidencia y límites en docs/AJUSTES_NEGOCIO_FASE_5.md.
+
+
 ## Resultado manual en un campo — 2026-11-08
 
 - Registro administrativo con un único número de cinco cifras y conservación de ceros iniciales. Validación de longitud y dígitos antes de enviar; adaptación compatible con API y base de datos existentes.

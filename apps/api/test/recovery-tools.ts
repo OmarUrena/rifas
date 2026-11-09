@@ -19,6 +19,11 @@ export async function revertEmptyB5(client:Client,url:string) {
   // Preflight before removing ANY newer schema or repairing its history.
   const preflight=(await readFile(resolve(workspaceRoot,'infra/recovery/b5-down-empty.sql'),'utf8')).split('DROP TABLE sorteos.admin_actions;')[0]!;
   await client.query(preflight);
+  const stage5=await client.query<{version:string}>("SELECT version FROM supabase_migrations.schema_migrations WHERE name='ticket_recovery_stage5'");
+  if(stage5.rows[0]){
+    await client.query(await readFile(resolve(workspaceRoot,'infra/recovery/stage5-down.sql'),'utf8'));
+    revertLocalMigrationHistory(url,stage5.rows[0].version);
+  }
   const stage4=await client.query<{version:string}>("SELECT version FROM supabase_migrations.schema_migrations WHERE name='lottery_awards_stage4'");
   if(stage4.rows[0]){
     await client.query('BEGIN');

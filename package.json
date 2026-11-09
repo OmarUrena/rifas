@@ -36,7 +36,9 @@
     "test:stage4": "node apps/web/tests/integration/run-stage4-browser.mjs",
     "test:recovery": "npm run test:recovery --workspace @sorteos/api",
     "test:stage4:verify": "npm run test:recovery --workspace @sorteos/api && npm run test:schema --workspace @sorteos/api && npm run test:stage4",
-    "test:lottery": "npm run test:lottery --workspace @sorteos/api"
+    "test:lottery": "npm run test:lottery --workspace @sorteos/api",
+    "test:lookup": "npm run test:lookup --workspace @sorteos/api",
+    "test:stage5": "node apps/web/tests/integration/run-stage5-browser.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.3",

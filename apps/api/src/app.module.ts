@@ -22,6 +22,8 @@ import { DatabaseService } from './database/database.service';
 import { HealthController } from './health/health.controller';
 import { AdminGuard } from './auth/admin.guard';
 import { LotteryController } from './prizes/lottery.controller';
+import { TicketLookupController } from './ticket-lookup/lookup.controller';
+import { TicketLookupService } from './ticket-lookup/lookup.service';
 import { LotteryService } from './prizes/lottery.service';
 import { AdminSessionController } from './auth/admin-session.controller';
 import { CatalogService } from './catalog/catalog.service';
@@ -38,13 +40,13 @@ export class AppModule {
         skipIf: context => config.httpRateStore === 'postgres' && context.getClass() === HealthController && context.getHandler().name === 'health',
       }),
         MulterModule.register({limits:{fileSize:config.receiptMaxBytes,files:1,fields:9,parts:10,fieldNameSize:64,fieldSize:512}})],
-      controllers: [LotteryController,PrizesController,PublicBlessingsController,MediaController,OperationsController,HealthController,PublicRafflesController,PublicBankAccountsController,AdminRafflesController,CheckoutController,OrdersController,PaymentsController,AdminSessionController],
+      controllers: [TicketLookupController,LotteryController,PrizesController,PublicBlessingsController,MediaController,OperationsController,HealthController,PublicRafflesController,PublicBankAccountsController,AdminRafflesController,CheckoutController,OrdersController,PaymentsController,AdminSessionController],
       providers: [
         { provide: APP_CONFIG, useValue: config }, DatabaseService,AdminGuard,CatalogService,MediaService,CheckoutService,
         { provide: ThrottlerStorage, inject: [DatabaseService], useFactory: (db:DatabaseService) =>
           config.httpRateStore === 'postgres' ? new SharedThrottlerStorage(db,config) : new ThrottlerStorageService() },
         OrdersService,ReceiptService,PrivateStorageService,OrderUploadGuard,UploadCapacityInterceptor,
-        LotteryService,PrizesService,OperationsService,PaymentsService,FinancialAuthorization,FinancialGuard,
+        TicketLookupService,LotteryService,PrizesService,OperationsService,PaymentsService,FinancialAuthorization,FinancialGuard,
         { provide: APP_GUARD, useClass: ThrottlerGuard },
       ],
     };

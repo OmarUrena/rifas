@@ -12,6 +12,7 @@ export class ApiError extends Error {
 }
 
 const messages: Record<string, string> = {
+  LOOKUP_UNAVAILABLE: "La consulta de registros todavía no está disponible. Inténtalo más tarde.",
   DATABASE_NOT_CONFIGURED: "El servicio no está disponible en este momento. Inténtalo más tarde.",
   DATABASE_UNAVAILABLE: "El servicio está temporalmente fuera de línea. Inténtalo de nuevo en unos momentos.",
   SERVICE_UNAVAILABLE: "El servicio está temporalmente fuera de línea. Inténtalo de nuevo en unos momentos.",

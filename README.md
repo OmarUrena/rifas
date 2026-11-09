@@ -474,3 +474,7 @@ validación de esa sesión siguen pendientes. Estado en [B5](docs/ESTADO_BACKEND
 ## Lotería y premios (etapa 4)
 
 Registro manual de Pick 4 Florida + FIREBALL al final, adjudicación privada y constancias de entrega en Administración → Rifa → Premios y números bendecidos. Configurar premios de lotería antes de publicar. Para adjudicar, cerrar ventas antes del evento y conciliar todos los pagos. Ver [detalle y verificaciones](docs/AJUSTES_NEGOCIO_FASE_4.md) y [contrato](docs/CONTRATO_API.md). No requiere nuevas variables de entorno ni conexión a la lotería.
+
+## Consulta pública de registros — Etapa 5
+
+En `/consultar-boletos` se busca por rifa y teléfono, sin OTP. Solo muestra nombre y correo censurados y cantidades de órdenes no canceladas (incluye pendientes de pago); nunca números, códigos ni comprobantes. La migración local de etapa 5 debe aplicarse antes de habilitar el endpoint en otro entorno. No añade proveedores ni variables: usa la clave secreta estable `CHECKOUT_ABUSE_HASH_KEY` para límites compartidos. Contrato y evidencia en [fase 5](docs/AJUSTES_NEGOCIO_FASE_5.md).
