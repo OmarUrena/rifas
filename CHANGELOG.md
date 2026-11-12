@@ -1,5 +1,12 @@
 # Changelog
 
+## Proxy de compra opcional para Vercel — 2026-11-11
+
+- `CHECKOUT_PROXY_ENABLED` activa el transporte bajo el dominio web para sesión, cupos, órdenes y consulta por teléfono; `false` conserva la conexión directa para dominios del mismo sitio.
+- Cookie invitada privada, CSRF, idempotencia y límites por cliente conservados. Identidad de red firmada entre servidores con `CHECKOUT_PROXY_SECRET`, sin confiar globalmente en cabeceras reenviadas ni exponer claves al navegador.
+- Relay limitado a rutas públicas de invitado, sin reintentos de escritura; multipart y errores preservados. En Vercel, archivos limitados a 4 MiB para dejar espacio al formulario.
+- Variables y transición a dominio propio documentadas; pruebas de relay, firma y controles de NestJS, más recorrido integrado local reproducible. Sin migraciones, despliegue ni escrituras remotas.
+
 ## Optimización de visualización de imágenes — 2026-11-09
 
 - Versiones responsive desde 360 px, límite superior de 1920 px y tamaños ajustados a la portada y galería. Evita la descarga mínima anterior de 640 px para imágenes que se muestran a unos 350 px en móviles de densidad 1x.

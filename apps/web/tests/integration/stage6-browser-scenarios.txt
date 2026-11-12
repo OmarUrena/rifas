@@ -5,6 +5,9 @@ test('etapa 6: Comprar, formulario único, recuperación y confirmación móvil/
  const contexts:any[]=[];const output=path.join(m4Workspace,'.tmp/stage6-browser');fs.mkdirSync(output,{recursive:true});
  const count=async()=>Number((await db.query('SELECT count(*) FROM sorteos.orders WHERE raffle_id=$1',[fixture.raffle])).rows[0].count);
  async function prepare(view:any){
+  if(process.env.CHECKOUT_PROXY_ENABLED==='true')view.on('request',(request:any)=>{
+   if(/\/api\/v1\/(checkout|orders)/.test(request.url()))assert.equal(new URL(request.url()).origin,origin);
+  });
   await view.goto(origin+'/rifas/'+slug+'/participar');await view.getByRole('button',{name:'Confirmar cupo',exact:true}).click();
   await expect(view.getByRole('timer')).toBeVisible();
   await view.getByLabel('Nombre completo',{exact:true}).fill('CLIENTE DEMO FASE SEIS');
@@ -19,7 +22,7 @@ test('etapa 6: Comprar, formulario único, recuperación y confirmación móvil/
  try {
   const context=await browser.newContext({viewport:{width:390,height:844},permissions:['clipboard-read','clipboard-write']});contexts.push(context);const page=await context.newPage();
   page.setDefaultTimeout(30000);let holds=0,posts=0;
-  page.on('request',(r:any)=>{if(r.method()==='POST'&&r.url().endsWith('/checkout-holds'))holds++;if(r.method()==='POST'&&r.url().endsWith('/orders'))posts++;});
+  page.on('request',(r:any)=>{if(process.env.CHECKOUT_PROXY_ENABLED==='true'&&/\/api\/v1\/(checkout|orders)/.test(r.url()))assert.equal(new URL(r.url()).origin,origin);if(r.method()==='POST'&&r.url().endsWith('/checkout-holds'))holds++;if(r.method()==='POST'&&r.url().endsWith('/orders'))posts++;});
   await page.goto(origin+'/rifas');
   await page.getByRole('link',{name:'Comprar',exact:true}).first().click();
   await expect(page.getByRole('heading',{name:'Comprar boletos',exact:true})).toBeVisible();

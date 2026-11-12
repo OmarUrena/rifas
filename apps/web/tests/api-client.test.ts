@@ -3,7 +3,24 @@ import { afterEach, expect, test, vi } from "vitest";
 import { createApiClient } from "@/lib/api/client";
 import { ApiError, parseApiError } from "@/lib/api/errors";
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
+
+test("proxy opcional solo cambia el transporte de compra en navegador; SSR y modo directo usan la API", async () => {
+  const fetcher = vi.fn().mockImplementation(() => Promise.resolve(Response.json({ status: "ok" })));
+  vi.stubGlobal("fetch", fetcher);
+  vi.stubGlobal("window", { location: { origin: "https://web.example.test" } });
+  vi.stubEnv("NEXT_PUBLIC_CHECKOUT_PROXY_ENABLED", "true");
+  await createApiClient("https://api.example.test/api/v1", undefined, true).GET("/api/v1/health");
+  expect((fetcher.mock.calls[0]![0] as Request).url).toBe("https://web.example.test/api/v1/health");
+  await createApiClient("https://api.example.test/api/v1").GET("/api/v1/health");
+  expect((fetcher.mock.calls[1]![0] as Request).url).toBe("https://api.example.test/api/v1/health");
+  vi.stubEnv("NEXT_PUBLIC_CHECKOUT_PROXY_ENABLED", "false");
+  await createApiClient("https://api.example.test/api/v1", undefined, true).GET("/api/v1/health");
+  expect((fetcher.mock.calls[2]![0] as Request).url).toBe("https://api.example.test/api/v1/health");
+  vi.stubEnv("NEXT_PUBLIC_CHECKOUT_PROXY_ENABLED", "true"); vi.stubGlobal("window", undefined);
+  await createApiClient("https://api.example.test/api/v1", undefined, true).GET("/api/v1/health");
+  expect((fetcher.mock.calls[3]![0] as Request).url).toBe("https://api.example.test/api/v1/health");
+});
 
 test("M6: caída del servicio conserva referencia sin exponer mensajes internos", () => {
   const failure=parseApiError({error:{code:"DATABASE_UNAVAILABLE",requestId:"test-request",message:"PRIVATE_DATABASE_HOST"}},503);

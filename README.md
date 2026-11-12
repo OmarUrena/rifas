@@ -2,6 +2,60 @@
 
 ## Despliegue de la API en Vercel
 
+### Compra desde dos dominios gratuitos de Vercel
+
+La compra y la consulta por teléfono pueden usar un proxy privado en el dominio
+web. Así el navegador conserva su cookie HttpOnly/Secure/SameSite=Lax en la web,
+y Next.js reenvía las solicitudes a NestJS. Todas las escrituras siguen pasando
+por la API. No se necesita un dominio propio ni se desactiva CSRF.
+
+Configurar estas variables en Vercel antes de reconstruir los proyectos:
+
+| Proyecto | Variable | Valor |
+|---|---|---|
+| Web | `CHECKOUT_PROXY_ENABLED` | `true` |
+| Web | `API_BASE_URL` | `https://rifas-api-omega.vercel.app/api/v1` |
+| Web | `WEB_ORIGIN` | `https://rifas-web-pink.vercel.app` (sin barra final) |
+| Web y API | `CHECKOUT_PROXY_SECRET` | La misma clave privada aleatoria de 64 caracteres hexadecimales |
+| API | `CORS_ORIGINS` | Incluir `https://rifas-web-pink.vercel.app` |
+
+Generar la clave localmente con
+`node -e "process.stdout.write(require('node:crypto').randomBytes(32).toString('hex'))"`.
+Guardarla únicamente en variables de servidor de ambos proyectos; nunca en Git,
+capturas ni variables `NEXT_PUBLIC_`. Desplegar primero la API y después la web.
+El booleano público se deriva de `CHECKOUT_PROXY_ENABLED` durante el build; no se
+configura manualmente `NEXT_PUBLIC_CHECKOUT_PROXY_ENABLED`.
+
+En Vercel, el modo proxy limita el archivo a 4 MiB, dejando espacio para los
+campos multipart bajo el límite de 4.5 MB de Functions. Puede fijarse
+`RECEIPT_MAX_BYTES=4194304` en ambos proyectos para igualar límites. Se conserva
+el envío único de formulario y comprobante. Ver
+[límite de Vercel](https://vercel.com/kb/guide/how-to-bypass-vercel-body-size-limit-serverless-functions).
+
+El proxy solo permite rutas de invitado, no transmite cookies administrativas
+ni Authorization y no reintenta escrituras. Conserva idempotencia, respuestas y
+correlación de la API. Firma una clave de cliente derivada de la IP recibida del
+borde Vercel; NestJS verifica firma, origen, ruta, método y antigüedad antes de
+aplicar límites. No se habilita `trust proxy` global. Fuera de Vercel, este relay
+solo admite desarrollo/test en loopback; otro hosting requiere adaptar la fuente
+confiable de IP. Ver [ADR 0037](docs/decisions/0037-optional-checkout-proxy.md).
+
+Al comprar un dominio, conectar web/API bajo el mismo sitio (por ejemplo,
+`rifas.example.com` y `api.example.com`), actualizar `API_BASE_URL`, `WEB_ORIGIN`
+y `CORS_ORIGINS`, poner `CHECKOUT_PROXY_ENABLED=false` y reconstruir la web.
+Una vez retirado el proxy puede quitarse su clave de ambos proyectos. El cambio
+de transporte/dominio cambia el ámbito de la cookie: hacerlo en una ventana sin
+envíos en curso y conservar asistencia para órdenes de sesiones anteriores.
+No borrar almacenamiento del comprador ni crear otra orden para recuperar una
+transferencia previa. Desactivar la opción sin dominios del mismo sitio reproduce
+el bloqueo original.
+
+Prueba integrada local con PostgreSQL temporal, Next.js, NestJS y navegador:
+`powershell -NoProfile -File scripts/test-backend-local.ps1 -TestScript test:checkout:proxy`.
+Los adaptadores Auth/Storage de esta prueba son locales, sin transferencias reales.
+
+### Configuración y evidencia de la API
+
 **Verificación remota 2026-11-09:** tras aplicar la migración M6 autorizada,
 `/api/v1/health`, `/api/v1/health/ready` y `/api/v1/raffles` responden 200 en
 `https://rifas-api-omega.vercel.app`. Se verificaron conexión PostgreSQL, RLS y

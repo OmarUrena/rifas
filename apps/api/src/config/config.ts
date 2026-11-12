@@ -6,6 +6,7 @@ export interface AppConfig {
   host: string;
   port: number;
   corsOrigins: string[];
+  checkoutProxySecret?: string;
   swaggerEnabled: boolean;
   logLevel: 'silent' | 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
   rateLimit: number;
@@ -51,6 +52,8 @@ function boolean(value: string | undefined, fallback: boolean, name: string): bo
 }
 
 export function parseConfig(env: NodeJS.ProcessEnv): AppConfig {
+  const checkoutProxySecret = env.CHECKOUT_PROXY_SECRET || undefined;
+  if (checkoutProxySecret && !/^[a-f0-9]{64}$/.test(checkoutProxySecret)) throw new Error('Configuración inválida: CHECKOUT_PROXY_SECRET');
   const environment = env.NODE_ENV ?? 'development';
   if (!['development', 'test', 'staging', 'production'].includes(environment)) {
     throw new Error('Configuración inválida: NODE_ENV');
@@ -133,7 +136,7 @@ export function parseConfig(env: NodeJS.ProcessEnv): AppConfig {
     environment: environment as AppConfig['environment'],
     host: env.HOST ?? '127.0.0.1',
     port: integer(env.PORT, 3001, 'PORT', 65535),
-    corsOrigins, swaggerEnabled,
+    corsOrigins, swaggerEnabled, checkoutProxySecret,
     logLevel: logLevel as AppConfig['logLevel'],
     rateLimit: integer(env.RATE_LIMIT, 120, 'RATE_LIMIT', 10000),
     rateTtlMs: integer(env.RATE_TTL_MS, 60000, 'RATE_TTL_MS', 3600000),

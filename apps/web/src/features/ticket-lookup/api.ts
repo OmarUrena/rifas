@@ -1,7 +1,7 @@
 import { createApiClient } from '@/lib/api/client';
 import { ApiError } from '@/lib/api/errors';
 export function ticketLookupApi(baseUrl:string) {
-  const client=createApiClient(baseUrl,15000);
+  const client=createApiClient(baseUrl,15000,true);
   return {
     async raffles(page:number) {
       const {data}=await client.GET('/api/v1/ticket-lookup/raffles',{params:{query:{page,pageSize:12}}});

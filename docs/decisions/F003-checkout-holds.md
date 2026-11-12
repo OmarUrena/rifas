@@ -1,5 +1,9 @@
 # ADR F003 — Pre-reservas del frontend mediante la sesión B3
 
+Actualización 2026-11-11: [ADR 0037](0037-optional-checkout-proxy.md) amplía
+el transporte directo con un proxy opcional firmado para dominios separados de
+Vercel, manteniendo CSRF, sesión privada y cuotas por cliente.
+
 Fecha: 2026-11-03. Estado: aceptada. Prefijo F para evitar colisiones numéricas con ADR de backend.
 
 ## Contexto

@@ -7,7 +7,7 @@ export type BankAccount = components["schemas"]["PublicBankAccountDto"];
 // One initialization per browser tab, including multiple mounted consumers.
 let sessionFlight: Promise<void> | undefined;
 export function checkoutApi(baseUrl: string, origin = () => window.location.origin) {
-  const client = createApiClient(baseUrl);
+  const client = createApiClient(baseUrl, undefined, true);
   const signal = () => AbortSignal.timeout(15000);
   function checked(data: Hold | undefined): Hold {
     if (!data || !Number.isSafeInteger(data.totalMinor) || data.totalMinor < 0 || !Number.isSafeInteger(data.unitPriceMinor) || !Number.isFinite(Date.parse(data.serverTime)) || !Number.isFinite(Date.parse(data.expiresAt))) throw new ApiError("INVALID_RESPONSE", 502);

@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import { fileURLToPath } from "node:url";
 import { readAdminEnvironment, readEnvironment } from "./src/lib/config";
 
-readEnvironment(process.env);
+const environment = readEnvironment(process.env);
 readAdminEnvironment(process.env);
 
 const imageBase = process.env.PUBLIC_PRIZE_IMAGE_BASE_URL;
@@ -15,6 +15,8 @@ if (imageBase) {
 }
 
 const nextConfig: NextConfig = {
+  // Only this boolean reaches the bundle; the signing secret stays on the server.
+  env: { NEXT_PUBLIC_CHECKOUT_PROXY_ENABLED: String(environment.checkoutProxyEnabled) },
   poweredByHeader: false,
   devIndicators: false,
   turbopack: { root: fileURLToPath(new URL("../..", import.meta.url)) },

@@ -9,7 +9,8 @@ export class SafeLogger implements LoggerService {
     this.output = pino({ level, base: undefined, redact: {
       paths: ['req', 'res', 'body', 'headers', 'authorization', 'cookie', 'password', 'token',
         'phone', 'email', 'customerName', 'customerPhone', 'customerEmail', 'databaseUrl',
-        'storageKey','supabaseStorageKey','developmentMfaToken','ADMIN_DEVELOPMENT_MFA_TOKEN','receipt','buffer'],
+        'storageKey','supabaseStorageKey','developmentMfaToken','ADMIN_DEVELOPMENT_MFA_TOKEN','receipt','buffer',
+        'checkoutProxySecret','CHECKOUT_PROXY_SECRET'],
       remove: true,
     } });
   }

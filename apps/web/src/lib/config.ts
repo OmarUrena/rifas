@@ -30,6 +30,8 @@ export function readAdminEnvironment(env: EnvironmentInput) {
 }
 
 export function readEnvironment(env: EnvironmentInput) {
+  const checkoutProxyEnabled = env.CHECKOUT_PROXY_ENABLED ?? "false";
+  if (!["true", "false"].includes(checkoutProxyEnabled)) throw new Error("CHECKOUT_PROXY_ENABLED debe ser true o false.");
   const mode = env.API_MODE ?? "live";
   const appEnv = env.APP_ENV ?? (env.NODE_ENV === "development" ? "development" : "production");
   if (!["development", "test", "staging", "production"].includes(appEnv)) throw new Error("APP_ENV no válido.");
@@ -48,7 +50,15 @@ export function readEnvironment(env: EnvironmentInput) {
     if (["staging", "production"].includes(appEnv) && url.protocol !== "https:") throw new Error("La API requiere HTTPS en staging/producción.");
     apiBaseUrl = url.toString().replace(/\/$/, "");
   }
-  const receiptMaxBytes = Number(env.RECEIPT_MAX_BYTES ?? 5242880);
+  let receiptMaxBytes = Number(env.RECEIPT_MAX_BYTES ?? 5242880);
   if (!Number.isSafeInteger(receiptMaxBytes) || receiptMaxBytes < 1 || receiptMaxBytes > 10485760) throw new Error("RECEIPT_MAX_BYTES debe ser un entero entre 1 y 10485760, coherente con la API.");
-  return { mode, appEnv, apiBaseUrl, receiptMaxBytes } as const;
+  if (checkoutProxyEnabled === "true") {
+    // Leave room for multipart fields under Vercel Functions' 4.5 MB body limit.
+    if (env.VERCEL === "1") receiptMaxBytes = Math.min(receiptMaxBytes, 4194304);
+    if (!apiBaseUrl || !/^[a-f0-9]{64}$/.test(env.CHECKOUT_PROXY_SECRET ?? "")) throw new Error("El proxy requiere API_BASE_URL y CHECKOUT_PROXY_SECRET de 64 caracteres hexadecimales.");
+    const web = new URL(env.WEB_ORIGIN ?? "");
+    if (web.origin !== env.WEB_ORIGIN || !["http:", "https:"].includes(web.protocol) || web.origin === new URL(apiBaseUrl).origin
+      || (["staging", "production"].includes(appEnv) && web.protocol !== "https:")) throw new Error("WEB_ORIGIN debe ser el origen web exacto, distinto de la API y HTTPS en producción.");
+  }
+  return { mode, appEnv, apiBaseUrl, receiptMaxBytes, checkoutProxyEnabled: checkoutProxyEnabled === "true" } as const;
 }

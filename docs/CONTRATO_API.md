@@ -139,6 +139,20 @@ Desplegar web/API bajo el mismo sitio para que SameSite=Lax permita la cookie;
 una integración SSR debe reenviar esa cookie de forma protegida. No hay token
 en querystrings, body ni localStorage. Sin sesión vigente: 401 SESSION_INVALID.
 
+Alternativa implementada para dominios separados de Vercel: con
+`CHECKOUT_PROXY_ENABLED=true` en la web, el cliente tipado usa las mismas rutas
+`/api/v1` bajo el origen web para checkout, órdenes, cuentas y consulta por
+teléfono. Un Route Handler acotado reenvía a la API, incluyendo exclusivamente
+la cookie invitada. `CHECKOUT_PROXY_SECRET` compartido autentica cabeceras
+internas de identidad de red con HMAC-SHA256 y ventana de 60 segundos. El proxy
+valida Origin/Fetch Metadata antes de reenviar; NestJS conserva su validación
+de origen, sesión, DTO e idempotencia y sus límites persistentes. Las cabeceras
+de firma no son una credencial pública ni reemplazan la sesión del comprador.
+No cambian las rutas, esquemas ni OpenAPI del negocio. `false` (predeterminado)
+restaura transporte directo. En Vercel, el proxy limita el comprobante en la web
+a 4 MiB para dejar espacio al multipart. Configuración y transición de dominios:
+[README](../README.md#compra-desde-dos-dominios-gratuitos-de-vercel).
+
 ### `POST /checkout-holds`
 **Header:** `Idempotency-Key: 0b30...` + `Origin` válido.
 

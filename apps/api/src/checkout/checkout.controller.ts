@@ -6,6 +6,7 @@ import { APP_CONFIG, AppConfig } from '../config/config';
 import { CreateHoldDto, GuestSessionDto, HoldDto } from './checkout.dto';
 import { CheckoutService } from './checkout.service';
 import { assertCheckoutOrigin, guestCookieName, guestSecret } from './guest-access';
+import { clientAddress } from '../common/client-address';
 
 @ApiTags('checkout')
 @ApiCookieAuth('guestSession')
@@ -24,7 +25,7 @@ export class CheckoutController {
   @ApiHeader({name:'Origin',required:true,description:'Origen web permitido; no acepta ausencia o null.'})
   async open(@Req() req:Request,@Res({passthrough:true}) res:Response):Promise<GuestSessionDto> {
     this.origin(req);
-    const secret=await this.checkout.openSession(this.secret(req),this.checkout.ipKey(req.ip??req.socket.remoteAddress??''),this.requestId(req));
+    const secret=await this.checkout.openSession(this.secret(req),this.checkout.ipKey(clientAddress(req)),this.requestId(req));
     if(secret)res.cookie(this.cookieName,secret,{httpOnly:true,secure:this.cookieName.startsWith('__Host-'),sameSite:'lax',path:'/',maxAge:86400000});
     return {ready:true};
   }
@@ -34,7 +35,7 @@ export class CheckoutController {
   create(@Body() body:CreateHoldDto,@Headers('idempotency-key') key:string,@Req() req:Request) {
     this.origin(req);
     if(!key || !isUUID(key))throw new HttpException({code:'INVALID_REQUEST'},400);
-    return this.checkout.create(body,key,this.secret(req),this.checkout.ipKey(req.ip??req.socket.remoteAddress??''),this.requestId(req));
+    return this.checkout.create(body,key,this.secret(req),this.checkout.ipKey(clientAddress(req)),this.requestId(req));
   }
   @Get('checkout-holds/:id') @ApiOkResponse({type:HoldDto})
   get(@Param('id',new ParseUUIDPipe()) id:string,@Req() req:Request) {

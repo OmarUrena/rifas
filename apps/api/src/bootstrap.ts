@@ -12,6 +12,7 @@ import { AppConfig } from './config/config';
 import { ApiExceptionFilter, validationPipe } from './common/errors';
 import { SafeLogger } from './common/logger';
 import { createDocument } from './openapi';
+import { authenticateCheckoutProxy } from './common/client-address';
 
 export function configureApp(app: INestApplication, config: AppConfig, logger: SafeLogger): void {
   app.getHttpAdapter().getInstance().set('trust proxy', false);
@@ -41,6 +42,10 @@ export function configureApp(app: INestApplication, config: AppConfig, logger: S
       });
     });
     next();
+  });
+  app.use((req: Request, _res: Response, next: NextFunction) => {
+    try { authenticateCheckoutProxy(req,config); next(); }
+    catch (error) { next(error); }
   });
   app.use(helmet());
   app.enableCors({

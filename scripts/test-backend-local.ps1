@@ -2,7 +2,7 @@
 param(
     [string]$PgBin = 'C:/Program Files/PostgreSQL/17/bin',
     [ValidateRange(1024,65535)][int]$Port = 54339,
-    [ValidateSet('test:integration','test:catalog','test:checkout','test:orders','test:payments','test:m4','test:m5','test:m6','test:resilience','test:stage4','test:recovery','test:stage4:verify','test:lottery','test:lookup','test:stage5','test:stage6','test:sales','test:stage7:browser','test:stage7:flows','test:adjustments','test:adjustments:edge')][string]$TestScript = 'test:integration',
+    [ValidateSet('test:integration','test:catalog','test:checkout','test:orders','test:payments','test:m4','test:m5','test:m6','test:resilience','test:stage4','test:recovery','test:stage4:verify','test:lottery','test:lookup','test:stage5','test:stage6','test:checkout:proxy','test:sales','test:stage7:browser','test:stage7:flows','test:adjustments','test:adjustments:edge')][string]$TestScript = 'test:integration',
     [switch]$PasswordAuthentication
 )
 

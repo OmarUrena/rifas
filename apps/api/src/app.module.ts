@@ -15,7 +15,8 @@ import { PaymentsController } from './payments/payments.controller';
 import { PaymentsService } from './payments/payments.service';
 import { FinancialAuthorization, FinancialGuard } from './auth/financial.guard';
 import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard, ThrottlerModule, ThrottlerStorage, ThrottlerStorageService } from '@nestjs/throttler';
+import { ThrottlerModule, ThrottlerStorage, ThrottlerStorageService } from '@nestjs/throttler';
+import { ClientThrottlerGuard } from './common/client-throttler.guard';
 import { SharedThrottlerStorage } from './common/shared-throttler';
 import { APP_CONFIG, AppConfig } from './config/config';
 import { DatabaseService } from './database/database.service';
@@ -47,7 +48,7 @@ export class AppModule {
           config.httpRateStore === 'postgres' ? new SharedThrottlerStorage(db,config) : new ThrottlerStorageService() },
         OrdersService,ReceiptService,PrivateStorageService,OrderUploadGuard,UploadCapacityInterceptor,
         TicketLookupService,LotteryService,PrizesService,OperationsService,PaymentsService,FinancialAuthorization,FinancialGuard,
-        { provide: APP_GUARD, useClass: ThrottlerGuard },
+        { provide: APP_GUARD, useClass: ClientThrottlerGuard },
       ],
     };
   }
