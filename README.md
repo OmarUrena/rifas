@@ -4,6 +4,9 @@
 
 ### Compra desde dos dominios gratuitos de Vercel
 
+Si el despliegue sigue mostrando 403 después de publicar el código, consultar
+el [diagnóstico remoto y los pasos de configuración en Vercel](docs/DIAGNOSTICO_403_VERCEL.md).
+
 La compra y la consulta por teléfono pueden usar un proxy privado en el dominio
 web. Así el navegador conserva su cookie HttpOnly/Secure/SameSite=Lax en la web,
 y Next.js reenvía las solicitudes a NestJS. Todas las escrituras siguen pasando
