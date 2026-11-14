@@ -1,5 +1,11 @@
 # Changelog
 
+## Bucket privado de comprobantes — 2026-11-14
+
+- Detectado `receipts` ausente en Supabase Rifas: la API devuelve `STORAGE_UNAVAILABLE` cuando no puede verificar el bucket privado antes de subir el archivo.
+- Creado mediante Storage API con `public=false`, límite de 5 MiB y MIME JPG/PNG/PDF; configuración confirmada mediante SDK y consulta de metadatos. El proxy Vercel conserva su límite de 4 MiB.
+- Sin cambios de código, esquema, contrato ni despliegue; sin crear órdenes o subir comprobantes de prueba. Queda pendiente verificar el envío desde Vercel con sus propias credenciales. Evidencia y recuperación en ADR 0038.
+
 ## Proxy de compra opcional para Vercel — 2026-11-11
 
 - `CHECKOUT_PROXY_ENABLED` activa el transporte bajo el dominio web para sesión, cupos, órdenes y consulta por teléfono; `false` conserva la conexión directa para dominios del mismo sitio.

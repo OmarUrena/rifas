@@ -2,6 +2,15 @@
 
 ## Despliegue de la API en Vercel
 
+### Comprobantes: `STORAGE_UNAVAILABLE`
+
+La API requiere `PRIVATE_RECEIPT_BUCKET=receipts`, un bucket existente con
+`public=false`, y `SUPABASE_STORAGE_KEY` de servidor con acceso al mismo proyecto.
+El 2026-11-14 se detectó y creó el bucket privado faltante en Supabase Rifas.
+Ver [diagnóstico, verificación y recuperación](docs/decisions/0038-private-receipt-bucket.md).
+Ante un envío pendiente, conservar la pestaña y usar «Recuperar el mismo envío»
+con los datos y archivo originales; no repetir la transferencia.
+
 ### Compra desde dos dominios gratuitos de Vercel
 
 Si el despliegue sigue mostrando 403 después de publicar el código, consultar
