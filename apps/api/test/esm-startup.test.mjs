@@ -12,6 +12,7 @@ const { createApp } = require('../dist/bootstrap.js');
 const { parseConfig } = require('../dist/config/config.js');
 const { ReceiptService } = require('../dist/orders/receipt.service.js');
 const { PDFDocument } = require('pdf-lib');
+const sharp = require('sharp');
 
 test('worker del build valida un PDF con el archivo JavaScript incluido en Vercel', { timeout: 15000 }, async () => {
   const config = parseConfig({ NODE_ENV: 'test' });
@@ -24,6 +25,16 @@ test('worker del build valida un PDF con el archivo JavaScript incluido en Verce
   assert.equal(receipt.mime, 'application/pdf');
   assert.equal(receipt.extension, 'pdf');
   assert.deepEqual(new Uint8Array(receipt.bytes), bytes);
+});
+
+test('worker compilado decodifica PNG y JPG con sharp y conserva los bytes', { timeout: 15000 }, async () => {
+  const service=new ReceiptService(parseConfig({ NODE_ENV:'test', LOG_LEVEL:'silent' }));
+  const png=await sharp({create:{width:32,height:32,channels:3,background:'#fff'}}).png().toBuffer();
+  const jpg=await sharp(png).jpeg().toBuffer();
+  for(const [bytes,mime]of [[png,'image/png'],[jpg,'image/jpeg']]){
+    const result=await service.validate({buffer:bytes,size:bytes.length,mimetype:mime});
+    assert.equal(result.mime,mime);assert.deepEqual(result.bytes,bytes);
+  }
 });
 
 test('build CommonJS arranca y verifica JWT con jose ESM sin require(ESM)', { timeout: 20000 }, async () => {

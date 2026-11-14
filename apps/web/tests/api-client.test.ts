@@ -57,6 +57,18 @@ test("429 de proxy sin JSON mantiene mensaje de límite y correlación segura", 
   await expect(createApiClient("https://api.example.test/api/v1").GET("/api/v1/health")).rejects.toMatchObject({ code: "RATE_LIMITED", requestId: "proxy-123" });
 });
 
+test("503 de infraestructura sin JSON muestra indisponibilidad y conserva la referencia segura", async () => {
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("The deployment is currently unavailable\nSERVICE_UNAVAILABLE", { status: 503, headers: { "X-Request-Id": "proxy-503" } })));
+  await expect(createApiClient("https://api.example.test/api/v1").GET("/api/v1/health")).rejects.toMatchObject({ code: "SERVICE_UNAVAILABLE", status: 503, requestId: "proxy-503", message: "El servicio está temporalmente fuera de línea. Inténtalo de nuevo en unos momentos." });
+});
+
+test("fallo del validador conserva instrucciones para recuperar sin repetir el pago", () => {
+  const error=parseApiError({error:{code:"RECEIPT_VALIDATION_UNAVAILABLE",requestId:"receipt-503",message:"PRIVATE_DEPENDENCY"}},503);
+  expect(error.message).toContain("recuperar el mismo envío");
+  expect(error.message).toContain("No repitas la transferencia");
+  expect(error.message).not.toContain("PRIVATE_DEPENDENCY");
+});
+
 test("HTML inesperado no se muestra ni conserva correlaciones inseguras", async () => {
   vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("<html>PRIVATE-ERROR</html>", { status: 500, headers: { "X-Request-Id": "user@example.test" } })));
   await expect(createApiClient("https://api.example.test/api/v1").GET("/api/v1/health")).rejects.toMatchObject({ code: "UNKNOWN_ERROR", requestId: undefined, message: "No pudimos completar la solicitud. Inténtalo más tarde." });

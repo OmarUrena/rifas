@@ -5595,7 +5595,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description INVALID_RECEIPT: archivo rechazado por validación; no equivale a fallo del servicio validador. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -5624,7 +5624,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description Error uniforme */
+            /** @description RECEIPT_VALIDATION_UNAVAILABLE: worker no disponible, agotado o fallido; STORAGE_UNAVAILABLE: almacenamiento no disponible. Conservar el mismo envío para recuperación. */
             503: {
                 headers: {
                     [name: string]: unknown;

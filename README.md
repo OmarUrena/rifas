@@ -4,6 +4,11 @@
 
 ### Comprobantes: `STORAGE_UNAVAILABLE`
 
+Desde OpenAPI 0.12.1, `RECEIPT_VALIDATION_UNAVAILABLE` distingue un fallo del
+proceso validador de `INVALID_RECEIPT` (archivo rechazado). Los motivos fijos
+en logs se correlacionan con el `requestId`, sin registrar el comprobante.
+Ver [diagnóstico de validación y límites de verificación](docs/decisions/0039-receipt-validation-failures.md).
+
 La API requiere `PRIVATE_RECEIPT_BUCKET=receipts`, un bucket existente con
 `public=false`, y `SUPABASE_STORAGE_KEY` de servidor con acceso al mismo proyecto.
 El 2026-11-14 se detectó y creó el bucket privado faltante en Supabase Rifas.

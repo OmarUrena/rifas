@@ -17,6 +17,7 @@ const messages: Record<string, string> = {
   DATABASE_UNAVAILABLE: "El servicio está temporalmente fuera de línea. Inténtalo de nuevo en unos momentos.",
   SERVICE_UNAVAILABLE: "El servicio está temporalmente fuera de línea. Inténtalo de nuevo en unos momentos.",
   INVALID_RECEIPT: "No pudimos validar el comprobante. Selecciona una imagen JPG/PNG o un PDF válido.",
+  RECEIPT_VALIDATION_UNAVAILABLE: "El servicio de validación del comprobante no está disponible. Conserva los datos y el archivo para recuperar el mismo envío. No repitas la transferencia.",
   INVALID_BANK_ACCOUNT: "La cuenta seleccionada ya no admite transferencias. Si ya pagaste, solicita asistencia.",
   INVALID_TRANSFER_DATE: "Revisa la fecha y hora de la transferencia; no puede estar en el futuro.",
   RULES_CHANGED: "Las reglas cambiaron. Si ya transferiste, solicita asistencia antes de crear otro cupo.",
@@ -41,7 +42,7 @@ function safeRequestId(value: unknown): string | undefined {
   return typeof value === "string" && /^[\w.-]{1,128}$/.test(value) ? value : undefined;
 }
 export function parseApiError(body: unknown, status: number, headerRequestId?: string | null): ApiError {
-  const fallbackCode = status === 429 ? "RATE_LIMITED" : status === 403 ? "FORBIDDEN" : "UNKNOWN_ERROR";
+  const fallbackCode = status === 503 ? "SERVICE_UNAVAILABLE" : status === 429 ? "RATE_LIMITED" : status === 403 ? "FORBIDDEN" : "UNKNOWN_ERROR";
   if (typeof body === "object" && body !== null && "error" in body) {
     const error = body.error;
     if (typeof error === "object" && error !== null) {

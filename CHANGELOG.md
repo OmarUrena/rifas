@@ -1,5 +1,11 @@
 # Changelog
 
+## Diagnóstico de validación de comprobantes — 2026-11-14
+
+- Fallos de arranque, ejecución, timeout y protocolo del worker devuelven `503 RECEIPT_VALIDATION_UNAVAILABLE`; `422 INVALID_RECEIPT` queda para archivos rechazados explícitamente. Se espera la terminación del worker antes de devolver la respuesta y liberar capacidad.
+- Logs con motivos fijos y requestId, sin contenido ni mensajes de excepción. Frontend conserva recuperación y presenta los 503 sin JSON como servicio no disponible.
+- OpenAPI/cliente 0.12.1 regenerados; pruebas de archivos, worker fallido, timeout, privacidad y recuperación sin órdenes duplicadas. Ver ADR 0039 para evidencia y limitaciones: no se ha identificado la causa del 503 remoto ni desplegado esta corrección.
+
 ## Bucket privado de comprobantes — 2026-11-14
 
 - Detectado `receipts` ausente en Supabase Rifas: la API devuelve `STORAGE_UNAVAILABLE` cuando no puede verificar el bucket privado antes de subir el archivo.

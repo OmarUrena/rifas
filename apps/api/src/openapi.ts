@@ -5,7 +5,7 @@ export function createDocument(app: INestApplication) {
   const document = SwaggerModule.createDocument(app, new DocumentBuilder()
     .setTitle('App Sorteos API').setDescription('Etapa 6: compra pública simplificada y disponibilidad informativa calculada por servidor; conserva comprobante obligatorio, idempotencia y consulta protegida.')
     .addCookieAuth('__Host-sorteos_guest',{type:'apiKey',in:'cookie',description:'Cookie HttpOnly de checkout-session; en desarrollo: sorteos_guest.'},'guestSession')
-      .addBearerAuth().setVersion('0.12.0').build(), {
+      .addBearerAuth().setVersion('0.12.1').build(), {
     operationIdFactory: (controller, method) => `${controller}_${method}`,
   });
   for (const path of Object.values(document.paths)) {
@@ -21,6 +21,11 @@ export function createDocument(app: INestApplication) {
         headers: { 'Retry-After': { description: 'Segundos de espera del límite HTTP.', schema: {type:'integer',minimum:1} } },
       };
     }
+  }
+  const order=document.paths['/api/v1/orders']?.post;
+  if(order){
+    order.responses['422']={...order.responses['422'],description:'INVALID_RECEIPT: archivo rechazado por validación; no equivale a fallo del servicio validador.'};
+    order.responses['503']={...order.responses['503'],description:'RECEIPT_VALIDATION_UNAVAILABLE: worker no disponible, agotado o fallido; STORAGE_UNAVAILABLE: almacenamiento no disponible. Conservar el mismo envío para recuperación.'};
   }
   return document;
 }

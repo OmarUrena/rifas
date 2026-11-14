@@ -1,5 +1,13 @@
 # Contrato REST compartido — App Sorteos / API v1
 
+Corrección operativa 2026-11-14, OpenAPI 0.12.1: `POST /orders` distingue
+422 `INVALID_RECEIPT` (archivo rechazado) de 503 `RECEIPT_VALIDATION_UNAVAILABLE`
+(fallo de arranque, ejecución, tiempo o protocolo del worker). Este último mantiene
+la intención y el archivo originales para recuperar el mismo envío. Los logs de
+validación incluyen motivos fijos y requestId; nunca contenido, nombre de archivo
+ni mensajes de excepciones. Un 503 de infraestructura sin JSON se presenta como
+servicio no disponible; no permite inferir si una orden quedó creada.
+
 Etapa 7 conserva OpenAPI/cliente 0.12.0 y las reglas siguientes, sin endpoints ni variables nuevas. Ver [regresión y límites de entrega](AJUSTES_NEGOCIO_FASE_7.md).
 
 ## Etapa 6 — OpenAPI 0.12.0

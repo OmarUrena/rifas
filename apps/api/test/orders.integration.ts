@@ -13,6 +13,7 @@ import { parseConfig } from '../src/config/config';
 import { localDatabaseUrl, migrateLocal } from '../src/database/local-tools';
 import { seedDemo } from '../src/database/seed-demo';
 import { OrdersService } from '../src/orders/orders.service';
+import { ReceiptService } from '../src/orders/receipt.service';
 import { CheckoutService } from '../src/checkout/checkout.service';
 import { DatabaseService } from '../src/database/database.service';
 import { OrderDto } from '../src/orders/orders.dto';
@@ -118,6 +119,27 @@ test('archivo MIME ajeno, falsificado, truncado o demasiado grande no crea orden
     assert.equal((await submit(c,{file,mime})).status,422);
   }
   assert.equal((await submit(c,{file:Buffer.alloc(5242881)})).status,413);assert.equal(uploads,before);
+});
+
+test('fallo del worker es 503 sin upload ni orden y el mismo intento se recupera al restaurarlo',async()=>{
+  const c=await checkout(),key=randomUUID(),before=uploads,count=await orderCount();
+  const receipts=app.get(ReceiptService);
+  // Simulate a deployment whose worker cannot be loaded; restore the real parser before retrying.
+  const worker=receipts as unknown as {startWorker:(...args:unknown[])=>unknown};
+  const original=worker.startWorker;
+  try{
+    worker.startWorker=()=>{throw new Error('PRIVATE_DEPLOYMENT_PATH');};
+    const response=await submit(c,{key});
+    assert.equal(response.status,503);
+    const body=await response.json();assert.equal(body.error.code,'RECEIPT_VALIDATION_UNAVAILABLE');
+    assert.ok(!JSON.stringify(body).includes('PRIVATE_DEPLOYMENT_PATH'));
+    assert.equal(uploads,before);assert.equal(await orderCount(),count);
+  }finally{worker.startWorker=original;}
+  const recovered=await submit(c,{key});assert.equal(recovered.status,201);
+  const order=await recovered.json();
+  assert.equal(await orderCount(),count+1);
+  const replay=await submit(c,{key});assert.equal(replay.status,201);
+  assert.equal((await replay.json()).orderCode,order.orderCode);assert.equal(await orderCount(),count+1);
 });
 test('PDF con JavaScript se rechaza; JPG y PDF estructuralmente válidos son aceptados',async()=>{
   const hostile=await PDFDocument.create();hostile.addPage();

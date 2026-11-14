@@ -8,7 +8,7 @@
     "start": "node dist/main.js",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "test": "node -r ts-node/register --test --test-concurrency=1 test/foundation.test.ts test/local-tools.test.ts test/dev-runner.test.ts test/stage2.test.ts test/lookup.test.ts test/checkout-proxy.test.ts",
+    "test": "node -r ts-node/register --test --test-concurrency=1 test/foundation.test.ts test/receipt.test.ts test/local-tools.test.ts test/dev-runner.test.ts test/stage2.test.ts test/lookup.test.ts test/checkout-proxy.test.ts",
     "test:esm": "node --no-experimental-require-module --test test/esm-startup.test.mjs test/vercel-entrypoint.test.mjs",
     "test:integration": "node -r ts-node/register --test --test-concurrency=1 test/database.integration.ts test/schema.integration.ts test/catalog.integration.ts test/checkout.integration.ts test/orders.integration.ts test/payments.integration.ts test/resilience.integration.ts",
     "test:resilience": "node -r ts-node/register --test test/resilience.integration.ts",

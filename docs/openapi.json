@@ -5702,7 +5702,7 @@
             }
           },
           "422": {
-            "description": "Error uniforme",
+            "description": "INVALID_RECEIPT: archivo rechazado por validación; no equivale a fallo del servicio validador.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5741,7 +5741,7 @@
             }
           },
           "503": {
-            "description": "Error uniforme",
+            "description": "RECEIPT_VALIDATION_UNAVAILABLE: worker no disponible, agotado o fallido; STORAGE_UNAVAILABLE: almacenamiento no disponible. Conservar el mismo envío para recuperación.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7473,7 +7473,7 @@
   "info": {
     "title": "App Sorteos API",
     "description": "Etapa 6: compra pública simplificada y disponibilidad informativa calculada por servidor; conserva comprobante obligatorio, idempotencia y consulta protegida.",
-    "version": "0.12.0",
+    "version": "0.12.1",
     "contact": {}
   },
   "tags": [],

@@ -66,7 +66,7 @@ export class OrdersService implements OnModuleInit,OnModuleDestroy {
   }
   async submit(body:SubmitOrderDto,key:string,secret:string|undefined,file:ReceiptUpload|undefined,requestId:string):Promise<OrderDto> {
     // Validar y decodificar antes del upload; el hash de intención usa el original.
-    const receipt=await this.receipts.validate(file);
+    const receipt=await this.receipts.validate(file,requestId);
     const requestHash=sha(JSON.stringify([body.holdId.toLowerCase(),body.customerName,body.customerPhone,body.customerEmail,
       body.bankAccountId.toLowerCase(),body.bankReference,new Date(body.transferDate).toISOString(),body.acceptedRulesVersion,sha(file!.buffer),file!.mimetype]));
     const prepared=await this.db.transaction(async c=>{
